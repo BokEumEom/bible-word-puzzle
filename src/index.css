@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Jua", ui-sans-serif, system-ui, sans-serif;
+  --color-primary-light: #fef08a; /* yellow-200 */
+  --color-primary: #facc15; /* yellow-400 */
+  --color-primary-dark: #eab308; /* yellow-500 */
+  --color-secondary-light: #bbf7d0; /* green-200 */
+  --color-secondary: #4ade80; /* green-400 */
+  --color-secondary-dark: #22c55e; /* green-500 */
+  --color-accent-light: #bfdbfe; /* blue-200 */
+  --color-accent: #60a5fa; /* blue-400 */
+  --color-accent-dark: #3b82f6; /* blue-500 */
+  --color-bg-paper: #fdfbf7;
+}
+
+body {
+  background-color: var(--color-bg-paper);
+  background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+  background-size: 20px 20px;
+  color: #374151; /* gray-700 */
+}
