@@ -35,27 +35,27 @@ export function MemorizeScreen({ verse, onBack }: Props) {
       <div className="flex items-center mb-8">
         <button 
           onClick={onBack}
-          className="p-3 bg-white rounded-full shadow-md hover:bg-gray-50 border-2 border-gray-100"
+          className="p-3 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-white border-2 border-orange-100 transition-colors"
         >
-          <ChevronLeft size={32} className="text-gray-600" />
+          <ChevronLeft size={32} className="text-orange-500" />
         </button>
-        <h2 className="text-3xl font-bold text-gray-800 ml-4 flex-1 text-center">
+        <h2 className="text-3xl font-black text-stone-800 ml-4 flex-1 text-center">
           말씀 외우기
         </h2>
         <button 
           onClick={reset}
-          className="p-3 bg-blue-100 rounded-full shadow-md hover:bg-blue-200 border-2 border-blue-300 text-blue-600"
+          className="p-3 bg-amber-100 rounded-full shadow-sm hover:bg-amber-200 border-2 border-amber-300 text-amber-600 transition-colors"
         >
           <RotateCcw size={28} />
         </button>
       </div>
 
-      <div className="bg-yellow-50 text-yellow-800 p-4 rounded-2xl mb-8 text-xl border-2 border-yellow-200 text-center font-bold">
+      <div className="bg-orange-50/80 backdrop-blur-sm text-orange-800 p-4 rounded-2xl mb-8 text-xl border-2 border-orange-200 text-center font-bold">
         가리고 싶은 단어를 콕콕 눌러보세요!
       </div>
 
-      <div className="bg-white p-8 rounded-3xl shadow-xl border-4 border-yellow-300 w-full relative mb-8">
-        <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-gray-800 px-6 py-2 rounded-full font-bold text-2xl shadow-md border-2 border-yellow-500 whitespace-nowrap">
+      <div className="bg-white/90 backdrop-blur-md p-8 rounded-[2rem] shadow-sm border-4 border-amber-200 w-full relative mb-8">
+        <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-amber-400 text-stone-800 px-6 py-2 rounded-full font-black text-2xl shadow-sm border-2 border-amber-500 whitespace-nowrap">
           {verse.reference}
         </div>
         
@@ -67,10 +67,10 @@ export function MemorizeScreen({ verse, onBack }: Props) {
               whileTap={{ scale: 0.95 }}
               onClick={() => toggleWord(index)}
               className={`
-                px-4 py-3 rounded-xl text-2xl font-bold transition-all
+                px-4 py-3 rounded-xl text-2xl font-black transition-all
                 ${hiddenWords[index] 
-                  ? 'bg-gray-200 text-transparent border-2 border-dashed border-gray-400 min-w-[80px]' 
-                  : 'bg-blue-100 text-blue-800 border-2 border-blue-300 shadow-sm'}
+                  ? 'bg-stone-200 text-transparent border-2 border-dashed border-stone-400 min-w-[80px]' 
+                  : 'bg-orange-100 text-orange-800 border-2 border-orange-300 shadow-sm'}
               `}
             >
               {word}

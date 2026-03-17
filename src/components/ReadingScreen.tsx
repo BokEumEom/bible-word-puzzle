@@ -30,14 +30,14 @@ export function ReadingScreen({ verse, onBack }: Props) {
       <div className="flex items-center mb-12">
         <button 
           onClick={onBack}
-          className="p-3 bg-white rounded-full shadow-md hover:bg-gray-50 border-2 border-gray-100"
+          className="p-3 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-white border-2 border-orange-100 transition-colors"
         >
-          <ChevronLeft size={32} className="text-gray-600" />
+          <ChevronLeft size={32} className="text-orange-500" />
         </button>
         <div className="flex-1" />
         <button 
           onClick={handleReadAloud}
-          className="p-3 bg-yellow-400 rounded-full shadow-md hover:bg-yellow-500 border-2 border-yellow-500 text-white"
+          className="p-3 bg-amber-400 rounded-full shadow-sm hover:bg-amber-500 border-2 border-amber-500 text-white transition-colors"
         >
           <Volume2 size={32} />
         </button>
@@ -48,13 +48,13 @@ export function ReadingScreen({ verse, onBack }: Props) {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="bg-white p-8 rounded-3xl shadow-xl border-4 border-green-300 w-full relative"
+          className="bg-white/90 backdrop-blur-md p-8 rounded-[2rem] shadow-sm border-4 border-emerald-200 w-full relative"
         >
-          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-green-400 text-white px-6 py-2 rounded-full font-bold text-2xl shadow-md border-2 border-green-500 whitespace-nowrap">
+          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-emerald-400 text-white px-6 py-2 rounded-full font-black text-2xl shadow-sm border-2 border-emerald-500 whitespace-nowrap">
             {verse.reference}
           </div>
           
-          <p className="text-4xl leading-relaxed text-gray-800 mt-8 font-bold break-keep">
+          <p className="text-4xl leading-relaxed text-stone-800 mt-8 font-black break-keep">
             {verse.verse}
           </p>
         </motion.div>

@@ -4,6 +4,7 @@ export const bibleData: BibleBook[] = [
   {
     id: 'gen',
     name: '창세기',
+    testament: 'old',
     chapters: [
       {
         chapter: 1,
@@ -28,6 +29,7 @@ export const bibleData: BibleBook[] = [
   {
     id: 'exo',
     name: '출애굽기',
+    testament: 'old',
     chapters: [
       {
         chapter: 20,
@@ -43,6 +45,7 @@ export const bibleData: BibleBook[] = [
   {
     id: 'psa',
     name: '시편',
+    testament: 'old',
     chapters: [
       {
         chapter: 1,
@@ -117,6 +120,7 @@ export const bibleData: BibleBook[] = [
   {
     id: 'pro',
     name: '잠언',
+    testament: 'old',
     chapters: [
       {
         chapter: 1,
@@ -136,6 +140,7 @@ export const bibleData: BibleBook[] = [
   {
     id: 'isa',
     name: '이사야',
+    testament: 'old',
     chapters: [
       {
         chapter: 41,
@@ -148,6 +153,7 @@ export const bibleData: BibleBook[] = [
   {
     id: 'mat',
     name: '마태복음',
+    testament: 'new',
     chapters: [
       {
         chapter: 5,
@@ -178,6 +184,7 @@ export const bibleData: BibleBook[] = [
   {
     id: 'jhn',
     name: '요한복음',
+    testament: 'new',
     chapters: [
       {
         chapter: 1,
@@ -206,6 +213,7 @@ export const bibleData: BibleBook[] = [
   {
     id: 'rom',
     name: '로마서',
+    testament: 'new',
     chapters: [
       {
         chapter: 8,
@@ -218,6 +226,7 @@ export const bibleData: BibleBook[] = [
   {
     id: 'phi',
     name: '빌립보서',
+    testament: 'new',
     chapters: [
       {
         chapter: 4,
@@ -233,6 +242,7 @@ export const bibleData: BibleBook[] = [
   {
     id: '1th',
     name: '데살로니가전서',
+    testament: 'new',
     chapters: [
       {
         chapter: 5,

@@ -1,23 +1,33 @@
-@import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Jua&family=Nunito:wght@600;700;800;900&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Jua", ui-sans-serif, system-ui, sans-serif;
-  --color-primary-light: #fef08a; /* yellow-200 */
-  --color-primary: #facc15; /* yellow-400 */
-  --color-primary-dark: #eab308; /* yellow-500 */
+  --font-sans: "Nunito", "Jua", ui-sans-serif, system-ui, sans-serif;
+  --color-primary-light: #fed7aa; /* orange-200 */
+  --color-primary: #f97316; /* orange-500 */
+  --color-primary-dark: #ea580c; /* orange-600 */
   --color-secondary-light: #bbf7d0; /* green-200 */
   --color-secondary: #4ade80; /* green-400 */
   --color-secondary-dark: #22c55e; /* green-500 */
   --color-accent-light: #bfdbfe; /* blue-200 */
   --color-accent: #60a5fa; /* blue-400 */
   --color-accent-dark: #3b82f6; /* blue-500 */
-  --color-bg-paper: #fdfbf7;
+  --color-bg-paper: #fffaf0; /* floralwhite / warm cream */
+  --color-text-main: #5d4037; /* warm brown */
 }
 
 body {
-  background-color: var(--color-bg-paper);
-  background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
-  background-size: 20px 20px;
-  color: #374151; /* gray-700 */
+  background: linear-gradient(180deg, #FFF3E0 0%, #FFE0B2 40%, #C8E6C9 100%);
+  background-attachment: fixed;
+  color: var(--color-text-main);
+}
+
+/* Custom utility for the main orange button style from the image */
+.btn-primary {
+  @apply bg-gradient-to-b from-orange-400 to-orange-500 text-white font-black shadow-lg border-b-4 border-orange-600 rounded-full transition-transform hover:scale-105 active:scale-95 active:border-b-0 active:translate-y-1;
+}
+
+/* Custom utility for secondary buttons */
+.btn-secondary {
+  @apply bg-white text-orange-500 font-black shadow-md border-b-4 border-orange-200 rounded-full transition-transform hover:scale-105 active:scale-95 active:border-b-0 active:translate-y-1;
 }

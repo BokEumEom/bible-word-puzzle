@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, PanInfo } from 'motion/react';
-import confetti from 'canvas-confetti';
 import { Verse } from '../types';
 import { Check, Lightbulb, Star } from 'lucide-react';
 
@@ -111,20 +110,11 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
 
     if (currentAnswer === correctAnswer) {
       setIsSuccess(true);
-      
-      // Trigger confetti
-      confetti({
-        particleCount: 150,
-        spread: 70,
-        origin: { y: 0.6 },
-        colors: ['#facc15', '#4ade80', '#60a5fa', '#f87171', '#c084fc'],
-        disableForReducedMotion: true
-      });
 
       setTimeout(() => {
         setIsChecking(false);
         onCorrect();
-      }, 2500); // Wait for animation to finish
+      }, 2000); // Wait for animation to finish
     } else {
       setIsWrong(true);
       setTimeout(() => {
@@ -140,17 +130,17 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
     <div className="flex flex-col w-full max-w-lg mx-auto">
       {/* Reference & Hint */}
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-2xl font-bold text-gray-700 bg-white px-4 py-2 rounded-2xl shadow-sm border-2 border-gray-100 flex items-center gap-2">
+        <h3 className="text-2xl font-black text-stone-700 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-2xl shadow-sm border-2 border-orange-100 flex items-center gap-2">
           {verse.reference}
           {onToggleFavorite && (
             <button 
               onClick={onToggleFavorite}
-              className="ml-2 p-1 rounded-full hover:bg-gray-100 transition-colors"
+              className="ml-2 p-1 rounded-full hover:bg-orange-50 transition-colors"
               aria-label="즐겨찾기"
             >
               <Star 
                 size={24} 
-                className={isFavorite ? "text-yellow-400 fill-yellow-400" : "text-gray-300"} 
+                className={isFavorite ? "text-amber-400 fill-amber-400" : "text-stone-300"} 
               />
             </button>
           )}
@@ -158,7 +148,7 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
         {verse.hint && (
           <button 
             onClick={() => setShowHint(!showHint)}
-            className="bg-yellow-100 text-yellow-700 p-2 rounded-full hover:bg-yellow-200 transition-colors"
+            className="bg-amber-100 text-amber-700 p-2 rounded-full hover:bg-amber-200 transition-colors shadow-sm"
           >
             <Lightbulb size={24} />
           </button>
@@ -171,7 +161,7 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="bg-yellow-50 text-yellow-800 p-4 rounded-2xl mb-4 text-lg border-2 border-yellow-200"
+            className="bg-amber-50/80 backdrop-blur-sm text-amber-800 p-4 rounded-2xl mb-4 text-lg border-2 border-amber-200 font-bold"
           >
             💡 {verse.hint}
           </motion.div>
@@ -182,18 +172,18 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
       <motion.div 
         animate={isWrong ? { x: [-10, 10, -10, 10, 0] } : {}}
         transition={{ duration: 0.4 }}
-        className={`p-6 rounded-3xl shadow-md border-4 mb-8 min-h-[150px] flex flex-wrap gap-3 content-start transition-colors duration-500 ${
-          isSuccess ? 'bg-green-50 border-green-200' : 'bg-white border-blue-100'
+        className={`p-6 rounded-[2rem] shadow-sm border-4 mb-8 min-h-[150px] flex flex-wrap gap-3 content-start transition-colors duration-500 ${
+          isSuccess ? 'bg-emerald-50/80 backdrop-blur-sm border-emerald-200' : 'bg-white/90 backdrop-blur-md border-orange-100'
         }`}
       >
         {slots.map((item, i) => (
           <div 
             key={`slot-bg-${i}`} 
             data-slot-index={i}
-            className="relative bg-gray-100 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center"
+            className="relative bg-stone-100/80 border-2 border-dashed border-stone-300 rounded-xl flex items-center justify-center"
           >
             {/* Placeholder text - visible when empty, invisible when filled to maintain size */}
-            <div className={`px-4 py-3 text-xl font-bold whitespace-nowrap ${item ? 'opacity-0 pointer-events-none' : 'text-gray-400'}`}>
+            <div className={`px-4 py-3 text-xl font-black whitespace-nowrap ${item ? 'opacity-0 pointer-events-none' : 'text-stone-400'}`}>
               {item ? item.text : '빈칸'}
             </div>
             
@@ -207,25 +197,26 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
                 initial={{ rotateY: 180, scale: 0.8 }}
                 animate={{ 
                   rotateY: 0, 
-                  scale: 1,
-                  ...(isSuccess ? { 
-                    scale: [1, 1.2, 1],
-                    y: [0, -15, 0],
-                  } : {})
+                  scale: isSuccess ? [1, 1.2, 1] : 1,
+                  y: isSuccess ? [0, -15, 0] : 0,
                 }}
-                transition={{ 
-                  type: "spring", 
-                  stiffness: 250, 
-                  damping: 25,
-                  ...(isSuccess ? { duration: 0.5, delay: i * 0.1, ease: "easeOut" } : {})
+                transition={isSuccess ? {
+                  duration: 0.5,
+                  delay: i * 0.1,
+                  ease: "easeOut",
+                  times: [0, 0.5, 1]
+                } : {
+                  type: "spring",
+                  stiffness: 250,
+                  damping: 25
                 }}
                 onClick={() => handleSlotClick(item, i)}
                 disabled={isSuccess}
                 className={`
-                  absolute inset-0 w-full h-full flex items-center justify-center rounded-xl text-xl font-bold transition-colors cursor-grab active:cursor-grabbing
+                  absolute inset-0 w-full h-full flex items-center justify-center rounded-xl text-xl font-black transition-colors cursor-grab active:cursor-grabbing
                   ${isSuccess 
-                    ? 'bg-green-400 text-white shadow-md border-b-4 border-green-600' 
-                    : 'bg-blue-400 text-white shadow-sm border-b-4 border-blue-600 hover:bg-blue-500 hover:border-blue-700 active:border-b-0 active:translate-y-1'}
+                    ? 'bg-emerald-400 text-white shadow-sm border-b-4 border-emerald-600' 
+                    : 'bg-orange-400 text-white shadow-sm border-b-4 border-orange-600 hover:bg-orange-500 hover:border-orange-700 active:border-b-0 active:translate-y-1'}
                 `}
                 style={{ transformStyle: 'preserve-3d', touchAction: 'none' }}
               >
@@ -245,7 +236,7 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
             className="relative rounded-xl"
           >
             {/* Invisible placeholder to maintain size */}
-            <div className="px-4 py-3 text-xl font-bold opacity-0 pointer-events-none whitespace-nowrap">
+            <div className="px-4 py-3 text-xl font-black opacity-0 pointer-events-none whitespace-nowrap">
               {item ? item.text : '빈칸'}
             </div>
 
@@ -261,7 +252,7 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
                 transition={{ type: "spring", stiffness: 250, damping: 25 }}
                 disabled={isSuccess}
                 onClick={() => handleBankClick(item, i)}
-                className="absolute inset-0 w-full h-full flex items-center justify-center rounded-xl text-xl font-bold shadow-sm transition-colors bg-white border-2 border-b-4 border-gray-200 text-gray-700 hover:border-blue-400 hover:text-blue-500 active:border-b-2 active:translate-y-1 cursor-grab active:cursor-grabbing"
+                className="absolute inset-0 w-full h-full flex items-center justify-center rounded-xl text-xl font-black shadow-sm transition-colors bg-white/90 backdrop-blur-sm border-2 border-b-4 border-stone-200 text-stone-700 hover:border-orange-400 hover:text-orange-500 active:border-b-2 active:translate-y-1 cursor-grab active:cursor-grabbing"
                 style={{ transformStyle: 'preserve-3d', touchAction: 'none' }}
               >
                 {item.text}
@@ -284,10 +275,10 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
             onClick={checkAnswer}
             disabled={!allFilled || isChecking}
             className={`
-              w-full py-4 rounded-2xl text-2xl font-bold flex items-center justify-center gap-2 transition-all
+              w-full py-4 rounded-[2rem] text-2xl font-black flex items-center justify-center gap-2 transition-all
               ${allFilled 
-                ? 'bg-green-500 text-white shadow-lg border-b-4 border-green-700 hover:bg-green-400' 
-                : 'bg-gray-200 text-gray-400 cursor-not-allowed'}
+                ? 'btn-primary' 
+                : 'bg-stone-200 text-stone-400 cursor-not-allowed'}
             `}
           >
             <Check size={28} />
@@ -298,9 +289,10 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
             key="success-msg"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="w-full py-4 rounded-2xl text-2xl font-bold flex items-center justify-center gap-2 bg-yellow-400 text-yellow-900 shadow-lg border-b-4 border-yellow-600"
+            className="w-full py-4 rounded-[2rem] text-2xl font-black flex items-center justify-center gap-2 bg-emerald-500 text-white shadow-sm border-b-4 border-emerald-700"
           >
-            🎉 참 잘했어요! 🎉
+            <Check size={28} />
+            정답입니다! ✨
           </motion.div>
         )}
       </AnimatePresence>
@@ -311,10 +303,49 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="text-center text-red-500 font-bold text-xl mt-4"
+            className="text-center text-red-500 font-black text-xl mt-4"
           >
             조금만 더 생각해 볼까요? 할 수 있어요!
           </motion.p>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isSuccess && (
+          <motion.div
+            className="fixed inset-0 pointer-events-none flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              initial={{ scale: 0, rotate: -45 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ type: "spring", damping: 12, stiffness: 200 }}
+              className="bg-amber-400 text-amber-900 rounded-[3rem] w-56 h-56 flex flex-col items-center justify-center shadow-sm border-8 border-amber-200 relative"
+            >
+              <Star size={72} fill="currentColor" className="mb-2" />
+              <span className="text-3xl font-black">최고예요!</span>
+              
+              {/* Bursting small stars */}
+              {[...Array(8)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute text-amber-400"
+                  initial={{ scale: 0, x: 0, y: 0 }}
+                  animate={{ 
+                    scale: [0, 1.5, 0],
+                    x: Math.cos(i * 45 * Math.PI / 180) * 180,
+                    y: Math.sin(i * 45 * Math.PI / 180) * 180,
+                    rotate: 180
+                  }}
+                  transition={{ duration: 1.2, ease: "easeOut" }}
+                >
+                  <Star size={32} fill="currentColor" />
+                </motion.div>
+              ))}
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

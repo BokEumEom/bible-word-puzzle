@@ -7,7 +7,6 @@ import { DifficultySelector } from './components/DifficultySelector';
 import { ProgressHeader } from './components/ProgressHeader';
 import { VersePuzzleBoard } from './components/VersePuzzleBoard';
 import { ResultScreen } from './components/ResultScreen';
-import { FeedbackToast } from './components/FeedbackToast';
 import { BibleSelector } from './components/BibleSelector';
 import { ModeSelector } from './components/ModeSelector';
 import { ReadingScreen } from './components/ReadingScreen';
@@ -21,7 +20,6 @@ export default function App() {
   const [currentVerses, setCurrentVerses] = useState<Verse[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [stars, setStars] = useState(0);
-  const [showFeedback, setShowFeedback] = useState(false);
   const [selectedCustomVerse, setSelectedCustomVerse] = useState<Verse | null>(null);
 
   const { progress, toggleFavorite, markCompleted, addRecent, updateStreak } = useUserProgress();
@@ -52,7 +50,6 @@ export default function App() {
   };
 
   const handleCorrect = () => {
-    setShowFeedback(true);
     setStars(prev => prev + 1);
     
     if (gameState === 'custom-playing' && selectedCustomVerse) {
@@ -61,17 +58,14 @@ export default function App() {
       markCompleted(currentVerses[currentIndex]);
     }
     
-    setTimeout(() => {
-      setShowFeedback(false);
-      if (gameState === 'custom-playing') {
-        // Just show success and stay or go back to mode select
-        setGameState('select-mode');
-      } else if (currentIndex < currentVerses.length - 1) {
-        setCurrentIndex(prev => prev + 1);
-      } else {
-        setGameState('result');
-      }
-    }, 2000);
+    if (gameState === 'custom-playing') {
+      // Just show success and stay or go back to mode select
+      setGameState('select-mode');
+    } else if (currentIndex < currentVerses.length - 1) {
+      setCurrentIndex(prev => prev + 1);
+    } else {
+      setGameState('result');
+    }
   };
 
   const goHome = () => {
@@ -182,9 +176,9 @@ export default function App() {
             <div className="flex items-center mb-8">
               <button 
                 onClick={() => setGameState('select-mode')}
-                className="p-3 bg-white rounded-full shadow-md hover:bg-gray-50 border-2 border-gray-100"
+                className="p-3 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-white border-2 border-orange-100 transition-colors"
               >
-                <ChevronLeft size={32} className="text-gray-600" />
+                <ChevronLeft size={32} className="text-orange-500" />
               </button>
             </div>
             <div className="flex-1 flex flex-col justify-center">
@@ -198,8 +192,6 @@ export default function App() {
           </motion.div>
         )}
       </AnimatePresence>
-
-      <FeedbackToast show={showFeedback} />
     </div>
   );
 }

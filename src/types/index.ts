@@ -33,6 +33,7 @@ export interface BibleChapter {
 export interface BibleBook {
   id: string;
   name: string;
+  testament: 'old' | 'new';
   chapters: BibleChapter[];
 }
 
