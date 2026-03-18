@@ -173,7 +173,7 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
       <motion.div 
         animate={isWrong ? { x: [-10, 10, -10, 10, 0] } : {}}
         transition={{ duration: 0.4 }}
-        className={`p-6 rounded-[2rem] shadow-sm border-4 mb-8 min-h-[150px] flex flex-wrap gap-3 content-start transition-colors duration-500 ${
+        className={`p-4 sm:p-6 rounded-[2rem] shadow-sm border-4 mb-6 sm:mb-8 min-h-[120px] sm:min-h-[150px] flex flex-wrap gap-2 sm:gap-3 content-start transition-colors duration-500 ${
           isSuccess ? 'bg-emerald-50/80 backdrop-blur-sm border-emerald-200' : 'bg-white/90 backdrop-blur-md border-orange-100'
         }`}
       >
@@ -184,7 +184,7 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
             className="relative bg-stone-100/80 border-2 border-dashed border-stone-300 rounded-xl flex items-center justify-center"
           >
             {/* Placeholder text - visible when empty, invisible when filled to maintain size */}
-            <div className={`px-4 py-3 text-xl font-black whitespace-nowrap ${item ? 'opacity-0 pointer-events-none' : 'text-stone-400'}`}>
+            <div className={`px-3 py-2.5 sm:px-4 sm:py-3 text-base sm:text-xl font-black whitespace-nowrap ${item ? 'opacity-0 pointer-events-none' : 'text-stone-400'}`}>
               {item ? item.text : '빈칸'}
             </div>
             
@@ -214,7 +214,7 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
                 onClick={() => handleSlotClick(item, i)}
                 disabled={isSuccess}
                 className={`
-                  absolute inset-0 w-full h-full flex items-center justify-center rounded-xl text-xl font-black transition-colors cursor-grab active:cursor-grabbing
+                  absolute inset-0 w-full h-full flex items-center justify-center rounded-xl text-base sm:text-xl font-black transition-colors cursor-grab active:cursor-grabbing
                   ${isSuccess 
                     ? 'bg-emerald-400 text-white shadow-sm border-b-4 border-emerald-600' 
                     : 'bg-orange-400 text-white shadow-sm border-b-4 border-orange-600 hover:bg-orange-500 hover:border-orange-700 active:border-b-0 active:translate-y-1'}
@@ -229,7 +229,7 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
       </motion.div>
 
       {/* Word Bank */}
-      <div className="flex flex-wrap gap-3 justify-center mb-8">
+      <div className="flex flex-wrap gap-2 sm:gap-3 justify-center mb-8">
         {bank.map((item, i) => (
           <div 
             key={`bank-bg-${i}`} 
@@ -237,7 +237,7 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
             className="relative rounded-xl"
           >
             {/* Invisible placeholder to maintain size */}
-            <div className="px-4 py-3 text-xl font-black opacity-0 pointer-events-none whitespace-nowrap">
+            <div className="px-3 py-2.5 sm:px-4 sm:py-3 text-base sm:text-xl font-black opacity-0 pointer-events-none whitespace-nowrap">
               {item ? item.text : '빈칸'}
             </div>
 
@@ -253,7 +253,7 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
                 transition={{ type: "spring", stiffness: 250, damping: 25 }}
                 disabled={isSuccess}
                 onClick={() => handleBankClick(item, i)}
-                className="absolute inset-0 w-full h-full flex items-center justify-center rounded-xl text-xl font-black shadow-sm transition-colors bg-white/90 backdrop-blur-sm border-2 border-b-4 border-stone-200 text-stone-700 hover:border-orange-400 hover:text-orange-500 active:border-b-2 active:translate-y-1 cursor-grab active:cursor-grabbing"
+                className="absolute inset-0 w-full h-full flex items-center justify-center rounded-xl text-base sm:text-xl font-black shadow-sm transition-colors bg-white/90 backdrop-blur-sm border-2 border-b-4 border-stone-200 text-stone-700 hover:border-orange-400 hover:text-orange-500 active:border-b-2 active:translate-y-1 cursor-grab active:cursor-grabbing"
                 style={{ transformStyle: 'preserve-3d', touchAction: 'none' }}
               >
                 {item.text}
@@ -323,7 +323,7 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
               initial={{ scale: 0, rotate: -45 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ type: "spring", damping: 12, stiffness: 200 }}
-              className="bg-amber-400 text-amber-900 rounded-[3rem] w-56 h-56 flex flex-col items-center justify-center shadow-sm border-8 border-amber-200 relative"
+              className="bg-amber-400 text-amber-900 rounded-[3rem] w-44 h-44 sm:w-56 sm:h-56 flex flex-col items-center justify-center shadow-sm border-8 border-amber-200 relative"
             >
               <Star size={72} fill="currentColor" className="mb-2" />
               <span className="text-3xl font-black">최고예요!</span>

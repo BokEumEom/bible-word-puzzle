@@ -1,14 +1,15 @@
 import { motion } from 'motion/react';
-import { Star, Home, RotateCcw } from 'lucide-react';
+import { Star, Home, RotateCcw, Shuffle } from 'lucide-react';
 
 interface Props {
   stars: number;
   total: number;
   onHome: () => void;
   onRetry: () => void;
+  onChangeDifficulty: () => void;
 }
 
-export function ResultScreen({ stars, total, onHome, onRetry }: Props) {
+export function ResultScreen({ stars, total, onHome, onRetry, onChangeDifficulty }: Props) {
   return (
     <motion.div 
       initial={{ opacity: 0, scale: 0.9 }}
@@ -72,6 +73,16 @@ export function ResultScreen({ stars, total, onHome, onRetry }: Props) {
           다시 하기
         </motion.button>
         
+        <motion.button
+          whileHover={{ scale: 1.03, y: -2 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={onChangeDifficulty}
+          className="w-full text-2xl py-5 rounded-[2rem] flex items-center justify-center gap-3 bg-white/80 text-stone-700 font-black border-2 border-orange-200 shadow-sm hover:bg-white transition-colors"
+        >
+          <Shuffle size={32} />
+          다른 난이도 도전
+        </motion.button>
+
         <motion.button
           whileHover={{ scale: 1.03, y: -2 }}
           whileTap={{ scale: 0.95 }}

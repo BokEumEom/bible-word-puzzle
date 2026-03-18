@@ -20,6 +20,21 @@ body {
   background: linear-gradient(180deg, #FFF3E0 0%, #FFE0B2 40%, #C8E6C9 100%);
   background-attachment: fixed;
   color: var(--color-text-main);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  overscroll-behavior-y: none;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+/* Prevent pull-to-refresh on mobile */
+html {
+  overscroll-behavior: none;
+}
+
+/* Ensure minimum touch target size */
+button, [role="button"] {
+  min-height: 44px;
+  min-width: 44px;
 }
 
 /* Custom utility for the main orange button style from the image */

@@ -7,6 +7,9 @@ export interface UserProgress {
   recentVerses: Verse[];
   favoriteVerses: Verse[];
   completedVerses: Record<string, number>;
+  dailyGoal: number;
+  todayCompletions: number;
+  todayCompletionDate: string;
 }
 
 const STORAGE_KEY = 'bible_puzzle_progress';
@@ -16,7 +19,10 @@ const defaultProgress: UserProgress = {
   lastActiveDate: '',
   recentVerses: [],
   favoriteVerses: [],
-  completedVerses: {}
+  completedVerses: {},
+  dailyGoal: 3,
+  todayCompletions: 0,
+  todayCompletionDate: '',
 };
 
 function loadProgress(): UserProgress {
@@ -84,16 +90,30 @@ export function useUserProgress() {
   };
 
   const markCompleted = (verse: Verse) => {
-    setProgress(prev => ({
-      ...prev,
-      completedVerses: {
-        ...prev.completedVerses,
-        [verse.id]: (prev.completedVerses[verse.id] || 0) + 1
-      }
-    }));
+    const today = new Date().toISOString().split('T')[0];
+    setProgress(prev => {
+      const isNewDay = prev.todayCompletionDate !== today;
+      return {
+        ...prev,
+        completedVerses: {
+          ...prev.completedVerses,
+          [verse.id]: (prev.completedVerses[verse.id] || 0) + 1,
+        },
+        todayCompletions: isNewDay ? 1 : prev.todayCompletions + 1,
+        todayCompletionDate: today,
+      };
+    });
     updateStreak();
     addRecent(verse);
   };
 
-  return { progress, toggleFavorite, markCompleted, addRecent, updateStreak };
+  const setDailyGoal = (goal: number) => {
+    setProgress(prev => ({ ...prev, dailyGoal: goal }));
+  };
+
+  const today = new Date().toISOString().split('T')[0];
+  const isDailyGoalMet = progress.todayCompletionDate === today
+    && progress.todayCompletions >= progress.dailyGoal;
+
+  return { progress, toggleFavorite, markCompleted, addRecent, updateStreak, setDailyGoal, isDailyGoalMet };
 }

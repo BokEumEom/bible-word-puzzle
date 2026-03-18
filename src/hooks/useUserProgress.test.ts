@@ -121,6 +121,63 @@ describe('useUserProgress', () => {
     expect(result.current.progress.streak).toBe(1);
   });
 
+  it('returns default daily goal fields when localStorage is empty', () => {
+    const { result } = renderHook(() => useUserProgress());
+    expect(result.current.progress.dailyGoal).toBe(3);
+    expect(result.current.progress.todayCompletions).toBe(0);
+    expect(result.current.progress.todayCompletionDate).toBe('');
+    expect(result.current.isDailyGoalMet).toBe(false);
+  });
+
+  it('increments todayCompletions on markCompleted', () => {
+    const { result } = renderHook(() => useUserProgress());
+    const verse = { id: 'dg-1', reference: 'Test 1:1', verse: 'test', words: ['test'] };
+
+    act(() => result.current.markCompleted(verse));
+    expect(result.current.progress.todayCompletions).toBe(1);
+
+    const verse2 = { id: 'dg-2', reference: 'Test 1:2', verse: 'test2', words: ['test2'] };
+    act(() => result.current.markCompleted(verse2));
+    expect(result.current.progress.todayCompletions).toBe(2);
+  });
+
+  it('isDailyGoalMet becomes true when goal reached', () => {
+    const { result } = renderHook(() => useUserProgress());
+
+    for (let i = 0; i < 3; i++) {
+      const verse = { id: `goal-${i}`, reference: `T ${i}:1`, verse: `v${i}`, words: [`v${i}`] };
+      act(() => result.current.markCompleted(verse));
+    }
+
+    expect(result.current.isDailyGoalMet).toBe(true);
+  });
+
+  it('setDailyGoal updates the goal', () => {
+    const { result } = renderHook(() => useUserProgress());
+    act(() => result.current.setDailyGoal(5));
+    expect(result.current.progress.dailyGoal).toBe(5);
+  });
+
+  it('resets todayCompletions on new day', () => {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+    localStorage.setItem('bible_puzzle_progress', JSON.stringify({
+      ...{ streak: 1, lastActiveDate: yesterdayStr, recentVerses: [], favoriteVerses: [], completedVerses: {} },
+      dailyGoal: 3,
+      todayCompletions: 5,
+      todayCompletionDate: yesterdayStr,
+    }));
+
+    const { result } = renderHook(() => useUserProgress());
+    expect(result.current.progress.todayCompletions).toBe(5);
+
+    const verse = { id: 'new-day-1', reference: 'T 1:1', verse: 'v', words: ['v'] };
+    act(() => result.current.markCompleted(verse));
+    expect(result.current.progress.todayCompletions).toBe(1);
+  });
+
   it('handles localStorage write failure gracefully', () => {
     const { result } = renderHook(() => useUserProgress());
 

@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { BibleBookMeta, BibleChapter, BibleVerse, Verse } from '../types';
 import { bibleIndex, loadBookChapters } from '../data/bible';
-import { Book, ChevronLeft, ChevronRight, List, CheckCircle2, Home, Loader2, Search, X, RefreshCw } from 'lucide-react';
+import { Book, ChevronLeft, ChevronRight, List, CheckCircle2, Home, Loader2, Search, X, RefreshCw, Clock } from 'lucide-react';
 
 interface Props {
   onSelect: (verse: Verse) => void;
@@ -13,80 +13,71 @@ interface Props {
 type Step = 'book' | 'chapter' | 'verse';
 
 const MAX_STAGGER = 20;
+const RECENT_BOOKS_KEY = 'bible-puzzle-recent-books';
+const MAX_RECENT = 5;
 
-const themes = {
+// --- Theme ---
+
+const chapterThemes = {
   old: {
-    bg: 'bg-amber-100',
-    text: 'text-amber-900',
-    border: 'border-amber-200',
-    borderDark: 'border-amber-300',
-    borderDarker: 'border-amber-400',
-    btnBg: 'bg-amber-200',
-    btnHover: 'hover:bg-amber-300',
-    btnText: 'text-amber-900',
-    iconText: 'text-amber-600',
-    navHover: 'hover:bg-amber-50',
-    navDisabled: 'bg-amber-50',
+    bg: 'bg-amber-100', text: 'text-amber-900', border: 'border-amber-200',
+    borderDark: 'border-amber-300', borderDarker: 'border-amber-400',
+    btnBg: 'bg-amber-200', btnHover: 'hover:bg-amber-300', btnText: 'text-amber-900',
+    iconText: 'text-amber-600', navHover: 'hover:bg-amber-50', navDisabled: 'bg-amber-50',
     numText: 'text-amber-800',
-    breadcrumbBg: 'bg-amber-500',
-    breadcrumbText: 'text-white',
-    breadcrumbInactiveBg: 'bg-amber-100',
-    breadcrumbInactiveText: 'text-amber-800',
-    breadcrumbInactiveHover: 'hover:bg-amber-200',
-    breadcrumbArrow: 'text-amber-300',
-    verseBg: 'bg-amber-400',
-    verseText: 'text-amber-900',
-    bookBg: 'bg-amber-100',
-    bookBorder: 'border-amber-300',
-    bookHover: 'hover:bg-amber-200',
-    tabActive: 'bg-white text-amber-600 shadow-sm border-2 border-amber-100',
+    breadcrumbBg: 'bg-amber-500', breadcrumbText: 'text-white',
+    breadcrumbInactiveBg: 'bg-amber-100', breadcrumbInactiveText: 'text-amber-800',
+    breadcrumbInactiveHover: 'hover:bg-amber-200', breadcrumbArrow: 'text-amber-300',
+    verseBg: 'bg-amber-400', verseText: 'text-amber-900',
   },
   new: {
-    bg: 'bg-indigo-100',
-    text: 'text-indigo-900',
-    border: 'border-indigo-200',
-    borderDark: 'border-indigo-300',
-    borderDarker: 'border-indigo-400',
-    btnBg: 'bg-indigo-200',
-    btnHover: 'hover:bg-indigo-300',
-    btnText: 'text-indigo-900',
-    iconText: 'text-indigo-600',
-    navHover: 'hover:bg-indigo-50',
-    navDisabled: 'bg-indigo-50',
+    bg: 'bg-indigo-100', text: 'text-indigo-900', border: 'border-indigo-200',
+    borderDark: 'border-indigo-300', borderDarker: 'border-indigo-400',
+    btnBg: 'bg-indigo-200', btnHover: 'hover:bg-indigo-300', btnText: 'text-indigo-900',
+    iconText: 'text-indigo-600', navHover: 'hover:bg-indigo-50', navDisabled: 'bg-indigo-50',
     numText: 'text-indigo-800',
-    breadcrumbBg: 'bg-indigo-500',
-    breadcrumbText: 'text-white',
-    breadcrumbInactiveBg: 'bg-indigo-100',
-    breadcrumbInactiveText: 'text-indigo-800',
-    breadcrumbInactiveHover: 'hover:bg-indigo-200',
-    breadcrumbArrow: 'text-indigo-300',
-    verseBg: 'bg-indigo-400',
-    verseText: 'text-indigo-900',
-    bookBg: 'bg-indigo-100',
-    bookBorder: 'border-indigo-300',
-    bookHover: 'hover:bg-indigo-200',
-    tabActive: 'bg-white text-indigo-600 shadow-sm border-2 border-indigo-100',
+    breadcrumbBg: 'bg-indigo-500', breadcrumbText: 'text-white',
+    breadcrumbInactiveBg: 'bg-indigo-100', breadcrumbInactiveText: 'text-indigo-800',
+    breadcrumbInactiveHover: 'hover:bg-indigo-200', breadcrumbArrow: 'text-indigo-300',
+    verseBg: 'bg-indigo-400', verseText: 'text-indigo-900',
   },
 } as const;
 
-type Theme = typeof themes.old | typeof themes.new;
+type ChapterTheme = typeof chapterThemes.old | typeof chapterThemes.new;
 
 function chapterUnit(bookName: string): string {
   return bookName === '시편' ? '편' : '장';
 }
 
+// --- Recent books helpers ---
+
+function loadRecentBooks(): string[] {
+  try {
+    const raw = localStorage.getItem(RECENT_BOOKS_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter((id): id is string => typeof id === 'string') : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveRecentBook(bookId: string): void {
+  const recents = loadRecentBooks().filter(id => id !== bookId);
+  const updated = [bookId, ...recents].slice(0, MAX_RECENT);
+  localStorage.setItem(RECENT_BOOKS_KEY, JSON.stringify(updated));
+}
+
+// --- Sub-components ---
+
 function ChapterNavigator({
-  book,
-  chapters,
-  currentChapter,
-  onChangeChapter,
-  theme,
+  book, chapters, currentChapter, onChangeChapter, theme,
 }: {
   book: BibleBookMeta;
   chapters: BibleChapter[];
   currentChapter: BibleChapter;
   onChangeChapter: (chapter: BibleChapter) => void;
-  theme: Theme;
+  theme: ChapterTheme;
 }) {
   const currentIndex = chapters.findIndex(c => c.chapter === currentChapter.chapter);
   const prevChapter = currentIndex > 0 ? chapters[currentIndex - 1] : null;
@@ -105,12 +96,10 @@ function ChapterNavigator({
       >
         <ChevronLeft size={28} />
       </motion.button>
-
       <div className="flex items-center gap-2">
         <List size={28} className={theme.iconText} />
         <span>{book.name} <span className={`text-3xl ${theme.iconText}`}>{currentChapter.chapter}</span>{unit}</span>
       </div>
-
       <motion.button
         whileHover={nextChapter ? { scale: 1.1, x: 2 } : {}}
         whileTap={nextChapter ? { scale: 0.9 } : {}}
@@ -125,6 +114,8 @@ function ChapterNavigator({
   );
 }
 
+// --- Main component ---
+
 export function BibleSelector({ onSelect, onBack, completedVerses = {} }: Props) {
   const [step, setStep] = useState<Step>('book');
   const [selectedBook, setSelectedBook] = useState<BibleBookMeta | null>(null);
@@ -134,14 +125,32 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {} }: Props)
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [recentBookIds, setRecentBookIds] = useState<string[]>([]);
 
-  const displayedBooks = useMemo(() => {
-    const testament = bibleIndex.filter(book => book.testament === activeTestament);
-    if (!searchQuery.trim()) return testament;
+  const theme = chapterThemes[selectedBook?.testament ?? activeTestament];
+
+  useEffect(() => {
+    setRecentBookIds(loadRecentBooks());
+  }, []);
+
+  const testamentBooks = useMemo(() => {
+    return bibleIndex.filter(b => b.testament === activeTestament);
+  }, [activeTestament]);
+
+  // Search across ALL books by name or abbreviation
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim()) return null;
     const q = searchQuery.trim().toLowerCase();
-    return testament.filter(book => book.name.toLowerCase().includes(q));
-  }, [activeTestament, searchQuery]);
-  const theme = themes[selectedBook?.testament ?? activeTestament];
+    return bibleIndex.filter(b =>
+      b.name.toLowerCase().includes(q) || b.abbr.toLowerCase().includes(q)
+    );
+  }, [searchQuery]);
+
+  const recentBooks = useMemo(() => {
+    return recentBookIds
+      .map(id => bibleIndex.find(b => b.id === id))
+      .filter((b): b is BibleBookMeta => b !== undefined);
+  }, [recentBookIds]);
 
   const fetchChapters = (bookId: string) => {
     setLoading(true);
@@ -160,6 +169,9 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {} }: Props)
   const handleBookSelect = (book: BibleBookMeta) => {
     setSelectedBook(book);
     setSelectedChapter(null);
+    setSearchQuery('');
+    saveRecentBook(book.id);
+    setRecentBookIds(loadRecentBooks());
     setStep('chapter');
   };
 
@@ -170,10 +182,8 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {} }: Props)
 
   const handleVerseSelect = (verse: BibleVerse) => {
     if (!selectedBook || !selectedChapter) return;
-
     const words = verse.text.split(' ').filter(w => w.length > 0);
     const unit = chapterUnit(selectedBook.name);
-
     const gameVerse: Verse = {
       id: `${selectedBook.id}-${selectedChapter.chapter}-${verse.verse}`,
       reference: `${selectedBook.name} ${selectedChapter.chapter}${unit} ${verse.verse}절`,
@@ -181,7 +191,6 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {} }: Props)
       words,
       hint: '말씀을 잘 읽고 맞춰보아요!',
     };
-
     onSelect(gameVerse);
   };
 
@@ -191,9 +200,21 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {} }: Props)
     else onBack();
   };
 
+  const headerTitle = () => {
+    if (step === 'book') return '성경 찾기 📖';
+    if (step === 'chapter' && selectedBook) return selectedBook.name;
+    if (step === 'verse' && selectedBook && selectedChapter) return `${selectedBook.name} ${selectedChapter.chapter}${chapterUnit(selectedBook.name)}`;
+    return '성경 찾기 📖';
+  };
+
+  const hasCompletedBook = (bookId: string) => {
+    return Object.keys(completedVerses).some(key => key.startsWith(`${bookId}-`));
+  };
+
   return (
     <div className="flex flex-col min-h-screen p-4 max-w-md mx-auto pt-6 pb-20">
-      <div className="sticky top-2 z-20 mb-8">
+      {/* Sticky header */}
+      <div className="sticky top-2 z-20 mb-6">
         <div className="bg-white/90 backdrop-blur-md p-4 rounded-[2rem] shadow-sm border-2 border-orange-100 flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <motion.button
@@ -205,7 +226,7 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {} }: Props)
               <ChevronLeft size={28} className="text-orange-500" />
             </motion.button>
             <h2 className="text-2xl font-black text-stone-800 text-center flex-1">
-              {step === 'book' ? '성경 찾기 📖' : step === 'chapter' ? selectedBook?.name : `${selectedBook?.name} ${selectedChapter?.chapter}${chapterUnit(selectedBook?.name ?? '')}`}
+              {headerTitle()}
             </h2>
             <motion.button
               whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
@@ -217,7 +238,8 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {} }: Props)
             </motion.button>
           </div>
 
-          {step !== 'book' && (
+          {/* Breadcrumbs for chapter/verse steps */}
+          {(step === 'chapter' || step === 'verse') && (
             <nav className="flex items-center justify-center gap-2 px-1 pb-1 overflow-x-auto no-scrollbar" aria-label="성경 탐색 경로">
               <motion.button
                 whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
@@ -225,7 +247,7 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {} }: Props)
                 className="flex items-center gap-1.5 px-4 py-2 bg-orange-100 text-orange-800 rounded-full font-black text-sm hover:bg-orange-200 transition-colors shadow-sm whitespace-nowrap"
               >
                 <Book size={16} />
-                성경 목록
+                성경
               </motion.button>
 
               <ChevronRight size={18} className="text-orange-300 shrink-0" aria-hidden="true" />
@@ -264,6 +286,7 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {} }: Props)
       </div>
 
       <AnimatePresence mode="wait">
+        {/* Step 1: Book selection — search + recents + testament toggle + abbreviation grid */}
         {step === 'book' && (
           <motion.div
             key="book"
@@ -272,21 +295,14 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {} }: Props)
             exit={{ opacity: 0, x: 20 }}
             className="flex flex-col gap-4"
           >
-            <div className={`p-5 rounded-3xl mb-4 text-2xl border-4 text-center font-black shadow-sm ${
-              activeTestament === 'old'
-                ? 'bg-amber-100 text-amber-900 border-amber-200'
-                : 'bg-indigo-100 text-indigo-900 border-indigo-200'
-            }`}>
-              어떤 성경을 읽을까요? 🧐
-            </div>
-
-            <div className="relative mb-2">
+            {/* Search */}
+            <div className="relative">
               <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="성경 이름 검색..."
+                placeholder="성경 검색 (창, 시, 요...)"
                 className="w-full pl-11 pr-10 py-3 rounded-2xl bg-white/80 backdrop-blur-sm border-2 border-orange-100 text-lg font-bold text-stone-800 placeholder:text-stone-400 focus:outline-none focus:border-orange-300 transition-colors"
                 aria-label="성경 이름 검색"
               />
@@ -301,61 +317,151 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {} }: Props)
               )}
             </div>
 
-            <div className="flex bg-white/50 p-2 rounded-3xl mb-2 shadow-inner border-2 border-orange-100" role="tablist" aria-label="구약/신약 선택">
-              <motion.button
-                role="tab"
-                aria-selected={activeTestament === 'old'}
-                aria-controls="book-list"
-                className={`flex-1 py-3 px-4 rounded-2xl font-black text-xl transition-colors ${
-                  activeTestament === 'old'
-                    ? themes.old.tabActive
-                    : 'text-stone-500 hover:bg-white/80'
-                }`}
-                onClick={() => setActiveTestament('old')}
-                whileTap={{ scale: 0.95 }}
-              >
-                구약 <span className="text-sm font-bold opacity-70 ml-1">39권</span>
-              </motion.button>
-              <motion.button
-                role="tab"
-                aria-selected={activeTestament === 'new'}
-                aria-controls="book-list"
-                className={`flex-1 py-3 px-4 rounded-2xl font-black text-xl transition-colors ${
-                  activeTestament === 'new'
-                    ? themes.new.tabActive
-                    : 'text-stone-500 hover:bg-white/80'
-                }`}
-                onClick={() => setActiveTestament('new')}
-                whileTap={{ scale: 0.95 }}
-              >
-                신약 <span className="text-sm font-bold opacity-70 ml-1">27권</span>
-              </motion.button>
-            </div>
+            {/* Search results */}
+            {searchResults ? (
+              <div className="flex flex-col gap-2">
+                {searchResults.length === 0 ? (
+                  <div className="text-center py-12 text-stone-400 font-bold text-lg">
+                    검색 결과가 없어요 😅
+                  </div>
+                ) : searchResults.map((book, index) => (
+                  <motion.button
+                    key={book.id}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.04 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => handleBookSelect(book)}
+                    className={`w-full p-4 rounded-2xl shadow-sm border-2 border-b-4 text-left flex items-center gap-3 transition-colors ${
+                      book.testament === 'old'
+                        ? 'bg-amber-50 border-amber-200 hover:bg-amber-100'
+                        : 'bg-indigo-50 border-indigo-200 hover:bg-indigo-100'
+                    }`}
+                  >
+                    <span className="text-lg font-black text-stone-400 w-8">{book.abbr}</span>
+                    <span className="text-xl font-black text-stone-800">{book.name}</span>
+                    <span className="text-sm font-bold text-stone-400 ml-auto">{book.chapterCount}{chapterUnit(book.name)}</span>
+                    {hasCompletedBook(book.id) && (
+                      <CheckCircle2 size={20} className="text-emerald-500 shrink-0" />
+                    )}
+                  </motion.button>
+                ))}
+              </div>
+            ) : (
+              <>
+                {/* Recent books */}
+                {recentBooks.length > 0 && (
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2 px-1">
+                      <Clock size={16} className="text-stone-400" />
+                      <span className="text-sm font-black text-stone-400">최근</span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {recentBooks.map((book, index) => (
+                        <motion.button
+                          key={book.id}
+                          initial={{ opacity: 0, y: 5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.05 }}
+                          whileTap={{ scale: 0.93 }}
+                          onClick={() => handleBookSelect(book)}
+                          className={`px-4 py-2.5 rounded-2xl font-black text-base border-2 border-b-4 transition-colors ${
+                            book.testament === 'old'
+                              ? 'bg-amber-100 border-amber-300 hover:bg-amber-200 text-amber-800'
+                              : 'bg-indigo-100 border-indigo-300 hover:bg-indigo-200 text-indigo-800'
+                          }`}
+                        >
+                          {book.name}
+                        </motion.button>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-            <div id="book-list" role="tabpanel" className="grid grid-cols-2 gap-4">
-              {displayedBooks.length === 0 ? (
-                <div className="col-span-2 text-center py-12 text-stone-400 font-bold text-lg">
-                  검색 결과가 없어요 😅
+                {/* Testament tabs */}
+                <div className="flex bg-white/50 p-1.5 rounded-3xl shadow-inner border-2 border-orange-100" role="tablist" aria-label="구약/신약 선택">
+                  <motion.button
+                    role="tab"
+                    aria-selected={activeTestament === 'old'}
+                    className={`flex-1 py-3 px-4 rounded-2xl font-black text-xl transition-colors ${
+                      activeTestament === 'old'
+                        ? 'bg-white text-amber-600 shadow-sm border-2 border-amber-100'
+                        : 'text-stone-500 hover:bg-white/80'
+                    }`}
+                    onClick={() => setActiveTestament('old')}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    구약
+                  </motion.button>
+                  <motion.button
+                    role="tab"
+                    aria-selected={activeTestament === 'new'}
+                    className={`flex-1 py-3 px-4 rounded-2xl font-black text-xl transition-colors ${
+                      activeTestament === 'new'
+                        ? 'bg-white text-indigo-600 shadow-sm border-2 border-indigo-100'
+                        : 'text-stone-500 hover:bg-white/80'
+                    }`}
+                    onClick={() => setActiveTestament('new')}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    신약
+                  </motion.button>
                 </div>
-              ) : displayedBooks.map((book, index) => (
-                <motion.button
-                  key={book.id}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: Math.min(index, MAX_STAGGER) * 0.05, type: "spring", stiffness: 200 }}
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => handleBookSelect(book)}
-                  className={`p-6 h-32 rounded-[2rem] shadow-sm border-b-8 flex items-center justify-center transition-colors ${theme.bookBg} ${theme.bookBorder} ${theme.bookHover}`}
-                  aria-label={`${book.name} (${book.chapterCount}${chapterUnit(book.name)})`}
+
+                {/* Abbreviation grid — DifficultySelector tone */}
+                <motion.div
+                  key={activeTestament}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="grid grid-cols-4 gap-3"
                 >
-                  <span className="text-2xl font-black text-stone-800">{book.name}</span>
-                </motion.button>
-              ))}
-            </div>
+                  {testamentBooks.map((book, index) => {
+                    const completed = hasCompletedBook(book.id);
+                    const isOld = activeTestament === 'old';
+
+                    return (
+                      <motion.button
+                        key={book.id}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{
+                          delay: index < MAX_STAGGER ? index * 0.015 : 0,
+                          type: 'spring', stiffness: 300, damping: 20,
+                        }}
+                        whileHover={{ scale: 1.05, y: -3 }}
+                        whileTap={{ scale: 0.93 }}
+                        onClick={() => handleBookSelect(book)}
+                        className={`relative aspect-square rounded-[2rem] border-b-8 shadow-sm transition-colors flex flex-col justify-between p-3 text-left ${
+                          completed
+                            ? isOld
+                              ? 'bg-amber-200 hover:bg-amber-300 border-amber-400'
+                              : 'bg-indigo-200 hover:bg-indigo-300 border-indigo-400'
+                            : isOld
+                              ? 'bg-amber-100 hover:bg-amber-200 border-amber-300'
+                              : 'bg-indigo-100 hover:bg-indigo-200 border-indigo-300'
+                        }`}
+                        aria-label={book.name}
+                      >
+                        <span className={`text-2xl font-black ${isOld ? 'text-amber-700' : 'text-indigo-700'}`}>
+                          {book.abbr}
+                        </span>
+                        <span className={`text-[11px] font-bold self-end leading-tight ${isOld ? 'text-amber-600/80' : 'text-indigo-600/80'}`}>
+                          {book.name}
+                        </span>
+                        {completed && (
+                          <CheckCircle2 size={14} className="absolute top-2.5 right-2.5 text-emerald-500" />
+                        )}
+                      </motion.button>
+                    );
+                  })}
+                </motion.div>
+              </>
+            )}
           </motion.div>
         )}
 
+        {/* Step 2: Chapter selection */}
         {step === 'chapter' && selectedBook && (
           <motion.div
             key="chapter"
@@ -377,8 +483,7 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {} }: Props)
               <div className="flex flex-col items-center justify-center py-20 gap-4">
                 <p className="text-stone-500 font-bold text-lg">데이터를 불러오지 못했어요 😢</p>
                 <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                   onClick={() => selectedBook && fetchChapters(selectedBook.id)}
                   className="flex items-center gap-2 px-6 py-3 bg-orange-400 text-white font-black text-lg rounded-2xl shadow-sm border-b-4 border-orange-600 hover:bg-orange-500 transition-colors"
                 >
@@ -387,7 +492,7 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {} }: Props)
                 </motion.button>
               </div>
             ) : (
-              <div className="grid grid-cols-4 sm:grid-cols-5 gap-3 sm:gap-4" role="list" aria-label={`${selectedBook.name} 장 목록`}>
+              <div className="grid grid-cols-3 min-[400px]:grid-cols-4 sm:grid-cols-5 gap-2 min-[400px]:gap-3 sm:gap-4" role="list" aria-label={`${selectedBook.name} 장 목록`}>
                 {chapters.map((chapter, index) => (
                   <motion.button
                     key={chapter.chapter}
@@ -396,9 +501,7 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {} }: Props)
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{
                       delay: index < MAX_STAGGER ? index * 0.02 : 0,
-                      type: "spring",
-                      stiffness: 300,
-                      damping: 15,
+                      type: 'spring', stiffness: 300, damping: 15,
                     }}
                     whileHover={{ scale: 1.1, y: -4 }}
                     whileTap={{ scale: 0.9 }}
@@ -414,6 +517,7 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {} }: Props)
           </motion.div>
         )}
 
+        {/* Step 3: Verse selection */}
         {step === 'verse' && selectedBook && selectedChapter && (
           <motion.div
             key="verse"
@@ -443,8 +547,7 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {} }: Props)
                     animate={{ opacity: 1, y: 0 }}
                     transition={{
                       delay: index < MAX_STAGGER ? index * 0.05 : 0,
-                      type: "spring",
-                      stiffness: 200,
+                      type: 'spring', stiffness: 200,
                     }}
                     whileHover={{ scale: 1.02, y: -2 }}
                     whileTap={{ scale: 0.98 }}

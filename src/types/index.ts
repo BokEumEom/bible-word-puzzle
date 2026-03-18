@@ -18,7 +18,8 @@ export type GameState =
   | 'select-mode'
   | 'reading'
   | 'memorizing'
-  | 'custom-playing';
+  | 'custom-playing'
+  | 'custom-complete';
 
 export interface BibleVerse {
   verse: number;
@@ -33,6 +34,7 @@ export interface BibleChapter {
 export interface BibleBookMeta {
   id: string;
   name: string;
+  abbr: string;
   testament: 'old' | 'new';
   chapterCount: number;
 }

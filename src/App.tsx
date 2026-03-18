@@ -3,11 +3,15 @@ import { motion, AnimatePresence } from 'motion/react';
 import { GameState, Difficulty, Verse } from './types';
 import { verses } from './data/verses';
 import { shuffle } from './utils/shuffle';
+import { loadBookChapters } from './data/bible';
+import { getNextVerse } from './utils/verseNavigation';
 import { Dashboard } from './components/Dashboard';
 import { DifficultySelector } from './components/DifficultySelector';
 import { ProgressHeader } from './components/ProgressHeader';
 import { VersePuzzleBoard } from './components/VersePuzzleBoard';
 import { ResultScreen } from './components/ResultScreen';
+import { CompletionScreen } from './components/CompletionScreen';
+import { DailyGoalCelebration } from './components/DailyGoalCelebration';
 import { BibleSelector } from './components/BibleSelector';
 import { ModeSelector } from './components/ModeSelector';
 import { ReadingScreen } from './components/ReadingScreen';
@@ -22,8 +26,10 @@ export default function App() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [stars, setStars] = useState(0);
   const [selectedCustomVerse, setSelectedCustomVerse] = useState<Verse | null>(null);
+  const [nextVerse, setNextVerse] = useState<Verse | null>(null);
+  const [showGoalCelebration, setShowGoalCelebration] = useState(false);
 
-  const { progress, toggleFavorite, markCompleted, addRecent, updateStreak } = useUserProgress();
+  const { progress, toggleFavorite, markCompleted, addRecent, updateStreak, isDailyGoalMet } = useUserProgress();
 
   // Update streak on app load
   useEffect(() => {
@@ -50,23 +56,34 @@ export default function App() {
     setGameState('playing');
   };
 
+  // Show celebration when daily goal is first met
+  useEffect(() => {
+    if (isDailyGoalMet && !showGoalCelebration) {
+      setShowGoalCelebration(true);
+    }
+  }, [isDailyGoalMet]);
+
   const handleCorrect = () => {
     setStars(prev => prev + 1);
-    
+
     if (gameState === 'custom-playing' && selectedCustomVerse) {
       markCompleted(selectedCustomVerse);
+      // Compute next verse from cached chapters
+      const parsed = selectedCustomVerse.id.split('-');
+      const bookId = parsed.slice(0, parsed.length - 2).join('-');
+      loadBookChapters(bookId)
+        .then(chapters => setNextVerse(getNextVerse(selectedCustomVerse.id, chapters)))
+        .catch(() => setNextVerse(null));
+      setGameState('custom-complete');
     } else if (currentVerses[currentIndex]) {
       markCompleted(currentVerses[currentIndex]);
+      if (currentIndex < currentVerses.length - 1) {
+        setCurrentIndex(prev => prev + 1);
+      } else {
+        setGameState('result');
+      }
     }
-    
-    if (gameState === 'custom-playing') {
-      // Just show success and stay or go back to mode select
-      setGameState('select-mode');
-    } else if (currentIndex < currentVerses.length - 1) {
-      setCurrentIndex(prev => prev + 1);
-    } else {
-      setGameState('result');
-    }
+
   };
 
   const goHome = () => {
@@ -88,16 +105,26 @@ export default function App() {
     setGameState(mode);
   };
 
+  const handleNextVerse = () => {
+    if (nextVerse) {
+      setSelectedCustomVerse(nextVerse);
+      addRecent(nextVerse);
+      setNextVerse(null);
+      setGameState('custom-playing');
+    }
+  };
+
   return (
     <div className="min-h-screen w-full overflow-hidden relative font-sans">
       <AnimatePresence mode="wait">
         {gameState === 'home' && (
           <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <Dashboard 
-              progress={progress} 
-              onStartExplore={startExplore} 
+            <Dashboard
+              progress={progress}
+              isDailyGoalMet={isDailyGoalMet}
+              onStartExplore={startExplore}
               onStartPreset={startPreset}
-              onSelectVerse={handleBibleSelect} 
+              onSelectVerse={handleBibleSelect}
             />
           </motion.div>
         )}
@@ -130,11 +157,12 @@ export default function App() {
 
         {gameState === 'result' && (
           <motion.div key="result" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <ResultScreen 
-              stars={stars} 
-              total={currentVerses.length} 
-              onHome={goHome} 
-              onRetry={retry} 
+            <ResultScreen
+              stars={stars}
+              total={currentVerses.length}
+              onHome={goHome}
+              onRetry={retry}
+              onChangeDifficulty={() => setGameState('difficulty')}
             />
           </motion.div>
         )}
@@ -192,7 +220,24 @@ export default function App() {
             </div>
           </motion.div>
         )}
+
+        {gameState === 'custom-complete' && selectedCustomVerse && (
+          <motion.div key="custom-complete" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <CompletionScreen
+              verse={selectedCustomVerse}
+              nextVerse={nextVerse}
+              onNextVerse={handleNextVerse}
+              onBackToModes={() => setGameState('select-mode')}
+              onHome={goHome}
+            />
+          </motion.div>
+        )}
       </AnimatePresence>
+
+      <DailyGoalCelebration
+        show={showGoalCelebration}
+        onDismiss={() => setShowGoalCelebration(false)}
+      />
     </div>
   );
 }

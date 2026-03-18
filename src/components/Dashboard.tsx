@@ -3,15 +3,17 @@ import { BookOpen, Search, Flame, Star, Clock, CheckCircle2, ChevronRight, Heart
 import { Verse } from '../types';
 import { UserProgress } from '../hooks/useUserProgress';
 import { verses as presetVerses } from '../data/verses';
+import { DailyGoalBadge } from './DailyGoalBadge';
 
 interface Props {
   progress: UserProgress;
+  isDailyGoalMet: boolean;
   onStartExplore: () => void;
   onStartPreset: () => void;
   onSelectVerse: (verse: Verse) => void;
 }
 
-export function Dashboard({ progress, onStartExplore, onStartPreset, onSelectVerse }: Props) {
+export function Dashboard({ progress, isDailyGoalMet, onStartExplore, onStartPreset, onSelectVerse }: Props) {
   const getTodaysVerse = (): Verse => {
     const today = new Date().toISOString().split('T')[0];
     const seed = today.split('-').reduce((a, b) => a + parseInt(b), 0);
@@ -68,6 +70,15 @@ export function Dashboard({ progress, onStartExplore, onStartPreset, onSelectVer
             <p className="text-2xl font-black text-emerald-500">{Object.keys(progress.completedVerses).length}개</p>
           </div>
         </motion.div>
+      </div>
+
+      {/* Daily Goal */}
+      <div className="mb-8">
+        <DailyGoalBadge
+          todayCompletions={progress.todayCompletions}
+          dailyGoal={progress.dailyGoal}
+          isMet={isDailyGoalMet}
+        />
       </div>
 
       {/* Today's Verse */}
