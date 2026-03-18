@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { GameState, Difficulty, Verse } from './types';
 import { verses } from './data/verses';
+import { shuffle } from './utils/shuffle';
 import { Dashboard } from './components/Dashboard';
 import { DifficultySelector } from './components/DifficultySelector';
 import { ProgressHeader } from './components/ProgressHeader';
@@ -42,7 +43,7 @@ export default function App() {
     // Filter verses by difficulty and take up to 5 for a quick session, or all available
     const filtered = verses.filter(v => v.difficulty === diff);
     // Shuffle them
-    const shuffled = [...filtered].sort(() => Math.random() - 0.5);
+    const shuffled = shuffle(filtered);
     setCurrentVerses(shuffled);
     setCurrentIndex(0);
     setStars(0);

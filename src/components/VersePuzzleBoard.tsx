@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, PanInfo } from 'motion/react';
 import { Verse } from '../types';
+import { shuffle } from '../utils/shuffle';
 import { Check, Lightbulb, Star } from 'lucide-react';
 
 interface WordItem {
@@ -28,7 +29,7 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
     const items = verse.words.map((text, i) => ({ id: `word-${i}-${text}`, text }));
     setSlots(new Array(items.length).fill(null));
     // Shuffle words
-    setBank([...items].sort(() => Math.random() - 0.5));
+    setBank(shuffle(items));
     setShowHint(false);
     setIsWrong(false);
     setIsSuccess(false);

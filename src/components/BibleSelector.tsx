@@ -71,6 +71,10 @@ const themes = {
 
 type Theme = typeof themes.old | typeof themes.new;
 
+function chapterUnit(bookName: string): string {
+  return bookName === '시편' ? '편' : '장';
+}
+
 function ChapterNavigator({
   book,
   chapters,
@@ -87,7 +91,7 @@ function ChapterNavigator({
   const currentIndex = chapters.findIndex(c => c.chapter === currentChapter.chapter);
   const prevChapter = currentIndex > 0 ? chapters[currentIndex - 1] : null;
   const nextChapter = currentIndex < chapters.length - 1 ? chapters[currentIndex + 1] : null;
-  const chapterUnit = book.name === '시편' ? '편' : '장';
+  const unit = chapterUnit(book.name);
 
   return (
     <div className={`${theme.bg} ${theme.text} p-3 rounded-[2rem] mb-6 text-xl border-4 ${theme.borderDark} font-black flex items-center justify-between shadow-md`}>
@@ -97,14 +101,14 @@ function ChapterNavigator({
         onClick={() => prevChapter && onChangeChapter(prevChapter)}
         disabled={!prevChapter}
         className={`p-3 rounded-2xl transition-colors flex items-center justify-center ${prevChapter ? `bg-white/80 backdrop-blur-sm ${theme.iconText} ${theme.navHover} shadow-sm` : `opacity-40 cursor-not-allowed ${theme.navDisabled}`}`}
-        aria-label={`이전 ${chapterUnit}`}
+        aria-label={`이전 ${unit}`}
       >
         <ChevronLeft size={28} />
       </motion.button>
 
       <div className="flex items-center gap-2">
         <List size={28} className={theme.iconText} />
-        <span>{book.name} <span className={`text-3xl ${theme.iconText}`}>{currentChapter.chapter}</span>{chapterUnit}</span>
+        <span>{book.name} <span className={`text-3xl ${theme.iconText}`}>{currentChapter.chapter}</span>{unit}</span>
       </div>
 
       <motion.button
@@ -113,7 +117,7 @@ function ChapterNavigator({
         onClick={() => nextChapter && onChangeChapter(nextChapter)}
         disabled={!nextChapter}
         className={`p-3 rounded-2xl transition-colors flex items-center justify-center ${nextChapter ? `bg-white/80 backdrop-blur-sm ${theme.iconText} ${theme.navHover} shadow-sm` : `opacity-40 cursor-not-allowed ${theme.navDisabled}`}`}
-        aria-label={`다음 ${chapterUnit}`}
+        aria-label={`다음 ${unit}`}
       >
         <ChevronRight size={28} />
       </motion.button>
@@ -168,11 +172,11 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {} }: Props)
     if (!selectedBook || !selectedChapter) return;
 
     const words = verse.text.split(' ').filter(w => w.length > 0);
-    const chapterUnit = selectedBook.name === '시편' ? '편' : '장';
+    const unit = chapterUnit(selectedBook.name);
 
     const gameVerse: Verse = {
       id: `${selectedBook.id}-${selectedChapter.chapter}-${verse.verse}`,
-      reference: `${selectedBook.name} ${selectedChapter.chapter}${chapterUnit} ${verse.verse}절`,
+      reference: `${selectedBook.name} ${selectedChapter.chapter}${unit} ${verse.verse}절`,
       verse: verse.text,
       words,
       hint: '말씀을 잘 읽고 맞춰보아요!',
@@ -201,7 +205,7 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {} }: Props)
               <ChevronLeft size={28} className="text-orange-500" />
             </motion.button>
             <h2 className="text-2xl font-black text-stone-800 text-center flex-1">
-              {step === 'book' ? '성경 찾기 📖' : step === 'chapter' ? selectedBook?.name : `${selectedBook?.name} ${selectedChapter?.chapter}${selectedBook?.name === '시편' ? '편' : '장'}`}
+              {step === 'book' ? '성경 찾기 📖' : step === 'chapter' ? selectedBook?.name : `${selectedBook?.name} ${selectedChapter?.chapter}${chapterUnit(selectedBook?.name ?? '')}`}
             </h2>
             <motion.button
               whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
@@ -250,7 +254,7 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {} }: Props)
                     className={`flex items-center gap-1.5 px-4 py-2 ${theme.verseBg} ${theme.verseText} rounded-full font-black text-sm shadow-inner cursor-default whitespace-nowrap`}
                     aria-current="page"
                   >
-                    {selectedChapter?.chapter}{selectedBook?.name === '시편' ? '편' : '장'}
+                    {selectedChapter?.chapter}{chapterUnit(selectedBook?.name ?? '')}
                   </motion.div>
                 </>
               )}
@@ -343,7 +347,7 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {} }: Props)
                   whileTap={{ scale: 0.95 }}
                   onClick={() => handleBookSelect(book)}
                   className={`p-6 h-32 rounded-[2rem] shadow-sm border-b-8 flex items-center justify-center transition-colors ${theme.bookBg} ${theme.bookBorder} ${theme.bookHover}`}
-                  aria-label={`${book.name} (${book.chapterCount}${book.name === '시편' ? '편' : '장'})`}
+                  aria-label={`${book.name} (${book.chapterCount}${chapterUnit(book.name)})`}
                 >
                   <span className="text-2xl font-black text-stone-800">{book.name}</span>
                 </motion.button>
@@ -362,7 +366,7 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {} }: Props)
           >
             <div className={`${theme.bg} ${theme.text} p-5 rounded-[2rem] mb-4 text-2xl border-4 ${theme.border} text-center font-black flex items-center justify-center gap-3 shadow-sm`}>
               <Book size={28} className="-rotate-6" />
-              {selectedBook.name} 몇 {selectedBook.name === '시편' ? '편' : '장'}을 읽을까요?
+              {selectedBook.name} 몇 {chapterUnit(selectedBook.name)}을 읽을까요?
             </div>
 
             {loading ? (
@@ -400,7 +404,7 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {} }: Props)
                     whileTap={{ scale: 0.9 }}
                     onClick={() => handleChapterSelect(chapter)}
                     className={`aspect-square ${theme.btnBg} rounded-[1.5rem] shadow-sm border-b-4 ${theme.borderDarker} flex items-center justify-center text-2xl font-black ${theme.btnText} ${theme.btnHover} transition-colors`}
-                    aria-label={`${chapter.chapter}${selectedBook.name === '시편' ? '편' : '장'}`}
+                    aria-label={`${chapter.chapter}${chapterUnit(selectedBook.name)}`}
                   >
                     {chapter.chapter}
                   </motion.button>
@@ -426,7 +430,7 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {} }: Props)
               theme={theme}
             />
 
-            <div className="flex flex-col gap-4" role="list" aria-label={`${selectedBook.name} ${selectedChapter.chapter}${selectedBook.name === '시편' ? '편' : '장'} 절 목록`}>
+            <div className="flex flex-col gap-4" role="list" aria-label={`${selectedBook.name} ${selectedChapter.chapter}${chapterUnit(selectedBook.name)} 절 목록`}>
               {selectedChapter.verses.map((verse, index) => {
                 const verseId = `${selectedBook.id}-${selectedChapter.chapter}-${verse.verse}`;
                 const isCompleted = completedVerses[verseId] > 0;

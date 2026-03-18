@@ -19,14 +19,30 @@ const defaultProgress: UserProgress = {
   completedVerses: {}
 };
 
-export function useUserProgress() {
-  const [progress, setProgress] = useState<UserProgress>(() => {
+function loadProgress(): UserProgress {
+  try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : defaultProgress;
-  });
+    if (!stored) return defaultProgress;
+    const parsed = JSON.parse(stored);
+    return { ...defaultProgress, ...parsed };
+  } catch {
+    return defaultProgress;
+  }
+}
+
+function saveProgress(progress: UserProgress): void {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+  } catch {
+    // localStorage full or unavailable — silently skip
+  }
+}
+
+export function useUserProgress() {
+  const [progress, setProgress] = useState<UserProgress>(loadProgress);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+    saveProgress(progress);
   }, [progress]);
 
   const updateStreak = () => {

@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Verse } from '../types';
 import { ChevronLeft, Volume2 } from 'lucide-react';
@@ -8,7 +9,14 @@ interface Props {
 }
 
 export function ReadingScreen({ verse, onBack }: Props) {
-  // Simple TTS fallback (if supported by browser)
+  useEffect(() => {
+    return () => {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
+
   const handleReadAloud = () => {
     if ('speechSynthesis' in window) {
       const utterance = new SpeechSynthesisUtterance(`${verse.reference}. ${verse.verse}`);
