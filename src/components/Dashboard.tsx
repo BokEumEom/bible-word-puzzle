@@ -2,7 +2,7 @@ import { motion } from 'motion/react';
 import { BookOpen, Search, Flame, Star, Clock, CheckCircle2, ChevronRight, Heart, Play } from 'lucide-react';
 import { Verse } from '../types';
 import { UserProgress } from '../hooks/useUserProgress';
-import { bibleData } from '../data/bible';
+import { verses as presetVerses } from '../data/verses';
 
 interface Props {
   progress: UserProgress;
@@ -12,30 +12,10 @@ interface Props {
 }
 
 export function Dashboard({ progress, onStartExplore, onStartPreset, onSelectVerse }: Props) {
-  // Get a random verse for "Today's Verse" (or deterministic based on date)
   const getTodaysVerse = (): Verse => {
     const today = new Date().toISOString().split('T')[0];
     const seed = today.split('-').reduce((a, b) => a + parseInt(b), 0);
-    
-    // Flatten all verses
-    const allVerses: Verse[] = [];
-    bibleData.forEach(book => {
-      book.chapters.forEach(chapter => {
-        chapter.verses.forEach(verse => {
-          const words = verse.text.split(' ').filter(w => w.length > 0);
-          const chapterUnit = book.name === '시편' ? '편' : '장';
-          allVerses.push({
-            id: `${book.id}-${chapter.chapter}-${verse.verse}`,
-            reference: `${book.name} ${chapter.chapter}${chapterUnit} ${verse.verse}절`,
-            verse: verse.text,
-            words: words,
-            hint: '오늘의 말씀을 마음에 새겨보아요!',
-          });
-        });
-      });
-    });
-
-    return allVerses[seed % allVerses.length];
+    return presetVerses[seed % presetVerses.length];
   };
 
   const todaysVerse = getTodaysVerse();

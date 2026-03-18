@@ -30,10 +30,14 @@ export interface BibleChapter {
   verses: BibleVerse[];
 }
 
-export interface BibleBook {
+export interface BibleBookMeta {
   id: string;
   name: string;
   testament: 'old' | 'new';
+  chapterCount: number;
+}
+
+export interface BibleBook extends BibleBookMeta {
   chapters: BibleChapter[];
 }
 

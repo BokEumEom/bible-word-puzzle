@@ -151,10 +151,10 @@ export default function App() {
 
         {gameState === 'select-mode' && selectedCustomVerse && (
           <motion.div key="select-mode" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <ModeSelector 
-              verse={selectedCustomVerse} 
-              onSelectMode={handleModeSelect} 
-              onBack={() => setGameState('home')} 
+            <ModeSelector
+              verse={selectedCustomVerse}
+              onSelectMode={handleModeSelect}
+              onBack={() => setGameState('select-bible')}
             />
           </motion.div>
         )}

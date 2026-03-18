@@ -8,7 +8,7 @@ interface Props {
 }
 
 export function DifficultySelector({ onSelect, onBack }: Props) {
-  const difficulties: { id: Difficulty; label: string; desc: string; icon: any; color: string; border: string }[] = [
+  const difficulties: { id: Difficulty; label: string; desc: string; icon: any; color: string; border: string; iconColor: string }[] = [
     {
       id: 'beginner',
       label: '처음이에요',
