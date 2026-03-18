@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Verse } from '../types';
+import { Verse, OnboardingProfile } from '../types';
 
 export interface UserProgress {
   streak: number;
@@ -10,6 +10,7 @@ export interface UserProgress {
   dailyGoal: number;
   todayCompletions: number;
   todayCompletionDate: string;
+  onboarding: OnboardingProfile;
 }
 
 const STORAGE_KEY = 'bible_puzzle_progress';
@@ -23,6 +24,11 @@ const defaultProgress: UserProgress = {
   dailyGoal: 3,
   todayCompletions: 0,
   todayCompletionDate: '',
+  onboarding: {
+    level: 'beginner',
+    interests: [],
+    onboardingCompleted: false,
+  },
 };
 
 function loadProgress(): UserProgress {
@@ -111,9 +117,17 @@ export function useUserProgress() {
     setProgress(prev => ({ ...prev, dailyGoal: goal }));
   };
 
+  const saveOnboarding = (profile: OnboardingProfile) => {
+    setProgress(prev => ({
+      ...prev,
+      dailyGoal: profile.onboardingCompleted ? prev.dailyGoal : prev.dailyGoal,
+      onboarding: profile,
+    }));
+  };
+
   const today = new Date().toISOString().split('T')[0];
   const isDailyGoalMet = progress.todayCompletionDate === today
     && progress.todayCompletions >= progress.dailyGoal;
 
-  return { progress, toggleFavorite, markCompleted, addRecent, updateStreak, setDailyGoal, isDailyGoalMet };
+  return { progress, toggleFavorite, markCompleted, addRecent, updateStreak, setDailyGoal, saveOnboarding, isDailyGoalMet };
 }

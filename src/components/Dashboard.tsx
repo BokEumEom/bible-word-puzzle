@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { BookOpen, Search, Flame, Star, Clock, CheckCircle2, ChevronRight, Heart, Play } from 'lucide-react';
+import { BookOpen, Search, Flame, Star, Clock, CheckCircle2, ChevronRight, Heart, Play, Settings } from 'lucide-react';
 import { Verse } from '../types';
 import { UserProgress } from '../hooks/useUserProgress';
 import { verses as presetVerses } from '../data/verses';
@@ -11,9 +11,10 @@ interface Props {
   onStartExplore: () => void;
   onStartPreset: () => void;
   onSelectVerse: (verse: Verse) => void;
+  onResetOnboarding?: () => void;
 }
 
-export function Dashboard({ progress, isDailyGoalMet, onStartExplore, onStartPreset, onSelectVerse }: Props) {
+export function Dashboard({ progress, isDailyGoalMet, onStartExplore, onStartPreset, onSelectVerse, onResetOnboarding }: Props) {
   const getTodaysVerse = (): Verse => {
     const today = new Date().toISOString().split('T')[0];
     const seed = today.split('-').reduce((a, b) => a + parseInt(b), 0);
@@ -43,6 +44,21 @@ export function Dashboard({ progress, isDailyGoalMet, onStartExplore, onStartPre
       exit={{ opacity: 0, y: -20 }}
       className="flex flex-col min-h-screen p-4 max-w-md mx-auto pt-6 pb-20"
     >
+      {/* Profile reset */}
+      {onResetOnboarding && (
+        <div className="flex justify-end mb-4">
+          <motion.button
+            whileHover={{ scale: 1.1, rotate: 90 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={onResetOnboarding}
+            className="p-3 bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border-2 border-orange-100 hover:bg-orange-50 transition-colors"
+            aria-label="프로필 재설정"
+          >
+            <Settings size={22} className="text-stone-400" />
+          </motion.button>
+        </div>
+      )}
+
       {/* Header with Streak */}
       <div className="flex justify-between items-center mb-8 gap-4">
         <motion.div 

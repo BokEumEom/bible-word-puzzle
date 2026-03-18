@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { GameState, Difficulty, Verse } from './types';
+import { GameState, Difficulty, Verse, OnboardingProfile } from './types';
+import { OnboardingFlow } from './components/onboarding/OnboardingFlow';
 import { verses } from './data/verses';
 import { shuffle } from './utils/shuffle';
 import { loadBookChapters } from './data/bible';
@@ -20,7 +21,7 @@ import { ChevronLeft } from 'lucide-react';
 import { useUserProgress } from './hooks/useUserProgress';
 
 export default function App() {
-  const [gameState, setGameState] = useState<GameState>('home');
+  const [gameState, setGameState] = useState<GameState>(() => 'home' as GameState);
   const [difficulty, setDifficulty] = useState<Difficulty>('beginner');
   const [currentVerses, setCurrentVerses] = useState<Verse[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -28,13 +29,33 @@ export default function App() {
   const [selectedCustomVerse, setSelectedCustomVerse] = useState<Verse | null>(null);
   const [nextVerse, setNextVerse] = useState<Verse | null>(null);
   const [showGoalCelebration, setShowGoalCelebration] = useState(false);
+  const [isReOnboarding, setIsReOnboarding] = useState(false);
 
-  const { progress, toggleFavorite, markCompleted, addRecent, updateStreak, isDailyGoalMet } = useUserProgress();
+  const { progress, toggleFavorite, markCompleted, addRecent, updateStreak, setDailyGoal, saveOnboarding, isDailyGoalMet } = useUserProgress();
 
   // Update streak on app load
   useEffect(() => {
     updateStreak();
   }, []);
+
+  // Gate: show onboarding if not completed
+  useEffect(() => {
+    if (!progress.onboarding.onboardingCompleted) {
+      setGameState('onboarding');
+    }
+  }, []);
+
+  const handleOnboardingComplete = (profile: OnboardingProfile, dailyGoal: number) => {
+    saveOnboarding(profile);
+    setDailyGoal(dailyGoal);
+    setGameState('home');
+  };
+
+  const handleResetOnboarding = () => {
+    setIsReOnboarding(true);
+    saveOnboarding({ level: 'beginner', interests: [], onboardingCompleted: false });
+    setGameState('onboarding');
+  };
 
   const startPreset = () => {
     setGameState('difficulty');
@@ -117,6 +138,15 @@ export default function App() {
   return (
     <div className="min-h-screen w-full overflow-hidden relative font-sans">
       <AnimatePresence mode="wait">
+        {gameState === 'onboarding' && (
+          <motion.div key="onboarding" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <OnboardingFlow
+              onComplete={handleOnboardingComplete}
+              onSkip={isReOnboarding ? () => { setIsReOnboarding(false); goHome(); } : undefined}
+            />
+          </motion.div>
+        )}
+
         {gameState === 'home' && (
           <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <Dashboard
@@ -125,6 +155,7 @@ export default function App() {
               onStartExplore={startExplore}
               onStartPreset={startPreset}
               onSelectVerse={handleBibleSelect}
+              onResetOnboarding={handleResetOnboarding}
             />
           </motion.div>
         )}
@@ -170,10 +201,11 @@ export default function App() {
         {/* New Bible Exploration States */}
         {gameState === 'select-bible' && (
           <motion.div key="select-bible" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <BibleSelector 
-              onSelect={handleBibleSelect} 
-              onBack={goHome} 
+            <BibleSelector
+              onSelect={handleBibleSelect}
+              onBack={goHome}
               completedVerses={progress.completedVerses}
+              interests={progress.onboarding.interests}
             />
           </motion.div>
         )}

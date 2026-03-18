@@ -9,10 +9,11 @@ export interface Verse {
   hint?: string;
 }
 
-export type GameState = 
-  | 'home' 
-  | 'difficulty' 
-  | 'playing' 
+export type GameState =
+  | 'onboarding'
+  | 'home'
+  | 'difficulty'
+  | 'playing'
   | 'result'
   | 'select-bible'
   | 'select-mode'
@@ -20,6 +21,12 @@ export type GameState =
   | 'memorizing'
   | 'custom-playing'
   | 'custom-complete';
+
+export interface OnboardingProfile {
+  level: Difficulty;
+  interests: string[];
+  onboardingCompleted: boolean;
+}
 
 export interface BibleVerse {
   verse: number;

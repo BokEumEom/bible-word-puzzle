@@ -2,12 +2,13 @@ import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { BibleBookMeta, BibleChapter, BibleVerse, Verse } from '../types';
 import { bibleIndex, loadBookChapters } from '../data/bible';
-import { Book, ChevronLeft, ChevronRight, List, CheckCircle2, Home, Loader2, Search, X, RefreshCw, Clock } from 'lucide-react';
+import { Book, ChevronLeft, ChevronRight, List, CheckCircle2, Home, Loader2, Search, X, RefreshCw, Clock, Star } from 'lucide-react';
 
 interface Props {
   onSelect: (verse: Verse) => void;
   onBack: () => void;
   completedVerses?: Record<string, number>;
+  interests?: string[];
 }
 
 type Step = 'book' | 'chapter' | 'verse';
@@ -116,7 +117,7 @@ function ChapterNavigator({
 
 // --- Main component ---
 
-export function BibleSelector({ onSelect, onBack, completedVerses = {} }: Props) {
+export function BibleSelector({ onSelect, onBack, completedVerses = {}, interests = [] }: Props) {
   const [step, setStep] = useState<Step>('book');
   const [selectedBook, setSelectedBook] = useState<BibleBookMeta | null>(null);
   const [chapters, setChapters] = useState<BibleChapter[]>([]);
@@ -151,6 +152,13 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {} }: Props)
       .map(id => bibleIndex.find(b => b.id === id))
       .filter((b): b is BibleBookMeta => b !== undefined);
   }, [recentBookIds]);
+
+  const interestBooks = useMemo(() => {
+    if (interests.length === 0) return [];
+    return interests
+      .map(id => bibleIndex.find(b => b.id === id))
+      .filter((b): b is BibleBookMeta => b !== undefined);
+  }, [interests]);
 
   const fetchChapters = (bookId: string) => {
     setLoading(true);
@@ -369,6 +377,35 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {} }: Props)
                             book.testament === 'old'
                               ? 'bg-amber-100 border-amber-300 hover:bg-amber-200 text-amber-800'
                               : 'bg-indigo-100 border-indigo-300 hover:bg-indigo-200 text-indigo-800'
+                          }`}
+                        >
+                          {book.name}
+                        </motion.button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Interest books */}
+                {interestBooks.length > 0 && (
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2 px-1">
+                      <Star size={16} className="text-orange-400" />
+                      <span className="text-sm font-black text-orange-400">관심 성경</span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {interestBooks.map((book, index) => (
+                        <motion.button
+                          key={book.id}
+                          initial={{ opacity: 0, y: 5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.05 }}
+                          whileTap={{ scale: 0.93 }}
+                          onClick={() => handleBookSelect(book)}
+                          className={`px-4 py-2.5 rounded-2xl font-black text-base border-2 border-b-4 transition-colors ${
+                            book.testament === 'old'
+                              ? 'bg-amber-200 border-amber-400 hover:bg-amber-300 text-amber-800'
+                              : 'bg-indigo-200 border-indigo-400 hover:bg-indigo-300 text-indigo-800'
                           }`}
                         >
                           {book.name}
