@@ -178,6 +178,62 @@ describe('useUserProgress', () => {
     expect(result.current.progress.todayCompletions).toBe(1);
   });
 
+  it('returns default onboarding when localStorage is empty', () => {
+    const { result } = renderHook(() => useUserProgress());
+    expect(result.current.progress.onboarding).toEqual({
+      level: 'beginner',
+      interests: [],
+      onboardingCompleted: false,
+    });
+  });
+
+  it('saveOnboarding updates onboarding profile', () => {
+    const { result } = renderHook(() => useUserProgress());
+
+    act(() => {
+      result.current.saveOnboarding({
+        level: 'normal',
+        interests: ['psa', 'pro'],
+        onboardingCompleted: true,
+      });
+    });
+
+    expect(result.current.progress.onboarding.level).toBe('normal');
+    expect(result.current.progress.onboarding.interests).toEqual(['psa', 'pro']);
+    expect(result.current.progress.onboarding.onboardingCompleted).toBe(true);
+  });
+
+  it('saveOnboarding persists to localStorage', () => {
+    const { result } = renderHook(() => useUserProgress());
+
+    act(() => {
+      result.current.saveOnboarding({
+        level: 'easy',
+        interests: ['gen'],
+        onboardingCompleted: true,
+      });
+    });
+
+    const stored = JSON.parse(localStorage.getItem('bible_puzzle_progress')!);
+    expect(stored.onboarding.level).toBe('easy');
+    expect(stored.onboarding.onboardingCompleted).toBe(true);
+  });
+
+  it('saveOnboarding preserves existing dailyGoal', () => {
+    const { result } = renderHook(() => useUserProgress());
+
+    act(() => result.current.setDailyGoal(5));
+    act(() => {
+      result.current.saveOnboarding({
+        level: 'normal',
+        interests: [],
+        onboardingCompleted: true,
+      });
+    });
+
+    expect(result.current.progress.dailyGoal).toBe(5);
+  });
+
   it('handles localStorage write failure gracefully', () => {
     const { result } = renderHook(() => useUserProgress());
 
