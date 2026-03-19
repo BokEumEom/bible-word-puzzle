@@ -1,7 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, PanInfo } from 'motion/react';
 import { Verse } from '../types';
 import { shuffle } from '../utils/shuffle';
+import { useSound } from '../hooks/useSound';
+import { vibrateShort, vibrateError, vibrateSuccess } from '../haptics/haptics';
+import { ComboText } from './ComboText';
+import { ConfettiBurst } from './ConfettiBurst';
 import { Check, Lightbulb, Star } from 'lucide-react';
 
 interface WordItem {
@@ -23,6 +27,11 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
   const [isChecking, setIsChecking] = useState(false);
   const [isWrong, setIsWrong] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [comboCount, setComboCount] = useState(0);
+  const [showCombo, setShowCombo] = useState(false);
+  const [lastPlacedSlot, setLastPlacedSlot] = useState<number | null>(null);
+  const comboTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const { play } = useSound();
 
   // Initialize puzzle
   useEffect(() => {
@@ -33,6 +42,9 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
     setShowHint(false);
     setIsWrong(false);
     setIsSuccess(false);
+    setComboCount(0);
+    setShowCombo(false);
+    setLastPlacedSlot(null);
   }, [verse]);
 
   const moveItem = (item: WordItem, source: 'bank' | 'slot', sourceIndex: number, dest: 'bank' | 'slot', destIndex: number) => {
@@ -55,6 +67,29 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
     setSlots(newSlots);
     setBank(newBank);
     setIsWrong(false);
+
+    // Sound + combo tracking when placing into a slot
+    if (dest === 'slot') {
+      play('word-place');
+      vibrateShort();
+      setLastPlacedSlot(destIndex);
+
+      // Check if placed in correct position for combo
+      const isCorrectPosition = item.text === verse.words[destIndex];
+      if (isCorrectPosition) {
+        const nextCombo = comboCount + 1;
+        setComboCount(nextCombo);
+        if (nextCombo >= 2) {
+          play('combo', { pitchMultiplier: 1 + nextCombo * 0.15 });
+          setShowCombo(true);
+          clearTimeout(comboTimerRef.current);
+          comboTimerRef.current = setTimeout(() => setShowCombo(false), 800);
+        }
+      } else {
+        setComboCount(0);
+        setShowCombo(false);
+      }
+    }
   };
 
   const handleDragEnd = (event: any, info: PanInfo, item: WordItem, source: 'bank' | 'slot', sourceIndex: number) => {
@@ -111,13 +146,17 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
 
     if (currentAnswer === correctAnswer) {
       setIsSuccess(true);
+      play('correct');
+      vibrateSuccess();
 
       setTimeout(() => {
         setIsChecking(false);
         onCorrect({ usedHint: showHint });
-      }, 2000); // Wait for animation to finish
+      }, 2000);
     } else {
       setIsWrong(true);
+      play('wrong');
+      vibrateError();
       setTimeout(() => {
         setIsChecking(false);
         setIsWrong(false);
@@ -169,8 +208,13 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
         )}
       </AnimatePresence>
 
+      {/* Combo Text */}
+      <div className="relative">
+        <ComboText comboCount={comboCount} show={showCombo} />
+      </div>
+
       {/* Slots Area */}
-      <motion.div 
+      <motion.div
         animate={isWrong ? { x: [-10, 10, -10, 10, 0] } : {}}
         transition={{ duration: 0.4 }}
         className={`p-4 sm:p-6 rounded-[2rem] shadow-sm border-4 mb-6 sm:mb-8 min-h-[120px] sm:min-h-[150px] flex flex-wrap gap-2 sm:gap-3 content-start transition-colors duration-500 ${
@@ -196,10 +240,13 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
                 whileDrag={{ scale: 1.1, rotateY: 180, zIndex: 50 }}
                 onDragEnd={(e, info) => handleDragEnd(e, info, item, 'slot', i)}
                 initial={{ rotateY: 180, scale: 0.8 }}
-                animate={{ 
-                  rotateY: 0, 
+                animate={{
+                  rotateY: 0,
                   scale: isSuccess ? [1, 1.2, 1] : 1,
                   y: isSuccess ? [0, -15, 0] : 0,
+                  boxShadow: lastPlacedSlot === i && !isSuccess
+                    ? ['0 0 0 0 rgba(52,211,153,0)', '0 0 16px 4px rgba(52,211,153,0.5)', '0 0 0 0 rgba(52,211,153,0)']
+                    : '0 0 0 0 rgba(52,211,153,0)',
                 }}
                 transition={isSuccess ? {
                   duration: 0.5,
@@ -310,6 +357,8 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
           </motion.p>
         )}
       </AnimatePresence>
+
+      <ConfettiBurst active={isSuccess} />
 
       <AnimatePresence>
         {isSuccess && (

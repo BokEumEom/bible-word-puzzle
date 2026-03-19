@@ -1,5 +1,7 @@
+import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AchievementDef, AchievementCategory } from '../data/achievements';
+import { useSound } from '../hooks/useSound';
 import { Award } from 'lucide-react';
 
 interface Props {
@@ -17,6 +19,12 @@ const categoryColors: Record<AchievementCategory, { border: string; text: string
 };
 
 export function AchievementUnlock({ show, achievement, onDismiss }: Props) {
+  const { play } = useSound();
+
+  useEffect(() => {
+    if (show && achievement) play('achievement');
+  }, [show]);
+
   if (!achievement) return null;
 
   const colors = categoryColors[achievement.category];

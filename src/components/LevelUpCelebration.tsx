@@ -1,5 +1,7 @@
+import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { LevelInfo } from '../data/levels';
+import { useSound } from '../hooks/useSound';
 import { Star } from 'lucide-react';
 
 interface Props {
@@ -9,6 +11,12 @@ interface Props {
 }
 
 export function LevelUpCelebration({ show, newLevel, onDismiss }: Props) {
+  const { play } = useSound();
+
+  useEffect(() => {
+    if (show && newLevel) play('level-up');
+  }, [show]);
+
   if (!newLevel) return null;
 
   return (

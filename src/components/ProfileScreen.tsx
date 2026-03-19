@@ -1,9 +1,10 @@
 import { motion } from 'motion/react';
-import { ChevronLeft, Flame, CheckCircle2, Target, Trophy, RotateCcw, Settings } from 'lucide-react';
+import { ChevronLeft, Flame, CheckCircle2, Target, Trophy, RotateCcw, Settings, Volume2, VolumeX } from 'lucide-react';
 import { LevelInfo, getXpProgress } from '../data/levels';
 import { UserProgress } from '../hooks/useUserProgress';
 import { achievements, AchievementCategory } from '../data/achievements';
 import { getDueReviews } from '../utils/spaced';
+import { useSound } from '../hooks/useSound';
 
 interface Props {
   progress: UserProgress;
@@ -33,6 +34,7 @@ function getStrengthDistribution(reviewData: UserProgress['reviewData']): { labe
 }
 
 export function ProfileScreen({ progress, level, onBack, onResetOnboarding }: Props) {
+  const { isMuted, toggleMute, play } = useSound();
   const { current, next, progress: xpProgress } = getXpProgress(progress.xp);
   const isMaxLevel = xpProgress === 1 && current === next;
   const unlockedCount = progress.unlockedAchievements.length;
@@ -197,25 +199,53 @@ export function ProfileScreen({ progress, level, onBack, onResetOnboarding }: Pr
       )}
 
       {/* Settings */}
-      {onResetOnboarding && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="bg-white/90 backdrop-blur-sm p-5 rounded-[2rem] shadow-sm border-b-4 border-stone-100"
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+        className="bg-white/90 backdrop-blur-sm p-5 rounded-[2rem] shadow-sm border-b-4 border-stone-100"
+      >
+        <h2 className="text-lg font-black text-stone-800 mb-4 flex items-center gap-2">
+          <Settings className="text-stone-400" size={22} />
+          설정
+        </h2>
+
+        {/* Sound toggle */}
+        <button
+          onClick={() => {
+            toggleMute();
+            if (isMuted) play('button-tap');
+          }}
+          className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-stone-50 transition-colors"
         >
-          <h2 className="text-lg font-black text-stone-800 mb-4 flex items-center gap-2">
-            <Settings className="text-stone-400" size={22} />
-            설정
-          </h2>
+          <div className="flex items-center gap-3">
+            {isMuted ? (
+              <VolumeX size={20} className="text-stone-400" />
+            ) : (
+              <Volume2 size={20} className="text-violet-500" />
+            )}
+            <span className="text-stone-600 font-bold text-sm">사운드</span>
+          </div>
+          <motion.div
+            className={`w-12 h-7 rounded-full p-1 ${isMuted ? 'bg-stone-200' : 'bg-violet-400'}`}
+          >
+            <motion.div
+              animate={{ x: isMuted ? 0 : 20 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+              className="w-5 h-5 bg-white rounded-full shadow-sm"
+            />
+          </motion.div>
+        </button>
+
+        {onResetOnboarding && (
           <button
             onClick={onResetOnboarding}
             className="w-full text-left p-3 rounded-xl hover:bg-stone-50 transition-colors text-stone-600 font-bold text-sm"
           >
             프로필 재설정
           </button>
-        </motion.div>
-      )}
+        )}
+      </motion.div>
     </motion.div>
   );
 }

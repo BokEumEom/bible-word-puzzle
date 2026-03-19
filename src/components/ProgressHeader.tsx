@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { Star, Home, ChevronLeft } from 'lucide-react';
 import { motion } from 'motion/react';
 
@@ -10,6 +11,9 @@ interface Props {
 }
 
 export function ProgressHeader({ current, total, stars, onClose, onBack }: Props) {
+  const prevStarsRef = useRef(stars);
+  const justEarned = stars > prevStarsRef.current;
+  prevStarsRef.current = stars;
   return (
     <div className="w-full mb-6 flex flex-col gap-3">
       {(onBack || onClose) && (
@@ -40,7 +44,13 @@ export function ProgressHeader({ current, total, stars, onClose, onBack }: Props
           {current} / {total}
         </div>
         
-        <div className="flex items-center gap-1.5 sm:gap-2 bg-amber-100 px-3 sm:px-4 py-2 rounded-full shrink-0">
+        <motion.div
+          className="flex items-center gap-1.5 sm:gap-2 bg-amber-100 px-3 sm:px-4 py-2 rounded-full shrink-0"
+          animate={justEarned ? {
+            boxShadow: ['0 0 0 0 rgba(251,191,36,0)', '0 0 16px 4px rgba(251,191,36,0.5)', '0 0 0 0 rgba(251,191,36,0)'],
+          } : {}}
+          transition={{ duration: 0.6 }}
+        >
           <motion.div
             key={stars}
             initial={{ scale: 1.5, rotate: -180 }}
@@ -50,7 +60,7 @@ export function ProgressHeader({ current, total, stars, onClose, onBack }: Props
             <Star fill="currentColor" size={20} className="sm:w-6 sm:h-6" />
           </motion.div>
           <span className="font-black text-lg sm:text-xl text-amber-700">{stars}</span>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

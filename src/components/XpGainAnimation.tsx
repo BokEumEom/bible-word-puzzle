@@ -1,5 +1,7 @@
+import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { XpEvent } from '../utils/xp';
+import { useSound } from '../hooks/useSound';
 import { Zap, Eye, Target, Flame } from 'lucide-react';
 
 interface Props {
@@ -8,6 +10,12 @@ interface Props {
 }
 
 export function XpGainAnimation({ xpEvent, onDone }: Props) {
+  const { play } = useSound();
+
+  useEffect(() => {
+    if (xpEvent) play('xp-gain');
+  }, [xpEvent]);
+
   if (!xpEvent) return null;
 
   const bonuses = [

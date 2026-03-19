@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useSound } from '../hooks/useSound';
 import { Trophy } from 'lucide-react';
 
 interface Props {
@@ -8,8 +9,11 @@ interface Props {
 }
 
 export function DailyGoalCelebration({ show, onDismiss }: Props) {
+  const { play } = useSound();
+
   useEffect(() => {
     if (!show) return;
+    play('correct');
     const timer = setTimeout(onDismiss, 2500);
     return () => clearTimeout(timer);
   }, [show, onDismiss]);

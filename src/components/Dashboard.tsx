@@ -68,7 +68,12 @@ export function Dashboard({ progress, isDailyGoalMet, level, onStartExplore, onS
         <div className="flex-1 h-2.5 bg-violet-100 rounded-full overflow-hidden">
           <motion.div
             initial={{ width: 0 }}
-            animate={{ width: `${goalProgress * 100}%` }}
+            animate={{
+              width: `${goalProgress * 100}%`,
+              boxShadow: isDailyGoalMet
+                ? ['0 0 0 0 rgba(139,92,246,0)', '0 0 8px 2px rgba(139,92,246,0.4)', '0 0 0 0 rgba(139,92,246,0)']
+                : '0 0 0 0 rgba(139,92,246,0)',
+            }}
             transition={{ duration: 0.5, ease: 'easeOut' }}
             className={`h-full rounded-full ${isDailyGoalMet ? 'bg-violet-500' : 'bg-violet-400'}`}
           />
