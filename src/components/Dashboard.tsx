@@ -6,6 +6,7 @@ import { UserProgress } from '../hooks/useUserProgress';
 import { verses as presetVerses } from '../data/verses';
 import { getRecommendations } from '../utils/recommend';
 import { NextActionCards } from './NextActionCards';
+import { InstallPrompt } from './InstallPrompt';
 
 interface Props {
   progress: UserProgress;
@@ -76,6 +77,9 @@ export function Dashboard({ progress, isDailyGoalMet, level, onStartExplore, onS
           {isDailyGoalMet ? '목표 달성!' : `${progress.todayCompletions}/${progress.dailyGoal}`}
         </span>
       </div>
+
+      {/* Install Prompt */}
+      <InstallPrompt />
 
       {/* Today's Verse — Main CTA */}
       <div className="mb-6">

@@ -21,6 +21,7 @@ import { ReadingScreen } from './components/ReadingScreen';
 import { MemorizeScreen } from './components/MemorizeScreen';
 import { AchievementUnlock } from './components/AchievementUnlock';
 import { ProfileScreen } from './components/ProfileScreen';
+import { UpdatePrompt } from './components/UpdatePrompt';
 import { ChevronLeft } from 'lucide-react';
 import { useUserProgress } from './hooks/useUserProgress';
 import { XpEvent } from './utils/xp';
@@ -385,6 +386,8 @@ export default function App() {
         achievement={showAchievement}
         onDismiss={handleAchievementDismiss}
       />
+
+      <UpdatePrompt />
     </div>
   );
 }

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFF3E0"/>
+      <stop offset="100%" style="stop-color:#FFE0B2"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
+  <!-- Book -->
+  <g transform="translate(256,220)">
+    <path d="M-80,-60 C-80,-60 -10,-75 0,-55 C10,-75 80,-60 80,-60 L80,60 C80,60 10,45 0,65 C-10,45 -80,60 -80,60 Z" fill="#F97316" opacity="0.9"/>
+    <line x1="0" y1="-55" x2="0" y2="65" stroke="#EA580C" stroke-width="3"/>
+    <!-- Pages -->
+    <line x1="-50" y1="-30" x2="-10" y2="-35" stroke="white" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+    <line x1="-50" y1="-10" x2="-10" y2="-15" stroke="white" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+    <line x1="-50" y1="10" x2="-10" y2="5" stroke="white" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+    <line x1="50" y1="-30" x2="10" y2="-35" stroke="white" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+    <line x1="50" y1="-10" x2="10" y2="-15" stroke="white" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+    <line x1="50" y1="10" x2="10" y2="5" stroke="white" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+  </g>
+  <!-- Puzzle piece -->
+  <g transform="translate(340,130) scale(0.8)">
+    <path d="M0,0 L40,0 C40,0 35,-15 50,-15 C65,-15 60,0 60,0 L100,0 L100,40 C100,40 115,35 115,50 C115,65 100,60 100,60 L100,100 L60,100 C60,100 65,115 50,115 C35,115 40,100 40,100 L0,100 L0,60 C0,60 -15,65 -15,50 C-15,35 0,40 0,40 Z" fill="#4ADE80" opacity="0.85"/>
+  </g>
+  <!-- Text -->
+  <text x="256" y="370" text-anchor="middle" font-family="sans-serif" font-weight="900" font-size="52" fill="#5D4037">말씀 팡팡</text>
+</svg>
