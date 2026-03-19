@@ -1,41 +1,38 @@
 import { motion } from 'motion/react';
-import { BookOpen, Search, Flame, Star, Clock, CheckCircle2, ChevronRight, Heart, Play, Settings } from 'lucide-react';
+import { BookOpen, Search, Flame, Clock, CheckCircle2, ChevronRight, Heart, Play, Settings } from 'lucide-react';
+import { LevelInfo } from '../data/levels';
 import { Verse } from '../types';
 import { UserProgress } from '../hooks/useUserProgress';
 import { verses as presetVerses } from '../data/verses';
+import { getRecommendations } from '../utils/recommend';
 import { DailyGoalBadge } from './DailyGoalBadge';
+import { LevelBadge } from './LevelBadge';
+import { AchievementGrid } from './AchievementGrid';
+import { NextActionCards } from './NextActionCards';
 
 interface Props {
   progress: UserProgress;
   isDailyGoalMet: boolean;
+  level: LevelInfo;
   onStartExplore: () => void;
   onStartPreset: () => void;
   onSelectVerse: (verse: Verse) => void;
   onResetOnboarding?: () => void;
 }
 
-export function Dashboard({ progress, isDailyGoalMet, onStartExplore, onStartPreset, onSelectVerse, onResetOnboarding }: Props) {
-  const getTodaysVerse = (): Verse => {
-    const today = new Date().toISOString().split('T')[0];
-    const seed = today.split('-').reduce((a, b) => a + parseInt(b), 0);
-    return presetVerses[seed % presetVerses.length];
-  };
+export function Dashboard({ progress, isDailyGoalMet, level, onStartExplore, onStartPreset, onSelectVerse, onResetOnboarding }: Props) {
+  const today = new Date().toISOString().split('T')[0];
+  const dateSeed = today.split('-').reduce((a, b) => a + parseInt(b), 0);
 
-  const todaysVerse = getTodaysVerse();
+  const recommendations = getRecommendations({
+    allVerses: presetVerses,
+    interests: progress.onboarding.interests,
+    level: progress.onboarding.level,
+    completedVerses: progress.completedVerses,
+    dateSeed,
+  });
 
-  // Get verses for "Review" (completed verses)
-  const getReviewVerses = () => {
-    const completedIds = Object.keys(progress.completedVerses);
-    if (completedIds.length === 0) return [];
-    
-    // Just return the first few for MVP, or random ones
-    const reviewVerses: Verse[] = [];
-    // We need to reconstruct Verse from ID, or we can just use recentVerses that are completed.
-    // For MVP, let's just use recentVerses that have a completion count > 0
-    return progress.recentVerses.filter(v => progress.completedVerses[v.id] > 0).slice(0, 3);
-  };
-
-  const reviewVerses = getReviewVerses();
+  const todaysVerse = recommendations.dailyVerse.verse;
 
   return (
     <motion.div 
@@ -88,6 +85,14 @@ export function Dashboard({ progress, isDailyGoalMet, onStartExplore, onStartPre
         </motion.div>
       </div>
 
+      {/* Level Badge */}
+      <div className="mb-6">
+        <LevelBadge level={level} xp={progress.xp} />
+      </div>
+
+      {/* Achievements */}
+      <AchievementGrid unlockedIds={progress.unlockedAchievements} />
+
       {/* Daily Goal */}
       <div className="mb-8">
         <DailyGoalBadge
@@ -96,6 +101,14 @@ export function Dashboard({ progress, isDailyGoalMet, onStartExplore, onStartPre
           isMet={isDailyGoalMet}
         />
       </div>
+
+      {/* Next Actions */}
+      {recommendations.nextActions.length > 0 && (
+        <NextActionCards
+          actions={recommendations.nextActions}
+          onSelectVerse={onSelectVerse}
+        />
+      )}
 
       {/* Today's Verse */}
       <div className="mb-8">
@@ -112,9 +125,16 @@ export function Dashboard({ progress, isDailyGoalMet, onStartExplore, onStartPre
           <div className="absolute -right-4 -top-4 opacity-5 text-amber-500">
             <BookOpen size={120} />
           </div>
-          <span className="inline-block bg-amber-100 text-amber-800 text-sm font-bold px-4 py-1.5 rounded-full mb-4 shadow-sm">
-            {todaysVerse.reference}
-          </span>
+          <div className="flex items-center gap-2 mb-4">
+            <span className="inline-block bg-amber-100 text-amber-800 text-sm font-bold px-4 py-1.5 rounded-full shadow-sm">
+              {todaysVerse.reference}
+            </span>
+            {recommendations.dailyVerse.reason === 'interest' && (
+              <span className="inline-block bg-violet-100 text-violet-700 text-xs font-black px-3 py-1 rounded-full shadow-sm">
+                관심 성경
+              </span>
+            )}
+          </div>
           <p className="text-lg text-stone-700 font-bold leading-relaxed line-clamp-2">
             {todaysVerse.verse}
           </p>

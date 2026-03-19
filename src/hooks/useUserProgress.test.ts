@@ -234,6 +234,80 @@ describe('useUserProgress', () => {
     expect(result.current.progress.dailyGoal).toBe(5);
   });
 
+  it('starts with 0 XP', () => {
+    const { result } = renderHook(() => useUserProgress());
+    expect(result.current.progress.xp).toBe(0);
+    expect(result.current.currentLevel.level).toBe(1);
+  });
+
+  it('markCompleted returns XpEvent and adds XP', () => {
+    const { result } = renderHook(() => useUserProgress());
+    const verse = { id: 'xp-1', reference: 'T 1:1', verse: 'v', words: ['v'] };
+
+    let xpEvent: any;
+    act(() => {
+      xpEvent = result.current.markCompleted(verse);
+    });
+
+    expect(xpEvent.base).toBe(10);
+    expect(xpEvent.total).toBeGreaterThan(0);
+    expect(result.current.progress.xp).toBe(xpEvent.total);
+  });
+
+  it('XP accumulates across multiple completions', () => {
+    const { result } = renderHook(() => useUserProgress());
+
+    let total = 0;
+    for (let i = 0; i < 5; i++) {
+      const verse = { id: `xp-acc-${i}`, reference: `T ${i}:1`, verse: `v${i}`, words: [`v${i}`] };
+      let xpEvent: any;
+      act(() => {
+        xpEvent = result.current.markCompleted(verse);
+      });
+      total += xpEvent.total;
+    }
+
+    expect(result.current.progress.xp).toBe(total);
+  });
+
+  it('review gives less XP than new verse', () => {
+    const { result } = renderHook(() => useUserProgress());
+    const verse = { id: 'xp-rev', reference: 'T 1:1', verse: 'v', words: ['v'] };
+
+    let firstXp: any;
+    act(() => {
+      firstXp = result.current.markCompleted(verse);
+    });
+
+    let reviewXp: any;
+    act(() => {
+      reviewXp = result.current.markCompleted(verse);
+    });
+
+    expect(reviewXp.base).toBeLessThan(firstXp.base);
+  });
+
+  it('currentLevel updates when XP crosses threshold', () => {
+    const { result } = renderHook(() => useUserProgress());
+    expect(result.current.currentLevel.level).toBe(1);
+
+    act(() => result.current.addXp(50));
+    expect(result.current.currentLevel.level).toBe(2);
+
+    act(() => result.current.addXp(100));
+    expect(result.current.currentLevel.level).toBe(3);
+  });
+
+  it('addXp increases XP immutably', () => {
+    const { result } = renderHook(() => useUserProgress());
+
+    act(() => result.current.addXp(25));
+    expect(result.current.progress.xp).toBe(25);
+
+    act(() => result.current.addXp(30));
+    expect(result.current.progress.xp).toBe(55);
+  });
+
   it('handles localStorage write failure gracefully', () => {
     const { result } = renderHook(() => useUserProgress());
 

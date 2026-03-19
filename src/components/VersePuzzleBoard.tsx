@@ -11,7 +11,7 @@ interface WordItem {
 
 interface Props {
   verse: Verse;
-  onCorrect: () => void;
+  onCorrect: (options?: { usedHint?: boolean }) => void;
   isFavorite?: boolean;
   onToggleFavorite?: () => void;
 }
@@ -114,7 +114,7 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
 
       setTimeout(() => {
         setIsChecking(false);
-        onCorrect();
+        onCorrect({ usedHint: showHint });
       }, 2000); // Wait for animation to finish
     } else {
       setIsWrong(true);

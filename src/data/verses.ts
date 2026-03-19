@@ -5,6 +5,7 @@ export const verses: Verse[] = [
   {
     id: 'b1',
     difficulty: 'beginner',
+    bookId: '1th',
     reference: '데살로니가전서 5:16',
     verse: '항상 기뻐하라',
     words: ['항상', '기뻐하라'],
@@ -13,6 +14,7 @@ export const verses: Verse[] = [
   {
     id: 'b2',
     difficulty: 'beginner',
+    bookId: '1th',
     reference: '데살로니가전서 5:17',
     verse: '쉬지 말고 기도하라',
     words: ['쉬지', '말고', '기도하라'],
@@ -21,6 +23,7 @@ export const verses: Verse[] = [
   {
     id: 'b3',
     difficulty: 'beginner',
+    bookId: '1th',
     reference: '데살로니가전서 5:18',
     verse: '범사에 감사하라',
     words: ['범사에', '감사하라'],
@@ -29,6 +32,7 @@ export const verses: Verse[] = [
   {
     id: 'b4',
     difficulty: 'beginner',
+    bookId: 'gen',
     reference: '창세기 1:1',
     verse: '태초에 하나님이 천지를 창조하시니라',
     words: ['태초에', '하나님이', '천지를', '창조하시니라'],
@@ -37,6 +41,7 @@ export const verses: Verse[] = [
   {
     id: 'b5',
     difficulty: 'beginner',
+    bookId: '1jn',
     reference: '요한일서 4:8',
     verse: '하나님은 사랑이심이라',
     words: ['하나님은', '사랑이심이라'],
@@ -45,6 +50,7 @@ export const verses: Verse[] = [
   {
     id: 'b6',
     difficulty: 'beginner',
+    bookId: 'psa',
     reference: '시편 150:6',
     verse: '호흡이 있는 자마다 여호와를 찬양할지어다',
     words: ['호흡이', '있는', '자마다', '여호와를', '찬양할지어다'],
@@ -55,6 +61,7 @@ export const verses: Verse[] = [
   {
     id: 'e1',
     difficulty: 'easy',
+    bookId: 'psa',
     reference: '시편 23:1',
     verse: '여호와는 나의 목자시니 내게 부족함이 없으리로다',
     words: ['여호와는', '나의', '목자시니', '내게', '부족함이', '없으리로다'],
@@ -63,6 +70,7 @@ export const verses: Verse[] = [
   {
     id: 'e2',
     difficulty: 'easy',
+    bookId: 'jhn',
     reference: '요한복음 3:16',
     verse: '하나님이 세상을 이처럼 사랑하사 독생자를 주셨으니',
     words: ['하나님이', '세상을', '이처럼', '사랑하사', '독생자를', '주셨으니'],
@@ -71,6 +79,7 @@ export const verses: Verse[] = [
   {
     id: 'e3',
     difficulty: 'easy',
+    bookId: 'php',
     reference: '빌립보서 4:13',
     verse: '내게 능력 주시는 자 안에서 내가 모든 것을 할 수 있느니라',
     words: ['내게', '능력', '주시는', '자', '안에서', '내가', '모든', '것을', '할 수', '있느니라'],
@@ -79,6 +88,7 @@ export const verses: Verse[] = [
   {
     id: 'e4',
     difficulty: 'easy',
+    bookId: 'psa',
     reference: '시편 3:3',
     verse: '여호와여 주는 나의 방패시요 나의 영광이시요 나의 머리를 드시는 자이시니이다',
     words: ['여호와여', '주는', '나의', '방패시요', '나의', '영광이시요', '나의', '머리를', '드시는', '자이시니이다'],
@@ -87,6 +97,7 @@ export const verses: Verse[] = [
   {
     id: 'e5',
     difficulty: 'easy',
+    bookId: 'psa',
     reference: '시편 8:1',
     verse: '여호와 우리 주여 주의 이름이 온 땅에 어찌 그리 아름다운지요',
     words: ['여호와', '우리 주여', '주의 이름이', '온 땅에', '어찌 그리', '아름다운지요'],
@@ -95,6 +106,7 @@ export const verses: Verse[] = [
   {
     id: 'e6',
     difficulty: 'easy',
+    bookId: 'psa',
     reference: '시편 23:2',
     verse: '그가 나를 푸른 풀밭에 누이시며 쉴 만한 물 가로 인도하시는도다',
     words: ['그가', '나를', '푸른 풀밭에', '누이시며', '쉴 만한', '물 가로', '인도하시는도다'],
@@ -103,6 +115,7 @@ export const verses: Verse[] = [
   {
     id: 'e7',
     difficulty: 'easy',
+    bookId: 'mat',
     reference: '마태복음 7:7',
     verse: '구하라 그리하면 너희에게 주실 것이요 찾으라 그리하면 찾아낼 것이요',
     words: ['구하라', '그리하면', '너희에게', '주실 것이요', '찾으라', '그리하면', '찾아낼 것이요'],
@@ -111,6 +124,7 @@ export const verses: Verse[] = [
   {
     id: 'e8',
     difficulty: 'easy',
+    bookId: 'psa',
     reference: '시편 119:105',
     verse: '주의 말씀은 내 발에 등이요 내 길에 빛이니이다',
     words: ['주의 말씀은', '내 발에', '등이요', '내 길에', '빛이니이다'],
@@ -121,6 +135,7 @@ export const verses: Verse[] = [
   {
     id: 'n1',
     difficulty: 'normal',
+    bookId: '1pe',
     reference: '베드로전서 5:7',
     verse: '너희 염려를 다 주께 맡기라 이는 그가 너희를 돌보심이라',
     words: ['너희', '염려를', '다', '주께', '맡기라', '이는', '그가', '너희를', '돌보심이라'],
@@ -129,6 +144,7 @@ export const verses: Verse[] = [
   {
     id: 'n2',
     difficulty: 'normal',
+    bookId: 'pro',
     reference: '잠언 3:5',
     verse: '너는 마음을 다하여 여호와를 신뢰하고 네 명철을 의지하지 말라',
     words: ['너는', '마음을', '다하여', '여호와를', '신뢰하고', '네', '명철을', '의지하지', '말라'],
@@ -137,6 +153,7 @@ export const verses: Verse[] = [
   {
     id: 'n3',
     difficulty: 'normal',
+    bookId: 'gal',
     reference: '갈라디아서 5:22',
     verse: '오직 성령의 열매는 사랑과 희락과 화평과 오래 참음과 자비와 양선과 충성과',
     words: ['오직', '성령의', '열매는', '사랑과', '희락과', '화평과', '오래 참음과', '자비와', '양선과', '충성과'],
@@ -145,6 +162,7 @@ export const verses: Verse[] = [
   {
     id: 'n4',
     difficulty: 'normal',
+    bookId: 'psa',
     reference: '시편 1:2',
     verse: '오직 여호와의 율법을 즐거워하여 그의 율법을 주야로 묵상하는도다',
     words: ['오직', '여호와의', '율법을', '즐거워하여', '그의', '율법을', '주야로', '묵상하는도다'],
@@ -153,6 +171,7 @@ export const verses: Verse[] = [
   {
     id: 'n5',
     difficulty: 'normal',
+    bookId: 'psa',
     reference: '시편 2:8',
     verse: '내게 구하라 내가 이방 나라를 네 유업으로 주리니 네 소유가 땅 끝까지 이르리로다',
     words: ['내게', '구하라', '내가', '이방 나라를', '네 유업으로', '주리니', '네 소유가', '땅 끝까지', '이르리로다'],
@@ -161,6 +180,7 @@ export const verses: Verse[] = [
   {
     id: 'n6',
     difficulty: 'normal',
+    bookId: 'psa',
     reference: '시편 23:4',
     verse: '내가 사망의 음침한 골짜기로 다닐지라도 해를 두려워하지 않을 것은 주께서 나와 함께 하심이라',
     words: ['내가', '사망의', '음침한', '골짜기로', '다닐지라도', '해를', '두려워하지', '않을 것은', '주께서', '나와', '함께', '하심이라'],
@@ -169,6 +189,7 @@ export const verses: Verse[] = [
   {
     id: 'n7',
     difficulty: 'normal',
+    bookId: 'pro',
     reference: '잠언 1:7',
     verse: '여호와를 경외하는 것이 지식의 근본이거늘 미련한 자는 지혜와 훈계를 멸시하느니라',
     words: ['여호와를', '경외하는 것이', '지식의', '근본이거늘', '미련한 자는', '지혜와', '훈계를', '멸시하느니라'],
@@ -177,6 +198,7 @@ export const verses: Verse[] = [
   {
     id: 'n8',
     difficulty: 'normal',
+    bookId: 'gen',
     reference: '창세기 1:27',
     verse: '하나님이 자기 형상 곧 하나님의 형상대로 사람을 창조하시되 남자와 여자를 창조하시고',
     words: ['하나님이', '자기 형상', '곧', '하나님의', '형상대로', '사람을', '창조하시되', '남자와', '여자를', '창조하시고'],

@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Verse, OnboardingProfile } from '../types';
+import { getLevelForXp } from '../data/levels';
+import { calculateXp, XpEvent } from '../utils/xp';
 
 export interface UserProgress {
   streak: number;
@@ -11,6 +13,10 @@ export interface UserProgress {
   todayCompletions: number;
   todayCompletionDate: string;
   onboarding: OnboardingProfile;
+  xp: number;
+  unlockedAchievements: string[];
+  dailyGoalMetCount: number;
+  noHintCompletions: number;
 }
 
 const STORAGE_KEY = 'bible_puzzle_progress';
@@ -29,6 +35,10 @@ const defaultProgress: UserProgress = {
     interests: [],
     onboardingCompleted: false,
   },
+  xp: 0,
+  unlockedAchievements: [],
+  dailyGoalMetCount: 0,
+  noHintCompletions: 0,
 };
 
 function loadProgress(): UserProgress {
@@ -95,22 +105,58 @@ export function useUserProgress() {
     });
   };
 
-  const markCompleted = (verse: Verse) => {
+  const addXp = (amount: number) => {
+    setProgress(prev => ({
+      ...prev,
+      xp: prev.xp + amount,
+    }));
+  };
+
+  const markCompleted = (verse: Verse, options?: { usedHint?: boolean; isReview?: boolean }): XpEvent => {
     const today = new Date().toISOString().split('T')[0];
+
+    // Calculate XP before state update (need current state for isDailyGoalJustMet)
+    const isNewDay = progress.todayCompletionDate !== today;
+    const newTodayCompletions = isNewDay ? 1 : progress.todayCompletions + 1;
+    const willMeetGoal = newTodayCompletions >= progress.dailyGoal;
+    const alreadyMetGoal = !isNewDay && progress.todayCompletions >= progress.dailyGoal;
+
+    const xpEvent = calculateXp({
+      usedHint: options?.usedHint ?? false,
+      isDailyGoalJustMet: willMeetGoal && !alreadyMetGoal,
+      streak: progress.streak,
+      isReview: options?.isReview ?? (progress.completedVerses[verse.id] > 0),
+    });
+
+    const isDailyGoalJustMet = willMeetGoal && !alreadyMetGoal;
+    const isNoHint = !(options?.usedHint ?? false);
+
     setProgress(prev => {
-      const isNewDay = prev.todayCompletionDate !== today;
+      const prevIsNewDay = prev.todayCompletionDate !== today;
       return {
         ...prev,
         completedVerses: {
           ...prev.completedVerses,
           [verse.id]: (prev.completedVerses[verse.id] || 0) + 1,
         },
-        todayCompletions: isNewDay ? 1 : prev.todayCompletions + 1,
+        todayCompletions: prevIsNewDay ? 1 : prev.todayCompletions + 1,
         todayCompletionDate: today,
+        xp: prev.xp + xpEvent.total,
+        noHintCompletions: prev.noHintCompletions + (isNoHint ? 1 : 0),
+        dailyGoalMetCount: prev.dailyGoalMetCount + (isDailyGoalJustMet ? 1 : 0),
       };
     });
     updateStreak();
     addRecent(verse);
+
+    return xpEvent;
+  };
+
+  const unlockAchievements = (ids: string[]) => {
+    setProgress(prev => ({
+      ...prev,
+      unlockedAchievements: [...prev.unlockedAchievements, ...ids],
+    }));
   };
 
   const setDailyGoal = (goal: number) => {
@@ -129,5 +175,7 @@ export function useUserProgress() {
   const isDailyGoalMet = progress.todayCompletionDate === today
     && progress.todayCompletions >= progress.dailyGoal;
 
-  return { progress, toggleFavorite, markCompleted, addRecent, updateStreak, setDailyGoal, saveOnboarding, isDailyGoalMet };
+  const currentLevel = getLevelForXp(progress.xp);
+
+  return { progress, toggleFavorite, markCompleted, addRecent, addXp, updateStreak, setDailyGoal, saveOnboarding, unlockAchievements, isDailyGoalMet, currentLevel };
 }

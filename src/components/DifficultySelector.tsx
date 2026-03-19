@@ -5,9 +5,10 @@ import { Baby, Smile, Zap, ChevronLeft } from 'lucide-react';
 interface Props {
   onSelect: (difficulty: Difficulty) => void;
   onBack: () => void;
+  defaultLevel?: Difficulty;
 }
 
-export function DifficultySelector({ onSelect, onBack }: Props) {
+export function DifficultySelector({ onSelect, onBack, defaultLevel }: Props) {
   const difficulties: { id: Difficulty; label: string; desc: string; icon: any; color: string; border: string; iconColor: string }[] = [
     {
       id: 'beginner',
@@ -71,7 +72,7 @@ export function DifficultySelector({ onSelect, onBack }: Props) {
               whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => onSelect(diff.id)}
-              className={`w-full flex items-center p-6 rounded-[2rem] border-b-8 ${diff.border} ${diff.color} shadow-sm transition-colors text-left`}
+              className={`w-full flex items-center p-6 rounded-[2rem] border-b-8 ${diff.border} ${diff.color} shadow-sm transition-colors text-left relative ${defaultLevel === diff.id ? 'ring-4 ring-orange-300' : ''}`}
             >
               <div className="bg-white/80 backdrop-blur-sm p-4 rounded-2xl mr-5 shadow-sm rotate-3">
                 <Icon size={36} className={diff.iconColor} />
@@ -80,6 +81,11 @@ export function DifficultySelector({ onSelect, onBack }: Props) {
                 <h3 className="text-2xl font-black text-stone-800 mb-1">{diff.label}</h3>
                 <p className="text-lg text-stone-600 font-bold">{diff.desc}</p>
               </div>
+              {defaultLevel === diff.id && (
+                <span className="absolute top-4 right-5 bg-orange-400 text-white text-xs font-black px-3 py-1 rounded-full shadow-sm">
+                  나의 레벨
+                </span>
+              )}
             </motion.button>
           );
         })}

@@ -3,6 +3,7 @@ export type Difficulty = 'beginner' | 'easy' | 'normal';
 export interface Verse {
   id: string;
   difficulty?: Difficulty;
+  bookId?: string;
   reference: string;
   verse: string;
   words: string[];
