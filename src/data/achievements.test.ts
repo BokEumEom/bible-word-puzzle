@@ -142,6 +142,7 @@ describe('buildAchievementContext', () => {
     unlockedAchievements: [],
     dailyGoalMetCount: 0,
     noHintCompletions: 0,
+    reviewData: {},
     ...overrides,
   });
 

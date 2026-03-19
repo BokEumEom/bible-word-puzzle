@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Verse, OnboardingProfile } from '../types';
 import { getLevelForXp } from '../data/levels';
 import { calculateXp, XpEvent } from '../utils/xp';
+import { ReviewData, updateReview } from '../utils/spaced';
 
 export interface UserProgress {
   streak: number;
@@ -17,6 +18,7 @@ export interface UserProgress {
   unlockedAchievements: string[];
   dailyGoalMetCount: number;
   noHintCompletions: number;
+  reviewData: Record<string, ReviewData>;
 }
 
 const STORAGE_KEY = 'bible_puzzle_progress';
@@ -39,6 +41,7 @@ const defaultProgress: UserProgress = {
   unlockedAchievements: [],
   dailyGoalMetCount: 0,
   noHintCompletions: 0,
+  reviewData: {},
 };
 
 function loadProgress(): UserProgress {
@@ -133,6 +136,8 @@ export function useUserProgress() {
 
     setProgress(prev => {
       const prevIsNewDay = prev.todayCompletionDate !== today;
+      const success = !(options?.usedHint ?? false);
+      const newReviewData = updateReview(prev.reviewData[verse.id], success, today);
       return {
         ...prev,
         completedVerses: {
@@ -144,6 +149,7 @@ export function useUserProgress() {
         xp: prev.xp + xpEvent.total,
         noHintCompletions: prev.noHintCompletions + (isNoHint ? 1 : 0),
         dailyGoalMetCount: prev.dailyGoalMetCount + (isDailyGoalJustMet ? 1 : 0),
+        reviewData: { ...prev.reviewData, [verse.id]: newReviewData },
       };
     });
     updateStreak();

@@ -151,4 +151,79 @@ describe('getRecommendations', () => {
     expect(input.allVerses).toEqual(versesBefore);
     expect(input.interests).toEqual(interestsBefore);
   });
+
+  describe('spaced repetition review', () => {
+    it('uses due review verse when reviewData provided', () => {
+      const result = getRecommendations(makeInput({
+        completedVerses: { b1: 1, e1: 1 },
+        reviewData: {
+          b1: { strength: 1, lastReviewedAt: '2026-03-17', nextReviewAt: '2026-03-18' },
+          e1: { strength: 2, lastReviewedAt: '2026-03-15', nextReviewAt: '2026-03-25' },
+        },
+        today: '2026-03-19',
+      }));
+      const review = result.nextActions.find(a => a.type === 'review');
+      expect(review).toBeDefined();
+      expect(review!.verse.id).toBe('b1'); // overdue
+    });
+
+    it('no review card when no due reviews', () => {
+      const result = getRecommendations(makeInput({
+        completedVerses: { b1: 1 },
+        reviewData: {
+          b1: { strength: 3, lastReviewedAt: '2026-03-19', nextReviewAt: '2026-03-26' },
+        },
+        today: '2026-03-19',
+      }));
+      const review = result.nextActions.find(a => a.type === 'review');
+      expect(review).toBeUndefined();
+    });
+
+    it('sets urgency high for overdue 4+ days', () => {
+      const result = getRecommendations(makeInput({
+        completedVerses: { b1: 1 },
+        reviewData: {
+          b1: { strength: 1, lastReviewedAt: '2026-03-10', nextReviewAt: '2026-03-14' },
+        },
+        today: '2026-03-19',
+      }));
+      const review = result.nextActions.find(a => a.type === 'review');
+      expect(review!.urgency).toBe('high');
+      expect(review!.label).toBe('긴급 복습!');
+    });
+
+    it('sets urgency medium for overdue 2-3 days', () => {
+      const result = getRecommendations(makeInput({
+        completedVerses: { b1: 1 },
+        reviewData: {
+          b1: { strength: 1, lastReviewedAt: '2026-03-15', nextReviewAt: '2026-03-17' },
+        },
+        today: '2026-03-19',
+      }));
+      const review = result.nextActions.find(a => a.type === 'review');
+      expect(review!.urgency).toBe('medium');
+    });
+
+    it('sets urgency low for due today', () => {
+      const result = getRecommendations(makeInput({
+        completedVerses: { b1: 1 },
+        reviewData: {
+          b1: { strength: 1, lastReviewedAt: '2026-03-18', nextReviewAt: '2026-03-19' },
+        },
+        today: '2026-03-19',
+      }));
+      const review = result.nextActions.find(a => a.type === 'review');
+      expect(review!.urgency).toBe('low');
+    });
+
+    it('falls back to count-based review when reviewData undefined', () => {
+      const result = getRecommendations(makeInput({
+        completedVerses: { b1: 1 },
+      }));
+      const review = result.nextActions.find(a => a.type === 'review');
+      expect(review).toBeDefined();
+      expect(review!.verse.id).toBe('b1');
+      expect(review!.urgency).toBeUndefined();
+    });
+  });
 });

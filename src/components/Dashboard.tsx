@@ -1,10 +1,11 @@
 import { motion } from 'motion/react';
-import { BookOpen, Search, Flame, Clock, CheckCircle2, ChevronRight, Heart, Play, Settings } from 'lucide-react';
+import { BookOpen, Search, Flame, Clock, CheckCircle2, ChevronRight, Heart, Play, Settings, RotateCcw } from 'lucide-react';
 import { LevelInfo } from '../data/levels';
 import { Verse } from '../types';
 import { UserProgress } from '../hooks/useUserProgress';
 import { verses as presetVerses } from '../data/verses';
 import { getRecommendations } from '../utils/recommend';
+import { getDueReviews } from '../utils/spaced';
 import { DailyGoalBadge } from './DailyGoalBadge';
 import { LevelBadge } from './LevelBadge';
 import { AchievementGrid } from './AchievementGrid';
@@ -30,8 +31,11 @@ export function Dashboard({ progress, isDailyGoalMet, level, onStartExplore, onS
     level: progress.onboarding.level,
     completedVerses: progress.completedVerses,
     dateSeed,
+    reviewData: progress.reviewData,
+    today,
   });
 
+  const dueCount = getDueReviews(progress.reviewData, today).length;
   const todaysVerse = recommendations.dailyVerse.verse;
 
   return (
@@ -84,6 +88,23 @@ export function Dashboard({ progress, isDailyGoalMet, level, onStartExplore, onS
           </div>
         </motion.div>
       </div>
+
+      {/* Due Reviews Badge */}
+      {dueCount > 0 && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex items-center gap-3 bg-white/90 backdrop-blur-sm p-4 rounded-[2rem] shadow-sm border-b-4 border-rose-100 mb-6"
+        >
+          <div className="bg-rose-100 p-2.5 rounded-2xl">
+            <RotateCcw className="text-rose-400" size={28} />
+          </div>
+          <div>
+            <p className="text-sm text-stone-500 font-bold">복습 대기</p>
+            <p className="text-2xl font-black text-rose-500">{dueCount}개</p>
+          </div>
+        </motion.div>
+      )}
 
       {/* Level Badge */}
       <div className="mb-6">

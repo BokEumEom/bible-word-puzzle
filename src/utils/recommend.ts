@@ -1,4 +1,5 @@
 import { Verse, Difficulty } from '../types';
+import { ReviewData, getDueReviews, getReviewUrgency, ReviewUrgency } from './spaced';
 
 export interface RecommendationInput {
   allVerses: readonly Verse[];
@@ -6,6 +7,8 @@ export interface RecommendationInput {
   level: Difficulty;
   completedVerses: Readonly<Record<string, number>>;
   dateSeed: number;
+  reviewData?: Readonly<Record<string, ReviewData>>;
+  today?: string;
 }
 
 export interface DailyVerseResult {
@@ -20,6 +23,7 @@ export interface NextAction {
   verse: Verse;
   label: string;
   description: string;
+  urgency?: ReviewUrgency;
 }
 
 export interface RecommendationResult {
@@ -60,27 +64,45 @@ function getDailyVerse(input: RecommendationInput): DailyVerseResult {
 }
 
 function getNextActions(input: RecommendationInput, dailyVerseId: string): NextAction[] {
-  const { allVerses, interests, level, completedVerses, dateSeed } = input;
+  const { allVerses, interests, level, completedVerses, dateSeed, reviewData, today } = input;
   const interestSet = new Set(interests);
   const actions: NextAction[] = [];
 
-  // Review: completed verse with lowest count, prefer interest-matched
-  const completedEntries = allVerses
-    .filter(v => completedVerses[v.id] > 0)
-    .map(v => ({ verse: v, count: completedVerses[v.id], isInterest: !!(v.bookId && interestSet.has(v.bookId)) }))
-    .sort((a, b) => {
-      if (a.isInterest !== b.isInterest) return a.isInterest ? -1 : 1;
-      return a.count - b.count;
-    });
+  // Review: spaced repetition if reviewData available, else fallback to count-based
+  if (reviewData && today) {
+    const dueReviews = getDueReviews(reviewData, today);
+    if (dueReviews.length > 0) {
+      const dueVerse = allVerses.find(v => v.id === dueReviews[0].verseId);
+      if (dueVerse) {
+        const urgency = getReviewUrgency(dueReviews[0].overdueDays);
+        actions.push({
+          type: 'review',
+          verse: dueVerse,
+          label: urgency === 'high' ? '긴급 복습!' : '복습하기',
+          description: `${dueVerse.reference} 다시 풀어보세요`,
+          urgency,
+        });
+      }
+    }
+  } else {
+    // Fallback: completed verse with lowest count, prefer interest-matched
+    const completedEntries = allVerses
+      .filter(v => completedVerses[v.id] > 0)
+      .map(v => ({ verse: v, count: completedVerses[v.id], isInterest: !!(v.bookId && interestSet.has(v.bookId)) }))
+      .sort((a, b) => {
+        if (a.isInterest !== b.isInterest) return a.isInterest ? -1 : 1;
+        return a.count - b.count;
+      });
 
-  if (completedEntries.length > 0) {
-    const reviewVerse = completedEntries[0].verse;
-    actions.push({
-      type: 'review',
-      verse: reviewVerse,
-      label: '복습하기',
-      description: `${reviewVerse.reference} 다시 풀어보세요`,
-    });
+    if (completedEntries.length > 0) {
+      const reviewVerse = completedEntries[0].verse;
+      actions.push({
+        type: 'review',
+        verse: reviewVerse,
+        label: '복습하기',
+        description: `${reviewVerse.reference} 다시 풀어보세요`,
+      });
+    }
   }
 
   // New: interest-matched uncompleted (different from dailyVerse)
