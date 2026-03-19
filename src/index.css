@@ -42,6 +42,15 @@ button, [role="button"] {
   @apply bg-gradient-to-b from-orange-400 to-orange-500 text-white font-black shadow-lg border-b-4 border-orange-600 rounded-full transition-transform hover:scale-105 active:scale-95 active:border-b-0 active:translate-y-1;
 }
 
+/* Hide scrollbar for horizontal scroll containers */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* Custom utility for secondary buttons */
 .btn-secondary {
   @apply bg-white text-orange-500 font-black shadow-md border-b-4 border-orange-200 rounded-full transition-transform hover:scale-105 active:scale-95 active:border-b-0 active:translate-y-1;

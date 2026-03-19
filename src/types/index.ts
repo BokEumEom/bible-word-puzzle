@@ -21,7 +21,8 @@ export type GameState =
   | 'reading'
   | 'memorizing'
   | 'custom-playing'
-  | 'custom-complete';
+  | 'custom-complete'
+  | 'profile';
 
 export interface OnboardingProfile {
   level: Difficulty;

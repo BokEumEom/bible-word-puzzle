@@ -20,6 +20,7 @@ import { ModeSelector } from './components/ModeSelector';
 import { ReadingScreen } from './components/ReadingScreen';
 import { MemorizeScreen } from './components/MemorizeScreen';
 import { AchievementUnlock } from './components/AchievementUnlock';
+import { ProfileScreen } from './components/ProfileScreen';
 import { ChevronLeft } from 'lucide-react';
 import { useUserProgress } from './hooks/useUserProgress';
 import { XpEvent } from './utils/xp';
@@ -241,6 +242,17 @@ export default function App() {
               onStartExplore={startExplore}
               onStartPreset={startPreset}
               onSelectVerse={handleBibleSelect}
+              onOpenProfile={() => setGameState('profile')}
+            />
+          </motion.div>
+        )}
+
+        {gameState === 'profile' && (
+          <motion.div key="profile" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <ProfileScreen
+              progress={progress}
+              level={currentLevel}
+              onBack={goHome}
               onResetOnboarding={handleResetOnboarding}
             />
           </motion.div>
