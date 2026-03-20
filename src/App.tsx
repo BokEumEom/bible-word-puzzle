@@ -235,7 +235,7 @@ export default function App() {
         )}
 
         {gameState === 'home' && (
-          <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <motion.div key="home" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.96 }} transition={{ duration: 0.25 }}>
             <Dashboard
               progress={progress}
               isDailyGoalMet={isDailyGoalMet}
@@ -249,7 +249,7 @@ export default function App() {
         )}
 
         {gameState === 'profile' && (
-          <motion.div key="profile" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <motion.div key="profile" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 40 }} transition={{ type: 'spring', stiffness: 300, damping: 30 }}>
             <ProfileScreen
               progress={progress}
               level={currentLevel}
@@ -260,13 +260,13 @@ export default function App() {
         )}
 
         {gameState === 'difficulty' && (
-          <motion.div key="diff" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <motion.div key="diff" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ type: 'spring', stiffness: 300, damping: 30 }}>
             <DifficultySelector onSelect={selectDifficulty} onBack={goHome} defaultLevel={progress.onboarding.level} />
           </motion.div>
         )}
 
         {gameState === 'playing' && currentVerses.length > 0 && (
-          <motion.div key="playing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col min-h-screen p-4 max-w-2xl mx-auto pt-8">
+          <motion.div key="playing" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} transition={{ duration: 0.3 }} className="flex flex-col min-h-screen p-4 max-w-2xl mx-auto pt-8">
             <ProgressHeader 
               current={currentIndex + 1} 
               total={currentVerses.length} 
@@ -286,7 +286,7 @@ export default function App() {
         )}
 
         {gameState === 'result' && (
-          <motion.div key="result" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <motion.div key="result" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} transition={{ type: 'spring', stiffness: 200, damping: 25 }}>
             <ResultScreen
               stars={stars}
               total={currentVerses.length}
@@ -299,7 +299,7 @@ export default function App() {
 
         {/* New Bible Exploration States */}
         {gameState === 'select-bible' && (
-          <motion.div key="select-bible" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <motion.div key="select-bible" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ type: 'spring', stiffness: 300, damping: 30 }}>
             <BibleSelector
               onSelect={handleBibleSelect}
               onBack={goHome}
@@ -310,7 +310,7 @@ export default function App() {
         )}
 
         {gameState === 'select-mode' && selectedCustomVerse && (
-          <motion.div key="select-mode" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <motion.div key="select-mode" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ type: 'spring', stiffness: 300, damping: 30 }}>
             <ModeSelector
               verse={selectedCustomVerse}
               onSelectMode={handleModeSelect}
@@ -320,13 +320,13 @@ export default function App() {
         )}
 
         {gameState === 'reading' && selectedCustomVerse && (
-          <motion.div key="reading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <motion.div key="reading" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ type: 'spring', stiffness: 300, damping: 30 }}>
             <ReadingScreen verse={selectedCustomVerse} onBack={() => setGameState('select-mode')} />
           </motion.div>
         )}
 
         {gameState === 'memorizing' && selectedCustomVerse && (
-          <motion.div key="memorizing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <motion.div key="memorizing" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ type: 'spring', stiffness: 300, damping: 30 }}>
             <MemorizeScreen verse={selectedCustomVerse} onBack={() => setGameState('select-mode')} />
           </motion.div>
         )}

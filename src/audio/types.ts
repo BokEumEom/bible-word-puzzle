@@ -6,7 +6,8 @@ export type SoundName =
   | 'level-up'
   | 'achievement'
   | 'combo'
-  | 'button-tap';
+  | 'button-tap'
+  | 'reveal-step';
 
 export interface NoteStep {
   readonly frequency: number;

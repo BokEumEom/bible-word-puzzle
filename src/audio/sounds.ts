@@ -69,4 +69,10 @@ export const SOUND_DEFINITIONS: Readonly<Record<SoundName, SoundDefinition>> = {
     notes: [{ frequency: 1000, startOffset: 0, duration: 0.03 }],
     gain: 0.1,
   },
+
+  'reveal-step': {
+    type: 'sine',
+    notes: [{ frequency: 523, startOffset: 0, duration: 0.12 }],
+    gain: 0.25,
+  },
 };

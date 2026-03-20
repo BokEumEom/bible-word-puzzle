@@ -30,6 +30,10 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
   const [comboCount, setComboCount] = useState(0);
   const [showCombo, setShowCombo] = useState(false);
   const [lastPlacedSlot, setLastPlacedSlot] = useState<number | null>(null);
+  const [correctSlots, setCorrectSlots] = useState<Set<number>>(new Set());
+  const [wrongSlots, setWrongSlots] = useState<Set<number>>(new Set());
+  const [revealedSlots, setRevealedSlots] = useState<Set<number>>(new Set());
+  const [showStarBurst, setShowStarBurst] = useState(false);
   const comboTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const { play } = useSound();
 
@@ -45,6 +49,10 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
     setComboCount(0);
     setShowCombo(false);
     setLastPlacedSlot(null);
+    setCorrectSlots(new Set());
+    setWrongSlots(new Set());
+    setRevealedSlots(new Set());
+    setShowStarBurst(false);
   }, [verse]);
 
   const moveItem = (item: WordItem, source: 'bank' | 'slot', sourceIndex: number, dest: 'bank' | 'slot', destIndex: number) => {
@@ -74,9 +82,10 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
       vibrateShort();
       setLastPlacedSlot(destIndex);
 
-      // Check if placed in correct position for combo
+      // Check if placed in correct position for combo + visual feedback
       const isCorrectPosition = item.text === verse.words[destIndex];
       if (isCorrectPosition) {
+        setCorrectSlots(prev => new Set([...prev, destIndex]));
         const nextCombo = comboCount + 1;
         setComboCount(nextCombo);
         if (nextCombo >= 2) {
@@ -86,6 +95,11 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
           comboTimerRef.current = setTimeout(() => setShowCombo(false), 800);
         }
       } else {
+        setCorrectSlots(prev => {
+          const next = new Set(prev);
+          next.delete(destIndex);
+          return next;
+        });
         setComboCount(0);
         setShowCombo(false);
       }
@@ -146,20 +160,46 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
 
     if (currentAnswer === correctAnswer) {
       setIsSuccess(true);
-      play('correct');
-      vibrateSuccess();
+
+      // Sequential reveal: each slot lights up with ascending pitch
+      const totalSlots = slots.length;
+      const stepDelay = 150; // ms between each slot reveal
+      for (let idx = 0; idx < totalSlots; idx++) {
+        setTimeout(() => {
+          setRevealedSlots(prev => new Set([...prev, idx]));
+          // Ascending pitch: C5 → up by major scale steps
+          const pitchStep = 1 + idx * 0.08;
+          play('reveal-step', { pitchMultiplier: pitchStep });
+          vibrateShort();
+        }, idx * stepDelay);
+      }
+
+      // After all slots revealed, play the final fanfare + star burst
+      const revealDuration = totalSlots * stepDelay;
+      setTimeout(() => {
+        play('correct');
+        vibrateSuccess();
+        setShowStarBurst(true);
+      }, revealDuration + 100);
 
       setTimeout(() => {
         setIsChecking(false);
         onCorrect({ usedHint: showHint });
-      }, 2000);
+      }, revealDuration + 2000);
     } else {
       setIsWrong(true);
       play('wrong');
       vibrateError();
+      // Mark individual wrong slots
+      const wrong = new Set<number>();
+      slots.forEach((s, i) => {
+        if (s && s.text !== verse.words[i]) wrong.add(i);
+      });
+      setWrongSlots(wrong);
       setTimeout(() => {
         setIsChecking(false);
         setIsWrong(false);
+        setWrongSlots(new Set());
       }, 800);
     }
   };
@@ -237,22 +277,30 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
                 layoutId={item.id}
                 drag={!isSuccess}
                 dragSnapToOrigin
-                whileDrag={{ scale: 1.1, rotateY: 180, zIndex: 50 }}
+                whileDrag={{ scale: 1.15, rotateY: 180, zIndex: 50, boxShadow: '0 8px 24px rgba(0,0,0,0.2)' }}
+                whileTap={!isSuccess ? { scale: 0.92, transition: { duration: 0.08 } } : {}}
                 onDragEnd={(e, info) => handleDragEnd(e, info, item, 'slot', i)}
                 initial={{ rotateY: 180, scale: 0.8 }}
                 animate={{
                   rotateY: 0,
-                  scale: isSuccess ? [1, 1.2, 1] : 1,
-                  y: isSuccess ? [0, -15, 0] : 0,
-                  boxShadow: lastPlacedSlot === i && !isSuccess
-                    ? ['0 0 0 0 rgba(52,211,153,0)', '0 0 16px 4px rgba(52,211,153,0.5)', '0 0 0 0 rgba(52,211,153,0)']
-                    : '0 0 0 0 rgba(52,211,153,0)',
+                  scale: revealedSlots.has(i) ? [1, 1.25, 1] : (wrongSlots.has(i) ? [1, 1.05, 0.95, 1.03, 0.97, 1] : 1),
+                  x: wrongSlots.has(i) ? [0, -6, 6, -4, 4, 0] : 0,
+                  y: revealedSlots.has(i) ? [0, -18, 0] : 0,
+                  boxShadow: revealedSlots.has(i)
+                    ? ['0 0 0 0 rgba(52,211,153,0)', '0 0 16px 6px rgba(52,211,153,0.7)', '0 0 4px 2px rgba(52,211,153,0.3)']
+                    : correctSlots.has(i) && !isSuccess
+                      ? ['0 0 0 0 rgba(52,211,153,0)', '0 0 12px 4px rgba(52,211,153,0.6)', '0 0 0 0 rgba(52,211,153,0)']
+                      : lastPlacedSlot === i && !isSuccess
+                        ? ['0 0 0 0 rgba(251,146,60,0)', '0 0 12px 3px rgba(251,146,60,0.4)', '0 0 0 0 rgba(251,146,60,0)']
+                        : '0 0 0 0 rgba(0,0,0,0)',
                 }}
-                transition={isSuccess ? {
-                  duration: 0.5,
-                  delay: i * 0.1,
+                transition={revealedSlots.has(i) ? {
+                  duration: 0.4,
                   ease: "easeOut",
-                  times: [0, 0.5, 1]
+                  times: [0, 0.4, 1]
+                } : wrongSlots.has(i) ? {
+                  duration: 0.4,
+                  ease: "easeInOut"
                 } : {
                   type: "spring",
                   stiffness: 250,
@@ -262,9 +310,15 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
                 disabled={isSuccess}
                 className={`
                   absolute inset-0 w-full h-full flex items-center justify-center rounded-xl text-base sm:text-xl font-black transition-colors cursor-grab active:cursor-grabbing
-                  ${isSuccess 
-                    ? 'bg-emerald-400 text-white shadow-sm border-b-4 border-emerald-600' 
-                    : 'bg-orange-400 text-white shadow-sm border-b-4 border-orange-600 hover:bg-orange-500 hover:border-orange-700 active:border-b-0 active:translate-y-1'}
+                  ${revealedSlots.has(i)
+                    ? 'bg-emerald-400 text-white shadow-sm border-b-4 border-emerald-600'
+                    : wrongSlots.has(i)
+                      ? 'bg-red-400 text-white shadow-sm border-b-4 border-red-600'
+                      : correctSlots.has(i) && !isSuccess
+                        ? 'bg-emerald-400 text-white shadow-sm border-b-4 border-emerald-600'
+                        : isSuccess
+                          ? 'bg-orange-400 text-white shadow-sm border-b-4 border-orange-600'
+                          : 'bg-orange-400 text-white shadow-sm border-b-4 border-orange-600 hover:bg-orange-500 hover:border-orange-700 active:border-b-0 active:translate-y-1'}
                 `}
                 style={{ transformStyle: 'preserve-3d', touchAction: 'none' }}
               >
@@ -293,7 +347,8 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
                 layoutId={item.id}
                 drag={!isSuccess}
                 dragSnapToOrigin
-                whileDrag={{ scale: 1.1, rotateY: 180, zIndex: 50 }}
+                whileDrag={{ scale: 1.15, rotateY: 180, zIndex: 50, boxShadow: '0 8px 24px rgba(0,0,0,0.2)' }}
+                whileTap={{ scale: 0.92, transition: { duration: 0.08 } }}
                 onDragEnd={(e, info) => handleDragEnd(e, info, item, 'bank', i)}
                 initial={{ rotateY: 180, scale: 0.8 }}
                 animate={{ rotateY: 0, scale: 1 }}
@@ -358,10 +413,10 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
         )}
       </AnimatePresence>
 
-      <ConfettiBurst active={isSuccess} />
+      <ConfettiBurst active={showStarBurst} />
 
       <AnimatePresence>
-        {isSuccess && (
+        {showStarBurst && (
           <motion.div
             className="fixed inset-0 pointer-events-none flex items-center justify-center z-50"
             initial={{ opacity: 0 }}
