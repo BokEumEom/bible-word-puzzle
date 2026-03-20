@@ -1,4 +1,4 @@
-import { Collection, CollectionVerse, collections } from '../data/collections';
+import { Collection, CollectionVerse } from '../data/collections';
 
 export interface CollectionProgress {
   readonly completed: number;
@@ -18,27 +18,6 @@ export function getCollectionProgress(
   return { completed, total, percent };
 }
 
-export function isCollectionUnlocked(
-  collection: Collection,
-  completedVerses: Readonly<Record<string, number>>,
-): boolean {
-  if (!collection.unlockRequirement) return true;
-  const reqCollection = collections.find(c => c.id === collection.unlockRequirement!.collectionId);
-  if (!reqCollection) return true;
-  const progress = getCollectionProgress(reqCollection, completedVerses);
-  return progress.percent >= collection.unlockRequirement.percent;
-}
-
-export function getActiveCollection(
-  completedVerses: Readonly<Record<string, number>>,
-): Collection | null {
-  // Find first collection that isn't fully completed
-  for (const collection of collections) {
-    const progress = getCollectionProgress(collection, completedVerses);
-    if (progress.percent < 100) return collection;
-  }
-  return null;
-}
 
 export function getNextVerseInCollection(
   collection: Collection,
