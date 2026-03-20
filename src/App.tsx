@@ -308,16 +308,11 @@ export default function App() {
             <Dashboard
               progress={progress}
               isDailyGoalMet={isDailyGoalMet}
-              level={currentLevel}
               onStartExplore={startExplore}
               onStartPreset={startPreset}
               onSelectVerse={handleBibleSelect}
               onOpenProfile={() => setGameState('profile')}
-              onOpenCollectionList={() => setGameState('collection-list')}
-              onPlayCollectionVerse={(collection: Collection, cv: CollectionVerse) => {
-                setSelectedCollection(collection);
-                handlePlayCollectionVerse(cv);
-              }}
+              onOpenCollections={() => setGameState('collection-list')}
             />
           </motion.div>
         )}

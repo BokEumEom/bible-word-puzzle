@@ -13,7 +13,7 @@ export interface RecommendationInput {
 
 export interface DailyVerseResult {
   verse: Verse;
-  reason: 'interest' | 'uncompleted' | 'fallback';
+  reason: 'interest' | 'uncompleted' | 'fallback' | 'review';
 }
 
 export type NextActionType = 'review' | 'new' | 'challenge';
@@ -42,8 +42,20 @@ function pickBySeed<T>(items: readonly T[], seed: number): T {
 }
 
 function getDailyVerse(input: RecommendationInput): DailyVerseResult {
-  const { allVerses, interests, completedVerses, dateSeed } = input;
+  const { allVerses, interests, completedVerses, dateSeed, reviewData, today } = input;
   const interestSet = new Set(interests);
+
+  // 0. Urgent review — if a verse is overdue, show it as today's verse
+  if (reviewData && today) {
+    const dueReviews = getDueReviews(reviewData, today);
+    const highUrgent = dueReviews.find(r => getReviewUrgency(r.overdueDays) === 'high');
+    if (highUrgent) {
+      const reviewVerse = allVerses.find(v => v.id === highUrgent.verseId);
+      if (reviewVerse) {
+        return { verse: reviewVerse, reason: 'review' };
+      }
+    }
+  }
 
   // 1. Interest-matched + uncompleted
   const interestUncompleted = allVerses.filter(

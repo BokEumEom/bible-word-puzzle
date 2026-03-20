@@ -1,39 +1,39 @@
 import { motion } from 'motion/react';
-import { BookOpen, Search, Flame, ChevronRight, Heart, Play, Clock, User } from 'lucide-react';
-import { LevelInfo } from '../data/levels';
+import { BookOpen, Search, Flame, ChevronRight, Heart, Sparkles, Clock, User, RotateCcw, Library } from 'lucide-react';
 import { Verse } from '../types';
 import { UserProgress } from '../hooks/useUserProgress';
 import { verses as presetVerses } from '../data/verses';
 import { getRecommendations } from '../utils/recommend';
-import { Collection, CollectionVerse } from '../data/collections';
-import { getActiveCollection, getCollectionProgress, getNextVerseInCollection } from '../utils/collectionProgress';
-import { NextActionCards } from './NextActionCards';
+import { getDueReviews } from '../utils/spaced';
 import { InstallPrompt } from './InstallPrompt';
 
 interface Props {
   progress: UserProgress;
   isDailyGoalMet: boolean;
-  level: LevelInfo;
   onStartExplore: () => void;
   onStartPreset: () => void;
   onSelectVerse: (verse: Verse) => void;
   onOpenProfile: () => void;
-  onOpenCollectionList: () => void;
-  onPlayCollectionVerse: (collection: Collection, cv: CollectionVerse) => void;
+  onOpenCollections: () => void;
 }
 
-const colorMap: Record<string, { bg: string; text: string; bar: string; border: string; cta: string }> = {
-  rose: { bg: 'bg-rose-50', text: 'text-rose-600', bar: 'bg-rose-400', border: 'border-rose-200', cta: 'bg-rose-500 active:bg-rose-600' },
-  sky: { bg: 'bg-sky-50', text: 'text-sky-600', bar: 'bg-sky-400', border: 'border-sky-200', cta: 'bg-sky-500 active:bg-sky-600' },
-  amber: { bg: 'bg-amber-50', text: 'text-amber-600', bar: 'bg-amber-400', border: 'border-amber-200', cta: 'bg-amber-500 active:bg-amber-600' },
-  emerald: { bg: 'bg-emerald-50', text: 'text-emerald-600', bar: 'bg-emerald-400', border: 'border-emerald-200', cta: 'bg-emerald-500 active:bg-emerald-600' },
-  violet: { bg: 'bg-violet-50', text: 'text-violet-600', bar: 'bg-violet-400', border: 'border-violet-200', cta: 'bg-violet-500 active:bg-violet-600' },
-  indigo: { bg: 'bg-indigo-50', text: 'text-indigo-600', bar: 'bg-indigo-400', border: 'border-indigo-200', cta: 'bg-indigo-500 active:bg-indigo-600' },
-  orange: { bg: 'bg-orange-50', text: 'text-orange-600', bar: 'bg-orange-400', border: 'border-orange-200', cta: 'bg-orange-500 active:bg-orange-600' },
-  teal: { bg: 'bg-teal-50', text: 'text-teal-600', bar: 'bg-teal-400', border: 'border-teal-200', cta: 'bg-teal-500 active:bg-teal-600' },
-};
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 6) return '고요한 밤이에요';
+  if (hour < 12) return '좋은 아침이에요';
+  if (hour < 18) return '좋은 오후예요';
+  return '좋은 저녁이에요';
+}
 
-export function Dashboard({ progress, isDailyGoalMet, level, onStartExplore, onStartPreset, onSelectVerse, onOpenProfile, onPlayCollectionVerse }: Props) {
+function getGreetingEmoji(): string {
+  const hour = new Date().getHours();
+  if (hour < 6) return '🌙';
+  if (hour < 12) return '☀️';
+  if (hour < 18) return '🌤️';
+  return '🌙';
+}
+
+export function Dashboard({ progress, isDailyGoalMet, onStartExplore, onStartPreset, onSelectVerse, onOpenProfile, onOpenCollections }: Props) {
   const today = new Date().toISOString().split('T')[0];
   const dateSeed = today.split('-').reduce((a, b) => a + parseInt(b), 0);
 
@@ -48,19 +48,13 @@ export function Dashboard({ progress, isDailyGoalMet, level, onStartExplore, onS
   });
 
   const todaysVerse = recommendations.dailyVerse.verse;
+  const isReview = recommendations.dailyVerse.reason === 'review';
   const goalProgress = Math.min(progress.todayCompletions / progress.dailyGoal, 1);
 
-  const activeCollection = getActiveCollection(progress.completedVerses);
-  const activeProgress = activeCollection
-    ? getCollectionProgress(activeCollection, progress.completedVerses)
-    : null;
-  const nextCollectionVerse = activeCollection
-    ? getNextVerseInCollection(activeCollection, progress.completedVerses)
-    : null;
-
-  const collectionColors = activeCollection
-    ? (colorMap[activeCollection.color] ?? colorMap.rose)
-    : null;
+  const dueReviews = progress.reviewData ? getDueReviews(progress.reviewData, today) : [];
+  const remainingReviews = isReview
+    ? dueReviews.filter(r => r.verseId !== todaysVerse.id).length
+    : dueReviews.length;
 
   return (
     <motion.div
@@ -69,16 +63,15 @@ export function Dashboard({ progress, isDailyGoalMet, level, onStartExplore, onS
       exit={{ opacity: 0, y: -20 }}
       className="flex flex-col min-h-screen p-4 max-w-md mx-auto pt-6 pb-20"
     >
-      {/* Mini Status Bar */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <span className="text-lg">{level.emoji}</span>
-          <span className="text-sm font-black text-violet-600">Lv.{level.level}</span>
-          <div className="flex items-center gap-1 bg-orange-50 px-2.5 py-1 rounded-full">
-            <Flame size={14} className="text-orange-500" />
-            <span className="text-sm font-black text-orange-500">{progress.streak}</span>
-          </div>
-        </div>
+      {/* Header: Greeting + Profile */}
+      <div className="flex items-center justify-between mb-2">
+        <motion.h1
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="text-xl font-black text-stone-800"
+        >
+          {getGreeting()} {getGreetingEmoji()}
+        </motion.h1>
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
@@ -90,8 +83,12 @@ export function Dashboard({ progress, isDailyGoalMet, level, onStartExplore, onS
         </motion.button>
       </div>
 
-      {/* Daily Goal Inline */}
+      {/* Streak + Daily Goal — single compact row */}
       <div className="flex items-center gap-3 mb-6">
+        <div className="flex items-center gap-1.5">
+          <Flame size={16} className="text-orange-500" />
+          <span className="text-sm font-black text-orange-500">{progress.streak}일</span>
+        </div>
         <div className="flex-1 h-2.5 bg-violet-100 rounded-full overflow-hidden">
           <motion.div
             initial={{ width: 0 }}
@@ -113,66 +110,32 @@ export function Dashboard({ progress, isDailyGoalMet, level, onStartExplore, onS
       {/* Install Prompt */}
       <InstallPrompt />
 
-      {/* Collection Continue Card — single compact card */}
-      {activeCollection && activeProgress && nextCollectionVerse && collectionColors && (
-        <motion.button
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05, type: 'spring', stiffness: 200 }}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={() => onPlayCollectionVerse(activeCollection, nextCollectionVerse)}
-          className={`w-full ${collectionColors.bg} p-4 rounded-2xl border-2 border-b-4 ${collectionColors.border} text-left mb-6 relative overflow-hidden`}
-        >
-          <div className="absolute -right-4 -top-4 opacity-5">
-            <span className="text-[80px]">{activeCollection.emoji}</span>
-          </div>
-          <div className="relative z-10 flex items-center gap-3">
-            <div className={`${collectionColors.cta} w-12 h-12 rounded-xl flex items-center justify-center shrink-0 shadow-sm`}>
-              <Play size={20} className="text-white" fill="currentColor" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-0.5">
-                <span className={`text-sm font-black ${collectionColors.text}`}>
-                  {activeCollection.emoji} {activeCollection.title}
-                </span>
-                <span className={`text-xs font-bold ${collectionColors.text} opacity-70`}>
-                  {activeProgress.completed}/{activeProgress.total}
-                </span>
-              </div>
-              <p className="text-sm text-stone-500 font-medium truncate">{nextCollectionVerse.reference} · {nextCollectionVerse.hint}</p>
-            </div>
-            <ChevronRight size={20} className="text-stone-300 shrink-0" />
-          </div>
-          {/* Mini progress bar */}
-          <div className="relative z-10 mt-3 h-1.5 bg-white/60 rounded-full overflow-hidden">
-            <motion.div
-              className={`h-full ${collectionColors.bar} rounded-full`}
-              initial={{ width: 0 }}
-              animate={{ width: `${activeProgress.percent}%` }}
-              transition={{ duration: 0.6, ease: 'easeOut' }}
-            />
-          </div>
-        </motion.button>
-      )}
-
-      {/* Today's Verse — Main CTA */}
+      {/* Today's Verse — original card style with "퍼즐로 만나기" CTA */}
       <div className="mb-6">
         <h2 className="text-xl font-black text-stone-800 mb-3 flex items-center gap-2">
-          <BookOpen className="text-amber-500" size={24} />
-          오늘의 말씀
+          {isReview ? (
+            <>
+              <RotateCcw className="text-emerald-500" size={24} />
+              다시 만나는 말씀
+            </>
+          ) : (
+            <>
+              <BookOpen className="text-amber-500" size={24} />
+              오늘의 말씀
+            </>
+          )}
         </h2>
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => onSelectVerse(todaysVerse)}
-          className="w-full bg-white/90 backdrop-blur-sm p-5 rounded-[2rem] shadow-md border-b-4 border-amber-200 text-left hover:bg-white transition-colors relative overflow-hidden"
+          className={`w-full bg-white/90 backdrop-blur-sm p-5 rounded-[2rem] shadow-md border-b-4 ${isReview ? 'border-emerald-200' : 'border-amber-200'} text-left hover:bg-white transition-colors relative overflow-hidden`}
         >
-          <div className="absolute -right-4 -top-4 opacity-5 text-amber-500">
-            <BookOpen size={100} />
+          <div className={`absolute -right-4 -top-4 opacity-5 ${isReview ? 'text-emerald-500' : 'text-amber-500'}`}>
+            {isReview ? <RotateCcw size={100} /> : <BookOpen size={100} />}
           </div>
           <div className="flex items-center gap-2 mb-3">
-            <span className="inline-block bg-amber-100 text-amber-800 text-sm font-bold px-3 py-1 rounded-full shadow-sm">
+            <span className={`inline-block ${isReview ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'} text-sm font-bold px-3 py-1 rounded-full shadow-sm`}>
               {todaysVerse.reference}
             </span>
             {recommendations.dailyVerse.reason === 'interest' && (
@@ -184,50 +147,72 @@ export function Dashboard({ progress, isDailyGoalMet, level, onStartExplore, onS
           <p className="text-base text-stone-700 font-bold leading-relaxed line-clamp-2">
             {todaysVerse.verse}
           </p>
-          <div className="mt-4 flex items-center text-amber-600 font-black text-sm">
-            학습하기 <ChevronRight size={16} />
+          <div className={`mt-4 flex items-center ${isReview ? 'text-emerald-600' : 'text-amber-600'} font-black text-sm`}>
+            퍼즐로 만나기 <ChevronRight size={16} />
           </div>
         </motion.button>
       </div>
 
-      {/* Next Actions */}
-      {recommendations.nextActions.length > 0 && (
-        <NextActionCards
-          actions={recommendations.nextActions}
-          onSelectVerse={onSelectVerse}
-        />
+      {/* Review reminder */}
+      {remainingReviews > 0 && (
+        <motion.button
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          whileTap={{ scale: 0.97 }}
+          onClick={() => {
+            const reviewAction = recommendations.nextActions.find(a => a.type === 'review');
+            if (reviewAction) onSelectVerse(reviewAction.verse);
+          }}
+          className="flex items-center gap-2 mb-6 px-4 py-2.5 bg-emerald-50/80 rounded-xl w-full text-left"
+        >
+          <RotateCcw size={15} className="text-emerald-500 shrink-0" />
+          <span className="text-sm font-medium text-emerald-600">
+            다시 만날 말씀 {remainingReviews}개
+          </span>
+          <ChevronRight size={14} className="text-emerald-400 ml-auto shrink-0" />
+        </motion.button>
       )}
 
-      {/* CTA Buttons — 2 column */}
-      <div className="grid grid-cols-2 gap-3 mb-8">
+      {/* 더 만나보기 — 3-column card grid (profile stats style) */}
+      <div className="grid grid-cols-3 gap-3 mb-6">
         <motion.button
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1, type: 'spring', stiffness: 200 }}
-          whileHover={{ scale: 1.03, y: -2 }}
+          transition={{ delay: 0.1 }}
           whileTap={{ scale: 0.95 }}
           onClick={onStartPreset}
-          className="flex flex-col items-center p-5 rounded-[2rem] border-b-8 border-orange-300 bg-orange-100 hover:bg-orange-200 shadow-sm transition-colors"
+          className="bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-sm border-b-4 border-orange-100 text-center"
         >
-          <div className="bg-white/80 backdrop-blur-sm p-3 rounded-2xl shadow-sm rotate-3 mb-3">
-            <Play className="text-orange-500" fill="currentColor" size={28} />
-          </div>
-          <h3 className="text-lg font-black text-stone-800">추천 퍼즐</h3>
+          <Sparkles className="text-orange-500 mx-auto mb-1" size={24} />
+          <p className="text-xl font-black text-orange-500">퍼즐</p>
+          <p className="text-xs font-bold text-stone-400">추천 퍼즐</p>
         </motion.button>
 
         <motion.button
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-          whileHover={{ scale: 1.03, y: -2 }}
+          transition={{ delay: 0.15 }}
           whileTap={{ scale: 0.95 }}
           onClick={onStartExplore}
-          className="flex flex-col items-center p-5 rounded-[2rem] border-b-8 border-violet-300 bg-violet-100 hover:bg-violet-200 shadow-sm transition-colors"
+          className="bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-sm border-b-4 border-violet-100 text-center"
         >
-          <div className="bg-white/80 backdrop-blur-sm p-3 rounded-2xl shadow-sm -rotate-3 mb-3">
-            <Search className="text-violet-500" size={28} />
-          </div>
-          <h3 className="text-lg font-black text-stone-800">성경 찾기</h3>
+          <Search className="text-violet-500 mx-auto mb-1" size={24} />
+          <p className="text-xl font-black text-violet-500">성경</p>
+          <p className="text-xs font-bold text-stone-400">66권 찾기</p>
+        </motion.button>
+
+        <motion.button
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={onOpenCollections}
+          className="bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-sm border-b-4 border-emerald-100 text-center"
+        >
+          <Library className="text-emerald-500 mx-auto mb-1" size={24} />
+          <p className="text-xl font-black text-emerald-500">테마</p>
+          <p className="text-xs font-bold text-stone-400">8개 모음</p>
         </motion.button>
       </div>
 
