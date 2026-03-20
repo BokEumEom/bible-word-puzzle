@@ -22,7 +22,11 @@ export type GameState =
   | 'memorizing'
   | 'custom-playing'
   | 'custom-complete'
-  | 'profile';
+  | 'profile'
+  | 'collection-list'
+  | 'collection-detail'
+  | 'collection-playing'
+  | 'collection-complete';
 
 export interface OnboardingProfile {
   level: Difficulty;

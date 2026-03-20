@@ -21,12 +21,18 @@ import { ReadingScreen } from './components/ReadingScreen';
 import { MemorizeScreen } from './components/MemorizeScreen';
 import { AchievementUnlock } from './components/AchievementUnlock';
 import { ProfileScreen } from './components/ProfileScreen';
+import { CollectionList } from './components/CollectionList';
+import { CollectionDetail } from './components/CollectionDetail';
+import { CollectionCompleteScreen } from './components/CollectionCompleteScreen';
 import { UpdatePrompt } from './components/UpdatePrompt';
 import { ChevronLeft } from 'lucide-react';
 import { useUserProgress } from './hooks/useUserProgress';
 import { XpEvent } from './utils/xp';
 import { LevelInfo, getLevelForXp } from './data/levels';
 import { AchievementDef, checkAchievements, buildAchievementContext } from './data/achievements';
+import { Collection, CollectionVerse } from './data/collections';
+import { getNextVerseInCollection, toVerseId } from './utils/collectionProgress';
+import { loadCollectionVerse } from './utils/loadCollectionVerse';
 
 export default function App() {
   const [gameState, setGameState] = useState<GameState>(() => 'home' as GameState);
@@ -44,6 +50,9 @@ export default function App() {
   const prevLevelRef = useRef<number | null>(null);
   const [pendingAchievements, setPendingAchievements] = useState<AchievementDef[]>([]);
   const [showAchievement, setShowAchievement] = useState<AchievementDef | null>(null);
+  const [selectedCollection, setSelectedCollection] = useState<Collection | null>(null);
+  const [collectionVerse, setCollectionVerse] = useState<Verse | null>(null);
+  const [collectionCv, setCollectionCv] = useState<CollectionVerse | null>(null);
 
   const { progress, toggleFavorite, markCompleted, addRecent, updateStreak, setDailyGoal, saveOnboarding, unlockAchievements, isDailyGoalMet, currentLevel } = useUserProgress();
 
@@ -222,6 +231,66 @@ export default function App() {
     }
   };
 
+  const handleSelectCollection = (collection: Collection) => {
+    setSelectedCollection(collection);
+    setGameState('collection-detail');
+  };
+
+  const handlePlayCollectionVerse = (cv: CollectionVerse) => {
+    setCollectionCv(cv);
+    loadCollectionVerse(cv)
+      .then(verse => {
+        setCollectionVerse(verse);
+        addRecent(verse);
+        setGameState('collection-playing');
+      })
+      .catch(() => {
+        // Fallback: go back to detail
+        setGameState('collection-detail');
+      });
+  };
+
+  const handleCollectionCorrect = (options?: { usedHint?: boolean }) => {
+    if (!collectionVerse || !selectedCollection) return;
+
+    const xpEvent = markCompleted(collectionVerse, options);
+    setLastXpEvent(xpEvent);
+
+    // Check achievements
+    const isNoHint = !(options?.usedHint ?? false);
+    const today = new Date().toISOString().split('T')[0];
+    const isNewDay = progress.todayCompletionDate !== today;
+    const newTodayCompletions = isNewDay ? 1 : progress.todayCompletions + 1;
+    const willMeetGoal = newTodayCompletions >= progress.dailyGoal;
+    const alreadyMetGoal = !isNewDay && progress.todayCompletions >= progress.dailyGoal;
+    checkAndUnlockAchievements({
+      ...progress,
+      completedVerses: { ...progress.completedVerses, [collectionVerse.id]: (progress.completedVerses[collectionVerse.id] || 0) + 1 },
+      xp: progress.xp + xpEvent.total,
+      noHintCompletions: progress.noHintCompletions + (isNoHint ? 1 : 0),
+      dailyGoalMetCount: progress.dailyGoalMetCount + ((willMeetGoal && !alreadyMetGoal) ? 1 : 0),
+    });
+
+    setGameState('collection-complete');
+  };
+
+  const handleCollectionNext = () => {
+    if (!selectedCollection || !collectionCv) return;
+
+    // Find the next incomplete verse in this collection using updated completedVerses
+    const updatedCompleted = {
+      ...progress.completedVerses,
+      [toVerseId(collectionCv)]: (progress.completedVerses[toVerseId(collectionCv)] || 0) + 1,
+    };
+    const nextCv = getNextVerseInCollection(selectedCollection, updatedCompleted);
+    if (nextCv) {
+      handlePlayCollectionVerse(nextCv);
+    } else {
+      // Collection complete — go back to detail
+      setGameState('collection-detail');
+    }
+  };
+
   return (
     <div className="min-h-screen w-full overflow-hidden relative font-sans">
       <AnimatePresence mode="wait">
@@ -244,6 +313,11 @@ export default function App() {
               onStartPreset={startPreset}
               onSelectVerse={handleBibleSelect}
               onOpenProfile={() => setGameState('profile')}
+              onOpenCollectionList={() => setGameState('collection-list')}
+              onPlayCollectionVerse={(collection: Collection, cv: CollectionVerse) => {
+                setSelectedCollection(collection);
+                handlePlayCollectionVerse(cv);
+              }}
             />
           </motion.div>
         )}
@@ -359,6 +433,62 @@ export default function App() {
               nextVerse={nextVerse}
               onNextVerse={handleNextVerse}
               onBackToModes={() => setGameState('select-mode')}
+              onHome={goHome}
+            />
+          </motion.div>
+        )}
+
+        {/* Collection Routes */}
+        {gameState === 'collection-list' && (
+          <motion.div key="collection-list" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ type: 'spring', stiffness: 300, damping: 30 }}>
+            <CollectionList
+              completedVerses={progress.completedVerses}
+              onSelectCollection={handleSelectCollection}
+              onBack={goHome}
+            />
+          </motion.div>
+        )}
+
+        {gameState === 'collection-detail' && selectedCollection && (
+          <motion.div key="collection-detail" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ type: 'spring', stiffness: 300, damping: 30 }}>
+            <CollectionDetail
+              collection={selectedCollection}
+              completedVerses={progress.completedVerses}
+              onPlayVerse={handlePlayCollectionVerse}
+              onBack={() => setGameState('collection-list')}
+            />
+          </motion.div>
+        )}
+
+        {gameState === 'collection-playing' && collectionVerse && (
+          <motion.div key="collection-playing" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} transition={{ duration: 0.3 }} className="flex flex-col min-h-screen p-4 max-w-2xl mx-auto pt-8">
+            <div className="flex items-center mb-8">
+              <button
+                onClick={() => setGameState('collection-detail')}
+                className="p-3 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-white border-2 border-orange-100 transition-colors"
+              >
+                <ChevronLeft size={32} className="text-orange-500" />
+              </button>
+            </div>
+            <div className="flex-1 flex flex-col justify-center">
+              <VersePuzzleBoard
+                verse={collectionVerse}
+                onCorrect={handleCollectionCorrect}
+                isFavorite={progress.favoriteVerses.some(v => v.id === collectionVerse.id)}
+                onToggleFavorite={() => handleToggleFavorite(collectionVerse)}
+              />
+            </div>
+          </motion.div>
+        )}
+
+        {gameState === 'collection-complete' && collectionVerse && selectedCollection && (
+          <motion.div key="collection-complete" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} transition={{ type: 'spring', stiffness: 200, damping: 25 }}>
+            <CollectionCompleteScreen
+              verse={collectionVerse}
+              collection={selectedCollection}
+              completedVerses={progress.completedVerses}
+              onNext={handleCollectionNext}
+              onBackToCollection={() => setGameState('collection-detail')}
               onHome={goHome}
             />
           </motion.div>

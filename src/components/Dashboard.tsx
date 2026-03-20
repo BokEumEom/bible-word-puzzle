@@ -5,6 +5,8 @@ import { Verse } from '../types';
 import { UserProgress } from '../hooks/useUserProgress';
 import { verses as presetVerses } from '../data/verses';
 import { getRecommendations } from '../utils/recommend';
+import { Collection, CollectionVerse } from '../data/collections';
+import { getActiveCollection, getCollectionProgress, getNextVerseInCollection } from '../utils/collectionProgress';
 import { NextActionCards } from './NextActionCards';
 import { InstallPrompt } from './InstallPrompt';
 
@@ -16,9 +18,22 @@ interface Props {
   onStartPreset: () => void;
   onSelectVerse: (verse: Verse) => void;
   onOpenProfile: () => void;
+  onOpenCollectionList: () => void;
+  onPlayCollectionVerse: (collection: Collection, cv: CollectionVerse) => void;
 }
 
-export function Dashboard({ progress, isDailyGoalMet, level, onStartExplore, onStartPreset, onSelectVerse, onOpenProfile }: Props) {
+const colorMap: Record<string, { bg: string; text: string; bar: string; border: string; cta: string }> = {
+  rose: { bg: 'bg-rose-50', text: 'text-rose-600', bar: 'bg-rose-400', border: 'border-rose-200', cta: 'bg-rose-500 active:bg-rose-600' },
+  sky: { bg: 'bg-sky-50', text: 'text-sky-600', bar: 'bg-sky-400', border: 'border-sky-200', cta: 'bg-sky-500 active:bg-sky-600' },
+  amber: { bg: 'bg-amber-50', text: 'text-amber-600', bar: 'bg-amber-400', border: 'border-amber-200', cta: 'bg-amber-500 active:bg-amber-600' },
+  emerald: { bg: 'bg-emerald-50', text: 'text-emerald-600', bar: 'bg-emerald-400', border: 'border-emerald-200', cta: 'bg-emerald-500 active:bg-emerald-600' },
+  violet: { bg: 'bg-violet-50', text: 'text-violet-600', bar: 'bg-violet-400', border: 'border-violet-200', cta: 'bg-violet-500 active:bg-violet-600' },
+  indigo: { bg: 'bg-indigo-50', text: 'text-indigo-600', bar: 'bg-indigo-400', border: 'border-indigo-200', cta: 'bg-indigo-500 active:bg-indigo-600' },
+  orange: { bg: 'bg-orange-50', text: 'text-orange-600', bar: 'bg-orange-400', border: 'border-orange-200', cta: 'bg-orange-500 active:bg-orange-600' },
+  teal: { bg: 'bg-teal-50', text: 'text-teal-600', bar: 'bg-teal-400', border: 'border-teal-200', cta: 'bg-teal-500 active:bg-teal-600' },
+};
+
+export function Dashboard({ progress, isDailyGoalMet, level, onStartExplore, onStartPreset, onSelectVerse, onOpenProfile, onPlayCollectionVerse }: Props) {
   const today = new Date().toISOString().split('T')[0];
   const dateSeed = today.split('-').reduce((a, b) => a + parseInt(b), 0);
 
@@ -34,6 +49,18 @@ export function Dashboard({ progress, isDailyGoalMet, level, onStartExplore, onS
 
   const todaysVerse = recommendations.dailyVerse.verse;
   const goalProgress = Math.min(progress.todayCompletions / progress.dailyGoal, 1);
+
+  const activeCollection = getActiveCollection(progress.completedVerses);
+  const activeProgress = activeCollection
+    ? getCollectionProgress(activeCollection, progress.completedVerses)
+    : null;
+  const nextCollectionVerse = activeCollection
+    ? getNextVerseInCollection(activeCollection, progress.completedVerses)
+    : null;
+
+  const collectionColors = activeCollection
+    ? (colorMap[activeCollection.color] ?? colorMap.rose)
+    : null;
 
   return (
     <motion.div
@@ -86,6 +113,49 @@ export function Dashboard({ progress, isDailyGoalMet, level, onStartExplore, onS
       {/* Install Prompt */}
       <InstallPrompt />
 
+      {/* Collection Continue Card — single compact card */}
+      {activeCollection && activeProgress && nextCollectionVerse && collectionColors && (
+        <motion.button
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05, type: 'spring', stiffness: 200 }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => onPlayCollectionVerse(activeCollection, nextCollectionVerse)}
+          className={`w-full ${collectionColors.bg} p-4 rounded-2xl border-2 border-b-4 ${collectionColors.border} text-left mb-6 relative overflow-hidden`}
+        >
+          <div className="absolute -right-4 -top-4 opacity-5">
+            <span className="text-[80px]">{activeCollection.emoji}</span>
+          </div>
+          <div className="relative z-10 flex items-center gap-3">
+            <div className={`${collectionColors.cta} w-12 h-12 rounded-xl flex items-center justify-center shrink-0 shadow-sm`}>
+              <Play size={20} className="text-white" fill="currentColor" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-0.5">
+                <span className={`text-sm font-black ${collectionColors.text}`}>
+                  {activeCollection.emoji} {activeCollection.title}
+                </span>
+                <span className={`text-xs font-bold ${collectionColors.text} opacity-70`}>
+                  {activeProgress.completed}/{activeProgress.total}
+                </span>
+              </div>
+              <p className="text-sm text-stone-500 font-medium truncate">{nextCollectionVerse.reference} · {nextCollectionVerse.hint}</p>
+            </div>
+            <ChevronRight size={20} className="text-stone-300 shrink-0" />
+          </div>
+          {/* Mini progress bar */}
+          <div className="relative z-10 mt-3 h-1.5 bg-white/60 rounded-full overflow-hidden">
+            <motion.div
+              className={`h-full ${collectionColors.bar} rounded-full`}
+              initial={{ width: 0 }}
+              animate={{ width: `${activeProgress.percent}%` }}
+              transition={{ duration: 0.6, ease: 'easeOut' }}
+            />
+          </div>
+        </motion.button>
+      )}
+
       {/* Today's Verse — Main CTA */}
       <div className="mb-6">
         <h2 className="text-xl font-black text-stone-800 mb-3 flex items-center gap-2">
@@ -128,7 +198,7 @@ export function Dashboard({ progress, isDailyGoalMet, level, onStartExplore, onS
         />
       )}
 
-      {/* CTA Buttons — 2 column, DifficultySelector style */}
+      {/* CTA Buttons — 2 column */}
       <div className="grid grid-cols-2 gap-3 mb-8">
         <motion.button
           initial={{ opacity: 0, y: 20 }}

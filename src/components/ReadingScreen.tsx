@@ -21,51 +21,89 @@ export function ReadingScreen({ verse, onBack }: Props) {
     if ('speechSynthesis' in window) {
       const utterance = new SpeechSynthesisUtterance(`${verse.reference}. ${verse.verse}`);
       utterance.lang = 'ko-KR';
-      utterance.rate = 0.8; // Slower for kids
+      utterance.rate = 0.8;
       window.speechSynthesis.speak(utterance);
-    } else {
-      alert('음성 읽기를 지원하지 않는 브라우저입니다.');
     }
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      className="flex flex-col min-h-screen p-6 max-w-md mx-auto pt-12"
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="flex flex-col min-h-screen max-w-md mx-auto bg-stone-50"
     >
-      <div className="flex items-center mb-12">
-        <button 
+      {/* Top Bar */}
+      <div className="flex items-center justify-between p-4 pt-6">
+        <button
           onClick={onBack}
-          className="p-3 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-white border-2 border-orange-100 transition-colors"
+          className="p-3 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-white border-2 border-stone-200 transition-colors"
         >
-          <ChevronLeft size={32} className="text-orange-500" />
+          <ChevronLeft size={28} className="text-stone-500" />
         </button>
-        <div className="flex-1" />
-        <button 
+        <button
           onClick={handleReadAloud}
-          className="p-3 bg-amber-400 rounded-full shadow-sm hover:bg-amber-500 border-2 border-amber-500 text-white transition-colors"
+          className="p-3 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-white border-2 border-stone-200 transition-colors"
         >
-          <Volume2 size={32} />
+          <Volume2 size={24} className="text-stone-500" />
         </button>
       </div>
 
-      <div className="flex-1 flex flex-col justify-center items-center text-center">
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="bg-white/90 backdrop-blur-md p-8 rounded-[2rem] shadow-sm border-4 border-emerald-200 w-full relative"
+      {/* Reading Content */}
+      <div className="flex-1 flex flex-col justify-center px-8 py-12">
+        {/* Reference */}
+        <motion.p
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="text-sm font-bold tracking-widest uppercase text-stone-400 mb-6"
         >
-          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-emerald-400 text-white px-6 py-2 rounded-full font-black text-2xl shadow-sm border-2 border-emerald-500 whitespace-nowrap">
-            {verse.reference}
-          </div>
-          
-          <p className="text-4xl leading-relaxed text-stone-800 mt-8 font-black break-keep">
+          {verse.reference}
+        </motion.p>
+
+        {/* Verse Text — editorial typography */}
+        <motion.blockquote
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+          className="relative"
+        >
+          {/* Decorative quotation mark */}
+          <span className="absolute -top-8 -left-2 text-7xl font-serif text-stone-200 select-none leading-none">
+            &ldquo;
+          </span>
+
+          <p
+            className="text-2xl leading-[1.9] text-stone-800 font-medium break-keep"
+            style={{ fontFamily: '"Noto Serif KR", serif', wordBreak: 'keep-all' }}
+          >
             {verse.verse}
           </p>
-        </motion.div>
+
+          <span className="absolute -bottom-4 right-0 text-7xl font-serif text-stone-200 select-none leading-none">
+            &rdquo;
+          </span>
+        </motion.blockquote>
+
+        {/* Divider */}
+        <motion.div
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ delay: 0.5, duration: 0.4 }}
+          className="h-px bg-stone-200 mt-10 mb-6 origin-left"
+        />
+
+        {/* Hint / Context */}
+        {verse.hint && (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+            className="text-base text-stone-400 font-medium italic"
+          >
+            {verse.hint}
+          </motion.p>
+        )}
       </div>
     </motion.div>
   );
