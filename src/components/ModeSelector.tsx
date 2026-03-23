@@ -59,7 +59,7 @@ export function ModeSelector({ verse, onSelectMode, onBack }: Props) {
         <div className="w-14" />
       </div>
 
-      <div className="bg-white/90 backdrop-blur-md p-6 rounded-[2rem] shadow-sm border-2 border-orange-100 mb-10 w-full text-center relative overflow-hidden">
+      <div className="bg-white/90 backdrop-blur-md p-6 rounded-3xl shadow-sm border-2 border-orange-100 mb-10 w-full text-center relative overflow-hidden">
         <div className="absolute -top-4 -right-4 bg-orange-50 w-20 h-20 rounded-full opacity-50" />
         <h3 className="text-2xl font-black text-orange-500 mb-3 relative z-10">{verse.reference}</h3>
         <p className="text-2xl text-stone-700 leading-relaxed font-bold relative z-10">{verse.verse}</p>
@@ -77,7 +77,7 @@ export function ModeSelector({ verse, onSelectMode, onBack }: Props) {
               whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => onSelectMode(mode.id)}
-              className={`w-full flex items-center p-6 rounded-[2rem] border-b-8 ${mode.border} ${mode.color} shadow-sm transition-colors text-left`}
+              className={`w-full flex items-center p-6 rounded-3xl border-b-8 ${mode.border} ${mode.color} shadow-sm transition-colors text-left`}
             >
               <div className="bg-white/80 backdrop-blur-sm p-4 rounded-2xl mr-5 shadow-sm rotate-3">
                 <Icon size={36} className={mode.iconColor} />

@@ -34,6 +34,18 @@ export interface OnboardingProfile {
   onboardingCompleted: boolean;
 }
 
+export interface SessionStats {
+  readonly startedAt: number;
+  readonly totalXp: number;
+  readonly versesCompleted: number;
+  readonly versesTotal: number;
+  readonly hintsUsed: number;
+  readonly streak: number;
+  readonly dailyGoalProgress: number;
+  readonly dailyGoal: number;
+  readonly isDailyGoalJustMet: boolean;
+}
+
 export interface BibleVerse {
   verse: number;
   text: string;

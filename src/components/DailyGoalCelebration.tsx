@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useSound } from '../hooks/useSound';
 import { Trophy } from 'lucide-react';
+import { animations } from '../design/tokens';
 
 interface Props {
   show: boolean;
@@ -32,8 +33,8 @@ export function DailyGoalCelebration({ show, onDismiss }: Props) {
             initial={{ scale: 0, rotate: -20 }}
             animate={{ scale: 1, rotate: 0 }}
             exit={{ scale: 0, opacity: 0 }}
-            transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-            className="bg-white/95 backdrop-blur-md p-10 rounded-[2rem] shadow-lg border-4 border-violet-200 text-center max-w-sm mx-6"
+            transition={animations.celebration}
+            className="card-celebration border-violet-200 p-10 text-center max-w-sm mx-6"
           >
             <motion.div
               animate={{ y: [0, -10, 0] }}

@@ -15,7 +15,7 @@ export function LevelBadge({ level, xp }: Props) {
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="flex items-center gap-4 bg-white/90 backdrop-blur-sm p-4 rounded-[2rem] shadow-sm border-b-4 border-violet-100"
+      className="flex items-center gap-4 bg-white/90 backdrop-blur-sm p-4 rounded-3xl shadow-sm border-b-4 border-violet-100"
     >
       <div className="bg-violet-100 p-3 rounded-2xl shrink-0">
         <span className="text-3xl">{level.emoji}</span>

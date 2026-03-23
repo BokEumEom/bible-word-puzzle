@@ -1,16 +1,19 @@
 import { motion } from 'motion/react';
-import { Star, ChevronRight, List, Home, BookOpen } from 'lucide-react';
-import { Verse } from '../types';
+import { Star, ChevronRight, List, Home, BookOpen, Zap, Flame, Target } from 'lucide-react';
+import { Verse, SessionStats } from '../types';
+import { ActionButton } from './ui/ActionButton';
+import { animations } from '../design/tokens';
 
 interface Props {
   verse: Verse;
   nextVerse: Verse | null;
+  sessionStats: SessionStats | null;
   onNextVerse: () => void;
   onBackToModes: () => void;
   onHome: () => void;
 }
 
-export function CompletionScreen({ verse, nextVerse, onNextVerse, onBackToModes, onHome }: Props) {
+export function CompletionScreen({ verse, nextVerse, sessionStats, onNextVerse, onBackToModes, onHome }: Props) {
   const isBookComplete = !nextVerse;
 
   return (
@@ -19,91 +22,142 @@ export function CompletionScreen({ verse, nextVerse, onNextVerse, onBackToModes,
       animate={{ opacity: 1, scale: 1 }}
       className="flex flex-col items-center justify-center min-h-screen p-6 text-center max-w-md mx-auto"
     >
+      {/* Header */}
       <motion.div
-        initial={{ y: -50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ type: 'spring', bounce: 0.5, delay: 0.2 }}
-        className="bg-white/90 backdrop-blur-md p-8 rounded-[2rem] shadow-sm border-4 border-emerald-200 w-full mb-8 relative overflow-hidden"
+        initial={{ scale: 0, rotate: -180 }}
+        animate={{ scale: 1, rotate: 0 }}
+        transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
+        className="mb-3"
       >
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: 'spring', delay: 0.4 }}
-          className="absolute -top-6 -right-6 bg-emerald-200 w-24 h-24 rounded-full opacity-30"
-        />
+        <Star size={56} className="text-amber-400 mx-auto drop-shadow-sm" fill="currentColor" />
+      </motion.div>
+      <motion.h2
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="text-3xl font-black text-stone-800 mb-6"
+      >
+        {isBookComplete ? '모두 완료했어요!' : '잘했어요!'}
+      </motion.h2>
 
-        <motion.div
-          initial={{ scale: 0, rotate: -180 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
-          className="mb-4"
-        >
-          <Star size={64} className="text-amber-400 mx-auto drop-shadow-sm" fill="currentColor" />
-        </motion.div>
-
-        <h2 className="text-3xl font-black text-stone-800 mb-4 relative z-10">
-          {isBookComplete ? '모두 완료했어요! 🎊' : '잘했어요! 🌟'}
-        </h2>
-
-        <div className="bg-emerald-50/80 rounded-2xl p-4 relative z-10 border-2 border-emerald-100">
-          <p className="text-sm text-emerald-600 font-bold mb-1">{verse.reference}</p>
-          <p className="text-lg text-stone-700 font-bold leading-relaxed">{verse.verse}</p>
+      {/* Verse card + stats combined */}
+      <motion.div
+        initial={{ y: 30, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.5, ...animations.standard }}
+        className="card-featured border-emerald-100 w-full mb-8 overflow-hidden"
+      >
+        {/* Completed verse */}
+        <div className="px-6 py-5 border-b-2 border-emerald-50">
+          <div className="flex items-center gap-2 mb-2">
+            <BookOpen size={16} className="text-emerald-500" />
+            <span className="text-sm text-emerald-600 font-bold">{verse.reference}</span>
+          </div>
+          <p className="text-base text-stone-700 font-bold leading-relaxed">{verse.verse}</p>
         </div>
 
+        {/* Session stats row */}
+        {sessionStats && (
+          <div className="grid grid-cols-3 gap-0">
+            {/* XP */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+              className="px-4 py-4 border-r border-emerald-50 text-center"
+            >
+              <div className="stat-icon bg-amber-100 w-fit mx-auto mb-1">
+                <Zap size={18} className="text-amber-500" />
+              </div>
+              <motion.p
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.9, type: 'spring' }}
+                className="text-xl font-black text-amber-600"
+              >
+                +{sessionStats.totalXp}
+              </motion.p>
+              <p className="text-[10px] font-bold text-stone-400">XP</p>
+            </motion.div>
+
+            {/* Streak */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
+              className="px-4 py-4 border-r border-emerald-50 text-center"
+            >
+              <div className="stat-icon bg-orange-100 w-fit mx-auto mb-1">
+                <Flame size={18} className="text-orange-500" />
+              </div>
+              <p className="text-xl font-black text-orange-500">{sessionStats.streak}일</p>
+              <p className="text-[10px] font-bold text-stone-400">연속</p>
+            </motion.div>
+
+            {/* Daily goal */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.9 }}
+              className="px-4 py-4 text-center"
+            >
+              <div className="stat-icon bg-violet-100 w-fit mx-auto mb-1">
+                <Target size={18} className="text-violet-500" />
+              </div>
+              <p className="text-xl font-black text-violet-500">
+                {Math.min(sessionStats.dailyGoalProgress, sessionStats.dailyGoal)}/{sessionStats.dailyGoal}
+              </p>
+              <p className="text-[10px] font-bold text-stone-400">오늘 목표</p>
+            </motion.div>
+          </div>
+        )}
+
         {isBookComplete && (
-          <motion.p
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
-            className="mt-4 text-emerald-600 font-bold relative z-10"
+            transition={{ delay: 1.0 }}
+            className="px-6 py-3 bg-emerald-50/80 border-t-2 border-emerald-100"
           >
-            이 책의 모든 구절을 완료했어요!
-          </motion.p>
+            <p className="text-sm text-emerald-600 font-bold">
+              이 책의 모든 구절을 완료했어요!
+            </p>
+          </motion.div>
         )}
       </motion.div>
 
+      {/* Action buttons */}
       <div className="flex flex-col w-full gap-4">
         {nextVerse && (
-          <motion.button
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            whileHover={{ scale: 1.03, y: -2 }}
-            whileTap={{ scale: 0.95 }}
+          <ActionButton
+            variant="primary"
+            size="lg"
+            icon={ChevronRight}
+            delay={1.0}
             onClick={onNextVerse}
-            className="btn-primary w-full text-xl py-5 rounded-[2rem] flex items-center justify-center gap-3"
           >
-            <ChevronRight size={28} />
             다음 구절 계속
-          </motion.button>
+          </ActionButton>
         )}
 
-        <motion.button
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          whileHover={{ scale: 1.03, y: -2 }}
-          whileTap={{ scale: 0.95 }}
+        <ActionButton
+          variant="secondary"
+          icon={List}
+          delay={1.1}
           onClick={onBackToModes}
-          className="btn-secondary w-full text-xl py-5 rounded-[2rem] flex items-center justify-center gap-3"
         >
-          <List size={28} />
           모드 선택
-        </motion.button>
+        </ActionButton>
 
         {isBookComplete && (
-          <motion.button
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            whileHover={{ scale: 1.03, y: -2 }}
-            whileTap={{ scale: 0.95 }}
+          <ActionButton
+            variant="ghost"
+            icon={Home}
+            delay={1.2}
             onClick={onHome}
-            className="w-full text-xl py-5 rounded-[2rem] flex items-center justify-center gap-3 bg-white/80 text-stone-600 font-black border-2 border-stone-200 shadow-sm"
           >
-            <Home size={28} />
             홈으로
-          </motion.button>
+          </ActionButton>
         )}
       </div>
     </motion.div>

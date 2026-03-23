@@ -86,7 +86,7 @@ function ChapterNavigator({
   const unit = chapterUnit(book.name);
 
   return (
-    <div className={`${theme.bg} ${theme.text} p-3 rounded-[2rem] mb-6 text-xl border-4 ${theme.borderDark} font-black flex items-center justify-between shadow-md`}>
+    <div className={`${theme.bg} ${theme.text} p-3 rounded-3xl mb-6 text-xl border-4 ${theme.borderDark} font-black flex items-center justify-between shadow-md`}>
       <motion.button
         whileHover={prevChapter ? { scale: 1.1, x: -2 } : {}}
         whileTap={prevChapter ? { scale: 0.9 } : {}}
@@ -223,7 +223,7 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {}, interest
     <div className="flex flex-col min-h-screen p-4 max-w-md mx-auto pt-6 pb-20">
       {/* Sticky header */}
       <div className="sticky top-2 z-20 mb-6">
-        <div className="bg-white/90 backdrop-blur-md p-4 rounded-[2rem] shadow-sm border-2 border-orange-100 flex flex-col gap-3">
+        <div className="bg-white/90 backdrop-blur-md p-4 rounded-3xl shadow-sm border-2 border-orange-100 flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <motion.button
               whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
@@ -469,7 +469,7 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {}, interest
                         whileHover={{ scale: 1.05, y: -3 }}
                         whileTap={{ scale: 0.93 }}
                         onClick={() => handleBookSelect(book)}
-                        className={`relative aspect-square rounded-[2rem] border-b-8 shadow-sm transition-colors flex flex-col justify-between p-3 text-left ${
+                        className={`relative aspect-square rounded-3xl border-b-8 shadow-sm transition-colors flex flex-col justify-between p-3 text-left ${
                           completed
                             ? isOld
                               ? 'bg-amber-200 hover:bg-amber-300 border-amber-400'
@@ -507,7 +507,7 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {}, interest
             exit={{ opacity: 0, x: -20 }}
             className="flex flex-col gap-4"
           >
-            <div className={`${theme.bg} ${theme.text} p-5 rounded-[2rem] mb-4 text-2xl border-4 ${theme.border} text-center font-black flex items-center justify-center gap-3 shadow-sm`}>
+            <div className={`${theme.bg} ${theme.text} p-5 rounded-3xl mb-4 text-2xl border-4 ${theme.border} text-center font-black flex items-center justify-center gap-3 shadow-sm`}>
               <Book size={28} className="-rotate-6" />
               {selectedBook.name} 몇 {chapterUnit(selectedBook.name)}을 읽을까요?
             </div>
@@ -543,7 +543,7 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {}, interest
                     whileHover={{ scale: 1.1, y: -4 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={() => handleChapterSelect(chapter)}
-                    className={`aspect-square ${theme.btnBg} rounded-[1.5rem] shadow-sm border-b-4 ${theme.borderDarker} flex items-center justify-center text-2xl font-black ${theme.btnText} ${theme.btnHover} transition-colors`}
+                    className={`aspect-square ${theme.btnBg} rounded-3xl shadow-sm border-b-4 ${theme.borderDarker} flex items-center justify-center text-2xl font-black ${theme.btnText} ${theme.btnHover} transition-colors`}
                     aria-label={`${chapter.chapter}${chapterUnit(selectedBook.name)}`}
                   >
                     {chapter.chapter}
@@ -589,7 +589,7 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {}, interest
                     whileHover={{ scale: 1.02, y: -2 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => handleVerseSelect(verse)}
-                    className={`${theme.bg} p-5 rounded-[2rem] shadow-sm border-b-4 ${theme.borderDark} text-left ${theme.btnHover} flex gap-4 items-start transition-colors relative overflow-hidden`}
+                    className={`${theme.bg} p-5 rounded-3xl shadow-sm border-b-4 ${theme.borderDark} text-left ${theme.btnHover} flex gap-4 items-start transition-colors relative overflow-hidden`}
                     aria-label={`${verse.verse}절: ${verse.text}`}
                   >
                     <span className={`bg-white/80 backdrop-blur-sm ${theme.numText} font-black rounded-2xl w-12 h-12 flex items-center justify-center shrink-0 mt-1 text-xl shadow-sm rotate-3`}>

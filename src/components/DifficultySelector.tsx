@@ -72,7 +72,7 @@ export function DifficultySelector({ onSelect, onBack, defaultLevel }: Props) {
               whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => onSelect(diff.id)}
-              className={`w-full flex items-center p-6 rounded-[2rem] border-b-8 ${diff.border} ${diff.color} shadow-sm transition-colors text-left relative ${defaultLevel === diff.id ? 'ring-4 ring-orange-300' : ''}`}
+              className={`w-full flex items-center p-6 rounded-3xl border-b-8 ${diff.border} ${diff.color} shadow-sm transition-colors text-left relative ${defaultLevel === diff.id ? 'ring-4 ring-orange-300' : ''}`}
             >
               <div className="bg-white/80 backdrop-blur-sm p-4 rounded-2xl mr-5 shadow-sm rotate-3">
                 <Icon size={36} className={diff.iconColor} />

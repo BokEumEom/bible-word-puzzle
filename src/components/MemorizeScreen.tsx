@@ -54,7 +54,7 @@ export function MemorizeScreen({ verse, onBack }: Props) {
         가리고 싶은 단어를 콕콕 눌러보세요!
       </div>
 
-      <div className="bg-white/90 backdrop-blur-md p-8 rounded-[2rem] shadow-sm border-4 border-amber-200 w-full relative mb-8">
+      <div className="bg-white/90 backdrop-blur-md p-8 rounded-3xl shadow-sm border-4 border-amber-200 w-full relative mb-8">
         <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-amber-400 text-stone-800 px-6 py-2 rounded-full font-black text-2xl shadow-sm border-2 border-amber-500 whitespace-nowrap">
           {verse.reference}
         </div>

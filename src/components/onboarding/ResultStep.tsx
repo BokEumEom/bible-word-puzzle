@@ -109,7 +109,7 @@ export function ResultStep({ level, interests, dailyGoal, onComplete }: Props) {
                     initial={{ opacity: 0, x: -30 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.3, type: 'spring', stiffness: 200 }}
-                    className={`w-full p-5 rounded-[2rem] border-2 border-b-6 ${card.color} flex items-center gap-4`}
+                    className={`w-full p-5 rounded-3xl border-2 border-b-6 ${card.color} flex items-center gap-4`}
                   >
                     <div className="bg-white/80 backdrop-blur-sm p-3 rounded-2xl shadow-sm">
                       <Icon size={28} />

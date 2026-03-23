@@ -13,7 +13,7 @@ export function DailyGoalBadge({ todayCompletions, dailyGoal, isMet }: Props) {
   return (
     <motion.div
       whileHover={{ scale: 1.05 }}
-      className="flex items-center gap-3 bg-white/90 backdrop-blur-sm p-4 rounded-[2rem] shadow-sm border-b-4 border-violet-100"
+      className="flex items-center gap-3 bg-white/90 backdrop-blur-sm p-4 rounded-3xl shadow-sm border-b-4 border-violet-100"
     >
       <div className={`p-2.5 rounded-2xl ${isMet ? 'bg-violet-200' : 'bg-violet-100'}`}>
         {isMet ? (

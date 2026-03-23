@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
 import { ChevronLeft, Flame, CheckCircle2, Target, Trophy, RotateCcw, Settings, Volume2, VolumeX } from 'lucide-react';
+import { SectionTitle } from './ui/SectionTitle';
 import { LevelInfo, getXpProgress } from '../data/levels';
 import { UserProgress } from '../hooks/useUserProgress';
 import { achievements, AchievementCategory } from '../data/achievements';
@@ -68,7 +69,7 @@ export function ProfileScreen({ progress, level, onBack, onResetOnboarding }: Pr
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 0.1 }}
-        className="bg-white/90 backdrop-blur-sm p-6 rounded-[2rem] shadow-sm border-b-4 border-violet-100 mb-6 text-center"
+        className="bg-white/90 backdrop-blur-sm p-6 rounded-3xl shadow-sm border-b-4 border-violet-100 mb-6 text-center"
       >
         <div className="text-5xl mb-2">{level.emoji}</div>
         <div className="flex items-center justify-center gap-2 mb-3">
@@ -126,11 +127,10 @@ export function ProfileScreen({ progress, level, onBack, onResetOnboarding }: Pr
 
       {/* Achievements */}
       <div className="mb-6">
-        <h2 className="text-xl font-black text-stone-800 mb-4 flex items-center gap-2">
-          <Trophy className="text-amber-500" size={24} />
-          나의 업적
-          <span className="text-sm font-bold text-stone-400 ml-auto">{unlockedCount}/{totalCount}</span>
-        </h2>
+        <div className="flex items-center justify-between mb-3">
+          <SectionTitle icon={Trophy} iconColor="text-amber-500">나의 업적</SectionTitle>
+          <span className="text-sm font-bold text-stone-400">{unlockedCount}/{totalCount}</span>
+        </div>
         <div className="grid grid-cols-4 gap-3">
           {achievements.map((achievement, index) => {
             const isUnlocked = progress.unlockedAchievements.includes(achievement.id);
@@ -142,7 +142,7 @@ export function ProfileScreen({ progress, level, onBack, onResetOnboarding }: Pr
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.3 + index * 0.02, type: 'spring', stiffness: 200, damping: 15 }}
-                className={`bg-white/90 backdrop-blur-sm p-3 rounded-[1.5rem] shadow-sm border-b-4 ${borderColor} text-center ${!isUnlocked ? 'opacity-30 grayscale' : ''}`}
+                className={`bg-white/90 backdrop-blur-sm p-3 rounded-3xl shadow-sm border-b-4 ${borderColor} text-center ${!isUnlocked ? 'opacity-30 grayscale' : ''}`}
               >
                 <div className="text-2xl mb-1">
                   {isUnlocked ? achievement.emoji : '🔒'}
@@ -162,10 +162,10 @@ export function ProfileScreen({ progress, level, onBack, onResetOnboarding }: Pr
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="bg-white/90 backdrop-blur-sm p-5 rounded-[2rem] shadow-sm border-b-4 border-rose-100 mb-6"
+          className="bg-white/90 backdrop-blur-sm p-5 rounded-3xl shadow-sm border-b-4 border-rose-100 mb-6"
         >
           <h2 className="text-lg font-black text-stone-800 mb-3 flex items-center gap-2">
-            <RotateCcw className="text-rose-400" size={22} />
+            <RotateCcw className="text-rose-400" size={20} />
             복습 현황
             {dueCount > 0 && (
               <span className="text-xs font-black text-rose-500 bg-rose-100 px-2 py-0.5 rounded-full ml-auto">
@@ -203,10 +203,10 @@ export function ProfileScreen({ progress, level, onBack, onResetOnboarding }: Pr
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className="bg-white/90 backdrop-blur-sm p-5 rounded-[2rem] shadow-sm border-b-4 border-stone-100"
+        className="bg-white/90 backdrop-blur-sm p-5 rounded-3xl shadow-sm border-b-4 border-stone-100"
       >
         <h2 className="text-lg font-black text-stone-800 mb-4 flex items-center gap-2">
-          <Settings className="text-stone-400" size={22} />
+          <Settings className="text-stone-400" size={20} />
           설정
         </h2>
 

@@ -6,6 +6,7 @@ import { verses as presetVerses } from '../data/verses';
 import { getRecommendations } from '../utils/recommend';
 import { getDueReviews } from '../utils/spaced';
 import { InstallPrompt } from './InstallPrompt';
+import { SectionTitle } from './ui/SectionTitle';
 
 interface Props {
   progress: UserProgress;
@@ -112,24 +113,16 @@ export function Dashboard({ progress, isDailyGoalMet, onStartExplore, onStartPre
 
       {/* Today's Verse — original card style with "퍼즐로 만나기" CTA */}
       <div className="mb-6">
-        <h2 className="text-xl font-black text-stone-800 mb-3 flex items-center gap-2">
-          {isReview ? (
-            <>
-              <RotateCcw className="text-emerald-500" size={24} />
-              다시 만나는 말씀
-            </>
-          ) : (
-            <>
-              <BookOpen className="text-amber-500" size={24} />
-              오늘의 말씀
-            </>
-          )}
-        </h2>
+        {isReview ? (
+          <SectionTitle icon={RotateCcw} iconColor="text-emerald-500">다시 만나는 말씀</SectionTitle>
+        ) : (
+          <SectionTitle icon={BookOpen} iconColor="text-amber-500">오늘의 말씀</SectionTitle>
+        )}
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => onSelectVerse(todaysVerse)}
-          className={`w-full bg-white/90 backdrop-blur-sm p-5 rounded-[2rem] shadow-md border-b-4 ${isReview ? 'border-emerald-200' : 'border-amber-200'} text-left hover:bg-white transition-colors relative overflow-hidden`}
+          className={`w-full card-featured ${isReview ? 'border-emerald-200' : 'border-amber-200'} text-left p-5 hover:bg-white transition-colors relative overflow-hidden`}
         >
           <div className={`absolute -right-4 -top-4 opacity-5 ${isReview ? 'text-emerald-500' : 'text-amber-500'}`}>
             {isReview ? <RotateCcw size={100} /> : <BookOpen size={100} />}
@@ -182,7 +175,7 @@ export function Dashboard({ progress, isDailyGoalMet, onStartExplore, onStartPre
           transition={{ delay: 0.1 }}
           whileTap={{ scale: 0.95 }}
           onClick={onStartPreset}
-          className="bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-sm border-b-4 border-orange-100 text-center"
+          className="card p-4 border-b-4 border-orange-100 text-center"
         >
           <Sparkles className="text-orange-500 mx-auto mb-1" size={24} />
           <p className="text-xl font-black text-orange-500">퍼즐</p>
@@ -195,7 +188,7 @@ export function Dashboard({ progress, isDailyGoalMet, onStartExplore, onStartPre
           transition={{ delay: 0.15 }}
           whileTap={{ scale: 0.95 }}
           onClick={onStartExplore}
-          className="bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-sm border-b-4 border-violet-100 text-center"
+          className="card p-4 border-b-4 border-violet-100 text-center"
         >
           <Search className="text-violet-500 mx-auto mb-1" size={24} />
           <p className="text-xl font-black text-violet-500">성경</p>
@@ -208,7 +201,7 @@ export function Dashboard({ progress, isDailyGoalMet, onStartExplore, onStartPre
           transition={{ delay: 0.2 }}
           whileTap={{ scale: 0.95 }}
           onClick={onOpenCollections}
-          className="bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-sm border-b-4 border-emerald-100 text-center"
+          className="card p-4 border-b-4 border-emerald-100 text-center"
         >
           <Library className="text-emerald-500 mx-auto mb-1" size={24} />
           <p className="text-xl font-black text-emerald-500">테마</p>
@@ -219,17 +212,14 @@ export function Dashboard({ progress, isDailyGoalMet, onStartExplore, onStartPre
       {/* Recent Verses — Horizontal Scroll */}
       {progress.recentVerses.length > 0 && (
         <div className="mb-6">
-          <h2 className="text-lg font-black text-stone-800 mb-3 flex items-center gap-2">
-            <Clock className="text-emerald-500" size={20} />
-            최근 말씀
-          </h2>
+          <SectionTitle icon={Clock} iconColor="text-emerald-500">최근 말씀</SectionTitle>
           <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-hide">
             {progress.recentVerses.slice(0, 5).map((verse) => (
               <motion.button
                 key={`recent-${verse.id}`}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => onSelectVerse(verse)}
-                className="shrink-0 w-44 bg-white/80 backdrop-blur-sm p-4 rounded-2xl shadow-sm border-b-4 border-emerald-100 text-left hover:bg-white transition-colors"
+                className="shrink-0 w-44 card p-4 border-b-4 border-emerald-100 text-left hover:bg-white transition-colors"
               >
                 <span className="text-xs font-bold text-emerald-600 mb-1 block">
                   {verse.reference}
@@ -251,17 +241,14 @@ export function Dashboard({ progress, isDailyGoalMet, onStartExplore, onStartPre
       {/* Favorite Verses — Horizontal Scroll */}
       {progress.favoriteVerses.length > 0 && (
         <div className="mb-6">
-          <h2 className="text-lg font-black text-stone-800 mb-3 flex items-center gap-2">
-            <Heart className="text-rose-400" size={20} />
-            좋아하는 말씀
-          </h2>
+          <SectionTitle icon={Heart} iconColor="text-rose-400">좋아하는 말씀</SectionTitle>
           <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-hide">
             {progress.favoriteVerses.map((verse) => (
               <motion.button
                 key={`fav-${verse.id}`}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => onSelectVerse(verse)}
-                className="shrink-0 w-44 bg-white/80 backdrop-blur-sm p-4 rounded-2xl shadow-sm border-b-4 border-rose-100 text-left hover:bg-white transition-colors"
+                className="shrink-0 w-44 card p-4 border-b-4 border-rose-100 text-left hover:bg-white transition-colors"
               >
                 <span className="text-xs font-bold text-rose-500 mb-1 block">
                   {verse.reference}

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { GameState, Difficulty, Verse, OnboardingProfile } from './types';
+import { GameState, Difficulty, Verse, OnboardingProfile, SessionStats } from './types';
 import { OnboardingFlow } from './components/onboarding/OnboardingFlow';
 import { verses } from './data/verses';
 import { shuffle } from './utils/shuffle';
@@ -53,6 +53,7 @@ export default function App() {
   const [selectedCollection, setSelectedCollection] = useState<Collection | null>(null);
   const [collectionVerse, setCollectionVerse] = useState<Verse | null>(null);
   const [collectionCv, setCollectionCv] = useState<CollectionVerse | null>(null);
+  const [sessionStats, setSessionStats] = useState<SessionStats | null>(null);
 
   const { progress, toggleFavorite, markCompleted, addRecent, updateStreak, setDailyGoal, saveOnboarding, unlockAchievements, isDailyGoalMet, currentLevel } = useUserProgress();
 
@@ -99,13 +100,22 @@ export default function App() {
 
   const selectDifficulty = (diff: Difficulty) => {
     setDifficulty(diff);
-    // Filter verses by difficulty and take up to 5 for a quick session, or all available
     const filtered = verses.filter(v => v.difficulty === diff);
-    // Shuffle them
     const shuffled = shuffle(filtered);
     setCurrentVerses(shuffled);
     setCurrentIndex(0);
     setStars(0);
+    setSessionStats({
+      startedAt: Date.now(),
+      totalXp: 0,
+      versesCompleted: 0,
+      versesTotal: shuffled.length,
+      hintsUsed: 0,
+      streak: progress.streak,
+      dailyGoalProgress: progress.todayCompletions,
+      dailyGoal: progress.dailyGoal,
+      isDailyGoalJustMet: false,
+    });
     setGameState('playing');
   };
 
@@ -149,6 +159,19 @@ export default function App() {
         dailyGoalMetCount: progress.dailyGoalMetCount + ((willMeetGoal && !alreadyMetGoal) ? 1 : 0),
       });
 
+      // Build single-verse session stats (reuse today/isNewDay from above)
+      setSessionStats({
+        startedAt: Date.now() - 30000, // approximate
+        totalXp: xpEvent.total,
+        versesCompleted: 1,
+        versesTotal: 1,
+        hintsUsed: options?.usedHint ? 1 : 0,
+        streak: progress.streak,
+        dailyGoalProgress: newTodayCompletions,
+        dailyGoal: progress.dailyGoal,
+        isDailyGoalJustMet: willMeetGoal && !alreadyMetGoal,
+      });
+
       // Compute next verse from cached chapters
       const parsed = selectedCustomVerse.id.split('-');
       const bookId = parsed.slice(0, parsed.length - 2).join('-');
@@ -175,6 +198,16 @@ export default function App() {
         noHintCompletions: progress.noHintCompletions + (isNoHint ? 1 : 0),
         dailyGoalMetCount: progress.dailyGoalMetCount + ((willMeetGoal && !alreadyMetGoal) ? 1 : 0),
       });
+
+      // Accumulate session stats
+      setSessionStats(prev => prev ? {
+        ...prev,
+        totalXp: prev.totalXp + xpEvent.total,
+        versesCompleted: prev.versesCompleted + 1,
+        hintsUsed: prev.hintsUsed + (options?.usedHint ? 1 : 0),
+        dailyGoalProgress: newTodayCompletions,
+        isDailyGoalJustMet: prev.isDailyGoalJustMet || (willMeetGoal && !alreadyMetGoal),
+      } : null);
 
       if (currentIndex < currentVerses.length - 1) {
         setCurrentIndex(prev => prev + 1);
@@ -359,6 +392,7 @@ export default function App() {
             <ResultScreen
               stars={stars}
               total={currentVerses.length}
+              sessionStats={sessionStats}
               onHome={goHome}
               onRetry={retry}
               onChangeDifficulty={() => setGameState('difficulty')}
@@ -426,6 +460,7 @@ export default function App() {
             <CompletionScreen
               verse={selectedCustomVerse}
               nextVerse={nextVerse}
+              sessionStats={sessionStats}
               onNextVerse={handleNextVerse}
               onBackToModes={() => setGameState('select-mode')}
               onHome={goHome}

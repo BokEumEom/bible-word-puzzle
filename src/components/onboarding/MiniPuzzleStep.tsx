@@ -91,7 +91,7 @@ export function MiniPuzzleStep({ onComplete }: Props) {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className={`w-full p-6 rounded-[2rem] shadow-sm border-4 mb-8 min-h-[80px] flex flex-wrap gap-3 justify-center content-center transition-colors duration-500 ${
+        className={`w-full p-6 rounded-3xl shadow-sm border-4 mb-8 min-h-[80px] flex flex-wrap gap-3 justify-center content-center transition-colors duration-500 ${
           isSuccess ? 'bg-emerald-50/80 border-emerald-200' : 'bg-white/90 border-orange-100'
         }`}
       >
@@ -168,7 +168,7 @@ export function MiniPuzzleStep({ onComplete }: Props) {
               initial={{ scale: 0, rotate: -30 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ type: 'spring', damping: 12, stiffness: 200 }}
-              className="bg-amber-400 text-amber-900 rounded-[3rem] w-52 h-52 flex flex-col items-center justify-center shadow-sm border-8 border-amber-200"
+              className="bg-amber-400 text-amber-900 rounded-full w-52 h-52 flex flex-col items-center justify-center shadow-sm border-8 border-amber-200"
             >
               <PartyPopper size={56} className="mb-2" />
               <span className="text-2xl font-black">이렇게 쉬워요!</span>

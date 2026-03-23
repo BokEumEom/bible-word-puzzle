@@ -6,6 +6,7 @@ import { useSound } from '../hooks/useSound';
 import { vibrateShort, vibrateError, vibrateSuccess } from '../haptics/haptics';
 import { ComboText } from './ComboText';
 import { ConfettiBurst } from './ConfettiBurst';
+import { BottomFeedbackSheet } from './BottomFeedbackSheet';
 import { Check, Lightbulb, Star } from 'lucide-react';
 
 interface WordItem {
@@ -34,6 +35,9 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
   const [wrongSlots, setWrongSlots] = useState<Set<number>>(new Set());
   const [revealedSlots, setRevealedSlots] = useState<Set<number>>(new Set());
   const [showStarBurst, setShowStarBurst] = useState(false);
+  const [correctPositionCount, setCorrectPositionCount] = useState<number | null>(null);
+  const [showBottomSheet, setShowBottomSheet] = useState(false);
+  const [bottomSheetType, setBottomSheetType] = useState<'correct' | 'wrong'>('correct');
   const comboTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const { play } = useSound();
 
@@ -53,6 +57,9 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
     setWrongSlots(new Set());
     setRevealedSlots(new Set());
     setShowStarBurst(false);
+    setCorrectPositionCount(null);
+    setShowBottomSheet(false);
+    setBottomSheetType('correct');
   }, [verse]);
 
   const moveItem = (item: WordItem, source: 'bank' | 'slot', sourceIndex: number, dest: 'bank' | 'slot', destIndex: number) => {
@@ -174,7 +181,7 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
         }, idx * stepDelay);
       }
 
-      // After all slots revealed, play the final fanfare + star burst
+      // After all slots revealed, play the final fanfare + show bottom sheet
       const revealDuration = totalSlots * stepDelay;
       setTimeout(() => {
         play('correct');
@@ -184,23 +191,42 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
 
       setTimeout(() => {
         setIsChecking(false);
-        onCorrect({ usedHint: showHint });
-      }, revealDuration + 2000);
+        setBottomSheetType('correct');
+        setShowBottomSheet(true);
+      }, revealDuration + 800);
     } else {
       setIsWrong(true);
       play('wrong');
       vibrateError();
-      // Mark individual wrong slots
+      // Mark individual wrong slots AND count correct positions
       const wrong = new Set<number>();
+      let correctCount = 0;
       slots.forEach((s, i) => {
-        if (s && s.text !== verse.words[i]) wrong.add(i);
+        if (s && s.text !== verse.words[i]) {
+          wrong.add(i);
+        } else if (s) {
+          correctCount++;
+        }
       });
       setWrongSlots(wrong);
+      setCorrectPositionCount(correctCount);
       setTimeout(() => {
         setIsChecking(false);
-        setIsWrong(false);
-        setWrongSlots(new Set());
-      }, 800);
+        setBottomSheetType('wrong');
+        setShowBottomSheet(true);
+      }, 600);
+    }
+  };
+
+  const handleBottomSheetContinue = () => {
+    setShowBottomSheet(false);
+    if (bottomSheetType === 'correct') {
+      onCorrect({ usedHint: showHint });
+    } else {
+      // Dismiss wrong state and let user try again
+      setIsWrong(false);
+      setWrongSlots(new Set());
+      setCorrectPositionCount(null);
     }
   };
 
@@ -255,9 +281,9 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
 
       {/* Slots Area */}
       <motion.div
-        animate={isWrong ? { x: [-10, 10, -10, 10, 0] } : {}}
+        animate={isWrong ? { x: [-4, 4, -3, 3, 0] } : {}}
         transition={{ duration: 0.4 }}
-        className={`p-4 sm:p-6 rounded-[2rem] shadow-sm border-4 mb-6 sm:mb-8 min-h-[120px] sm:min-h-[150px] flex flex-wrap gap-2 sm:gap-3 content-start transition-colors duration-500 ${
+        className={`p-4 sm:p-6 rounded-3xl shadow-sm border-4 mb-6 sm:mb-8 min-h-[120px] sm:min-h-[150px] flex flex-wrap gap-2 sm:gap-3 content-start transition-colors duration-500 ${
           isSuccess ? 'bg-emerald-50/80 backdrop-blur-sm border-emerald-200' : 'bg-white/90 backdrop-blur-md border-orange-100'
         }`}
       >
@@ -313,7 +339,7 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
                   ${revealedSlots.has(i)
                     ? 'bg-emerald-400 text-white shadow-sm border-b-4 border-emerald-600'
                     : wrongSlots.has(i)
-                      ? 'bg-red-400 text-white shadow-sm border-b-4 border-red-600'
+                      ? 'bg-amber-400 text-white shadow-sm border-b-4 border-amber-600'
                       : correctSlots.has(i) && !isSuccess
                         ? 'bg-emerald-400 text-white shadow-sm border-b-4 border-emerald-600'
                         : isSuccess
@@ -365,94 +391,53 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
         ))}
       </div>
 
-      {/* Check Button */}
-      <AnimatePresence mode="wait">
-        {!isSuccess ? (
-          <motion.button
-            key="check-btn"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            whileHover={allFilled ? { scale: 1.05 } : {}}
-            whileTap={allFilled ? { scale: 0.95 } : {}}
-            onClick={checkAnswer}
-            disabled={!allFilled || isChecking}
-            className={`
-              w-full py-4 rounded-[2rem] text-2xl font-black flex items-center justify-center gap-2 transition-all
-              ${allFilled 
-                ? 'btn-primary' 
-                : 'bg-stone-200 text-stone-400 cursor-not-allowed'}
-            `}
-          >
-            <Check size={28} />
-            정답 확인하기
-          </motion.button>
-        ) : (
-          <motion.div
-            key="success-msg"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="w-full py-4 rounded-[2rem] text-2xl font-black flex items-center justify-center gap-2 bg-emerald-500 text-white shadow-sm border-b-4 border-emerald-700"
-          >
-            <Check size={28} />
-            정답입니다! ✨
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {isWrong && !isSuccess && (
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className="text-center text-red-500 font-black text-xl mt-4"
-          >
-            조금만 더 생각해 볼까요? 할 수 있어요!
-          </motion.p>
-        )}
-      </AnimatePresence>
+      {/* Check Button — hidden when bottom sheet is showing */}
+      {!showBottomSheet && (
+        <AnimatePresence mode="wait">
+          {!isSuccess ? (
+            <motion.button
+              key="check-btn"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              whileHover={allFilled ? { scale: 1.05 } : {}}
+              whileTap={allFilled ? { scale: 0.95 } : {}}
+              onClick={checkAnswer}
+              disabled={!allFilled || isChecking}
+              className={`
+                w-full py-4 rounded-full text-2xl font-black flex items-center justify-center gap-2 transition-all
+                ${allFilled
+                  ? 'btn-primary'
+                  : 'bg-stone-200 text-stone-400 cursor-not-allowed'}
+              `}
+            >
+              <Check size={28} />
+              정답 확인하기
+            </motion.button>
+          ) : (
+            <motion.div
+              key="success-msg"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="w-full py-4 rounded-full text-2xl font-black flex items-center justify-center gap-2 bg-emerald-500 text-white shadow-sm border-b-4 border-emerald-700"
+            >
+              <Check size={28} />
+              정답이에요!
+            </motion.div>
+          )}
+        </AnimatePresence>
+      )}
 
       <ConfettiBurst active={showStarBurst} />
 
-      <AnimatePresence>
-        {showStarBurst && (
-          <motion.div
-            className="fixed inset-0 pointer-events-none flex items-center justify-center z-50"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <motion.div
-              initial={{ scale: 0, rotate: -45 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{ type: "spring", damping: 12, stiffness: 200 }}
-              className="bg-amber-400 text-amber-900 rounded-[3rem] w-44 h-44 sm:w-56 sm:h-56 flex flex-col items-center justify-center shadow-sm border-8 border-amber-200 relative"
-            >
-              <Star size={72} fill="currentColor" className="mb-2" />
-              <span className="text-3xl font-black">최고예요!</span>
-              
-              {/* Bursting small stars */}
-              {[...Array(8)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="absolute text-amber-400"
-                  initial={{ scale: 0, x: 0, y: 0 }}
-                  animate={{ 
-                    scale: [0, 1.5, 0],
-                    x: Math.cos(i * 45 * Math.PI / 180) * 180,
-                    y: Math.sin(i * 45 * Math.PI / 180) * 180,
-                    rotate: 180
-                  }}
-                  transition={{ duration: 1.2, ease: "easeOut" }}
-                >
-                  <Star size={32} fill="currentColor" />
-                </motion.div>
-              ))}
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Duolingo-style bottom feedback sheet */}
+      <BottomFeedbackSheet
+        type={bottomSheetType}
+        show={showBottomSheet}
+        correctCount={correctPositionCount ?? undefined}
+        totalCount={slots.length}
+        onContinue={handleBottomSheetContinue}
+      />
     </div>
   );
 }

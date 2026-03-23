@@ -35,7 +35,7 @@ export function AchievementGrid({ unlockedIds }: Props) {
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: index * 0.03, type: 'spring', stiffness: 200, damping: 15 }}
-              className={`bg-white/90 backdrop-blur-sm p-3 rounded-[1.5rem] shadow-sm border-b-4 ${borderColor} text-center ${!isUnlocked ? 'opacity-30 grayscale' : ''}`}
+              className={`bg-white/90 backdrop-blur-sm p-3 rounded-3xl shadow-sm border-b-4 ${borderColor} text-center ${!isUnlocked ? 'opacity-30 grayscale' : ''}`}
             >
               {isRecent && isUnlocked && (
                 <motion.div

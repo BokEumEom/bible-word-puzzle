@@ -59,7 +59,7 @@ export function GoalStep({ onSelect }: Props) {
               whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => onSelect(goal.value)}
-              className={`w-full flex items-center p-6 rounded-[2rem] border-b-8 ${goal.border} ${goal.color} shadow-sm transition-colors text-left relative`}
+              className={`w-full flex items-center p-6 rounded-3xl border-b-8 ${goal.border} ${goal.color} shadow-sm transition-colors text-left relative`}
             >
               <div className="bg-white/80 backdrop-blur-sm p-4 rounded-2xl mr-5 shadow-sm rotate-3">
                 <Icon size={36} className={goal.iconColor} />

@@ -39,7 +39,7 @@ export function XpGainAnimation({ xpEvent, onDone }: Props) {
           initial={{ scale: 0.5 }}
           animate={{ scale: 1 }}
           transition={{ type: 'spring', stiffness: 300, damping: 15 }}
-          className="bg-white/95 backdrop-blur-md px-8 py-5 rounded-[2rem] shadow-lg border-b-4 border-violet-200"
+          className="bg-white/95 backdrop-blur-md px-8 py-5 rounded-3xl shadow-lg border-b-4 border-violet-200"
         >
           <div className="flex items-center gap-3 mb-2">
             <Zap className="text-violet-500" size={24} />

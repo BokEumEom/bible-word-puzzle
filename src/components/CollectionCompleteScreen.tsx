@@ -3,6 +3,7 @@ import { Star, ChevronRight, List, Home, Trophy } from 'lucide-react';
 import { Verse } from '../types';
 import { Collection } from '../data/collections';
 import { getCollectionProgress } from '../utils/collectionProgress';
+import { ActionButton } from './ui/ActionButton';
 
 interface Props {
   verse: Verse;
@@ -35,7 +36,7 @@ export function CollectionCompleteScreen({
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: 'spring', bounce: 0.5, delay: 0.2 }}
-        className="bg-white/90 backdrop-blur-md p-8 rounded-[2rem] shadow-sm border-4 border-emerald-200 w-full mb-8 relative overflow-hidden"
+        className="bg-white/90 backdrop-blur-md p-8 rounded-3xl shadow-sm border-4 border-emerald-200 w-full mb-8 relative overflow-hidden"
       >
         <motion.div
           initial={{ scale: 0 }}
@@ -95,45 +96,18 @@ export function CollectionCompleteScreen({
 
       <div className="flex flex-col w-full gap-4">
         {!isCollectionComplete && (
-          <motion.button
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            whileHover={{ scale: 1.03, y: -2 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={onNext}
-            className="btn-primary w-full text-xl py-5 rounded-[2rem] flex items-center justify-center gap-3"
-          >
-            <ChevronRight size={28} />
+          <ActionButton variant="primary" size="lg" icon={ChevronRight} delay={0.4} onClick={onNext}>
             다음 구절
-          </motion.button>
+          </ActionButton>
         )}
 
-        <motion.button
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          whileHover={{ scale: 1.03, y: -2 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={onBackToCollection}
-          className="btn-secondary w-full text-xl py-5 rounded-[2rem] flex items-center justify-center gap-3"
-        >
-          <List size={28} />
+        <ActionButton variant="secondary" icon={List} delay={0.5} onClick={onBackToCollection}>
           구절 목록
-        </motion.button>
+        </ActionButton>
 
-        <motion.button
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          whileHover={{ scale: 1.03, y: -2 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={onHome}
-          className="w-full text-xl py-5 rounded-[2rem] flex items-center justify-center gap-3 bg-white/80 text-stone-600 font-black border-2 border-stone-200 shadow-sm"
-        >
-          <Home size={28} />
+        <ActionButton variant="ghost" icon={Home} delay={0.6} onClick={onHome}>
           홈으로
-        </motion.button>
+        </ActionButton>
       </div>
     </motion.div>
   );

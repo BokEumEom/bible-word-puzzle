@@ -135,7 +135,7 @@ export function InterestStep({ level, onSelect }: Props) {
               whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => togglePreset(preset)}
-              className={`w-full flex items-center p-5 rounded-[2rem] border-b-8 ${preset.border} ${preset.color} shadow-sm transition-colors text-left relative ${active ? 'ring-4 ring-orange-300' : ''}`}
+              className={`w-full flex items-center p-5 rounded-3xl border-b-8 ${preset.border} ${preset.color} shadow-sm transition-colors text-left relative ${active ? 'ring-4 ring-orange-300' : ''}`}
             >
               <div className="bg-white/80 backdrop-blur-sm p-3 rounded-2xl mr-4 shadow-sm rotate-3">
                 <Icon size={28} className={preset.iconColor} />
@@ -206,7 +206,7 @@ export function InterestStep({ level, onSelect }: Props) {
                         key={book.id}
                         whileTap={{ scale: 0.9 }}
                         onClick={() => toggleGridBook(book.id)}
-                        className={`aspect-square rounded-[2rem] border-b-8 shadow-sm transition-colors flex flex-col justify-between p-2.5 text-left ${
+                        className={`aspect-square rounded-3xl border-b-8 shadow-sm transition-colors flex flex-col justify-between p-2.5 text-left ${
                           active
                             ? isOld
                               ? 'bg-amber-200 border-amber-400 ring-4 ring-orange-300'
@@ -241,7 +241,7 @@ export function InterestStep({ level, onSelect }: Props) {
             whileTap={selected.size > 0 ? { scale: 0.95 } : {}}
             onClick={() => onSelect(Array.from(selected))}
             disabled={selected.size === 0}
-            className={`w-full py-4 rounded-[2rem] text-2xl font-black transition-all ${
+            className={`w-full py-4 rounded-3xl text-2xl font-black transition-all ${
               selected.size > 0
                 ? 'btn-primary'
                 : 'bg-stone-200 text-stone-400 cursor-not-allowed'
