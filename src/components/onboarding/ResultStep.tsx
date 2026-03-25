@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Difficulty } from '../../types';
 import { bibleIndex } from '../../data/bible';
-import { BarChart3, BookOpen, Target, Sparkles } from 'lucide-react';
+import { BarChart3, BookOpen, Target } from 'lucide-react';
 
 interface Props {
   level: Difficulty;
@@ -12,9 +12,9 @@ interface Props {
 }
 
 const levelLabels: Record<Difficulty, string> = {
-  beginner: '🌱 이제 막 시작',
-  easy: '🌿 주일학교 수준',
-  normal: '🌳 매일 말씀 읽기',
+  beginner: '이제 막 시작',
+  easy: '주일학교 수준',
+  normal: '매일 말씀 읽기',
 };
 
 export function ResultStep({ level, interests, dailyGoal, onComplete }: Props) {
@@ -66,11 +66,11 @@ export function ResultStep({ level, interests, dailyGoal, onComplete }: Props) {
             className="flex flex-col items-center w-full"
           >
             <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}
-              className="mb-8"
+              animate={{ y: [0, -8, 0] }}
+              transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
+              className="w-24 h-24 mb-6"
             >
-              <Sparkles size={48} className="text-orange-400" />
+              <img src="/joy-focused.png" alt="JOY" className="w-full h-full object-contain" />
             </motion.div>
             <h2 className="text-2xl font-black text-stone-800 mb-8 text-center">
               맞춤 플랜 생성 중...
@@ -92,12 +92,21 @@ export function ResultStep({ level, interests, dailyGoal, onComplete }: Props) {
             animate={{ opacity: 1 }}
             className="flex flex-col items-center w-full"
           >
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', stiffness: 200 }}
+              className="w-24 h-24 mb-4"
+            >
+              <img src="/joy-excited.png" alt="JOY" className="w-full h-full object-contain" />
+            </motion.div>
+
             <motion.h2
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               className="text-3xl font-black text-stone-800 mb-10 text-center leading-tight"
             >
-              맞춤 플랜이<br />준비됐어요! ✨
+              맞춤 플랜이<br />준비됐어요!
             </motion.h2>
 
             <div className="w-full space-y-4 mb-12">
@@ -111,7 +120,7 @@ export function ResultStep({ level, interests, dailyGoal, onComplete }: Props) {
                     transition={{ delay: index * 0.3, type: 'spring', stiffness: 200 }}
                     className={`w-full p-5 rounded-3xl border-2 border-b-6 ${card.color} flex items-center gap-4`}
                   >
-                    <div className="bg-white/80 backdrop-blur-sm p-3 rounded-2xl shadow-sm">
+                    <div className="bg-white p-3 rounded-2xl shadow-sm">
                       <Icon size={28} />
                     </div>
                     <div>

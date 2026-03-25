@@ -26,8 +26,8 @@ export function BottomFeedbackSheet({ type, show, correctCount, totalCount, onCo
           <div
             className={`px-6 pt-5 pb-8 ${
               isCorrect
-                ? 'bg-emerald-100 border-t-4 border-emerald-300'
-                : 'bg-amber-50 border-t-4 border-amber-200'
+                ? 'bg-emerald-100'
+                : 'bg-amber-50'
             }`}
             style={{ paddingBottom: 'max(2rem, env(safe-area-inset-bottom))' }}
           >

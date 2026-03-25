@@ -18,7 +18,7 @@ export function InstallPrompt() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 20 }}
-        className="bg-white/90 backdrop-blur-sm p-4 rounded-3xl shadow-sm border-b-4 border-violet-100 mb-6"
+        className="bg-white p-4 rounded-3xl shadow-[0_4px_0_var(--color-violet-100)] mb-6"
       >
         <div className="flex items-start gap-3">
           <div className="bg-violet-100 p-2.5 rounded-xl shrink-0 mt-0.5">

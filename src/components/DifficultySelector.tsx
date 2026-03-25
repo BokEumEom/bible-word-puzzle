@@ -9,14 +9,14 @@ interface Props {
 }
 
 export function DifficultySelector({ onSelect, onBack, defaultLevel }: Props) {
-  const difficulties: { id: Difficulty; label: string; desc: string; icon: any; color: string; border: string; iconColor: string }[] = [
+  const difficulties: { id: Difficulty; label: string; desc: string; icon: any; color: string; shadow: string; iconColor: string }[] = [
     {
       id: 'beginner',
       label: '처음이에요',
       desc: '짧고 쉬운 말씀이에요',
       icon: Baby,
       color: 'bg-emerald-100 hover:bg-emerald-200',
-      border: 'border-emerald-300',
+      shadow: 'shadow-[0_8px_0_var(--color-emerald-300)]',
       iconColor: 'text-emerald-500'
     },
     {
@@ -25,7 +25,7 @@ export function DifficultySelector({ onSelect, onBack, defaultLevel }: Props) {
       desc: '조금 더 긴 말씀이에요',
       icon: Smile,
       color: 'bg-amber-100 hover:bg-amber-200',
-      border: 'border-amber-300',
+      shadow: 'shadow-[0_8px_0_var(--color-amber-300)]',
       iconColor: 'text-amber-500'
     },
     {
@@ -34,7 +34,7 @@ export function DifficultySelector({ onSelect, onBack, defaultLevel }: Props) {
       desc: '긴 말씀도 거뜬해요!',
       icon: Zap,
       color: 'bg-sky-100 hover:bg-sky-200',
-      border: 'border-sky-300',
+      shadow: 'shadow-[0_8px_0_var(--color-sky-300)]',
       iconColor: 'text-sky-500'
     },
   ];
@@ -47,17 +47,26 @@ export function DifficultySelector({ onSelect, onBack, defaultLevel }: Props) {
       className="flex flex-col items-center justify-center min-h-screen p-6 max-w-md mx-auto relative"
     >
       <div className="absolute top-8 left-4">
-        <button 
+        <button
           onClick={onBack}
-          className="p-3 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-white border-2 border-orange-100 transition-colors"
+          className="p-3 bg-white rounded-full shadow-sm hover:bg-white border-2 border-orange-100 transition-colors"
           aria-label="뒤로가기"
         >
           <ChevronLeft size={32} className="text-orange-500" />
         </button>
       </div>
 
-      <h2 className="text-4xl font-black text-stone-800 mb-8 text-center mt-12 leading-tight">
-        어떤 난이도로<br/>해볼까요? 🤔
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ type: 'spring', stiffness: 200, delay: 0.1 }}
+        className="w-20 h-20 mx-auto mb-4 mt-12"
+      >
+        <img src="/joy-focused.png" alt="JOY" className="w-full h-full object-contain" />
+      </motion.div>
+
+      <h2 className="text-3xl font-black text-stone-800 mb-8 text-center leading-tight">
+        어떤 난이도로<br/>해볼까요?
       </h2>
 
       <div className="w-full space-y-5">
@@ -72,9 +81,9 @@ export function DifficultySelector({ onSelect, onBack, defaultLevel }: Props) {
               whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => onSelect(diff.id)}
-              className={`w-full flex items-center p-6 rounded-3xl border-b-8 ${diff.border} ${diff.color} shadow-sm transition-colors text-left relative ${defaultLevel === diff.id ? 'ring-4 ring-orange-300' : ''}`}
+              className={`w-full flex items-center p-6 rounded-3xl ${diff.color} ${diff.shadow} transition-colors text-left relative ${defaultLevel === diff.id ? 'ring-4 ring-orange-300' : ''}`}
             >
-              <div className="bg-white/80 backdrop-blur-sm p-4 rounded-2xl mr-5 shadow-sm rotate-3">
+              <div className="bg-white p-4 rounded-2xl mr-5 shadow-sm rotate-3">
                 <Icon size={36} className={diff.iconColor} />
               </div>
               <div>

@@ -16,7 +16,7 @@ interface Preset {
   icon: any;
   bookIds: string[];
   color: string;
-  border: string;
+  shadow: string;
   iconColor: string;
 }
 
@@ -24,22 +24,22 @@ const presets: Preset[] = [
   {
     id: 'wisdom', label: '시편/잠언', desc: '위로와 지혜',
     icon: BookOpen, bookIds: ['psa', 'pro'],
-    color: 'bg-violet-100 hover:bg-violet-200', border: 'border-violet-300', iconColor: 'text-violet-500',
+    color: 'bg-violet-100 hover:bg-violet-200', shadow: 'shadow-[0_8px_0_var(--color-violet-300)]', iconColor: 'text-violet-500',
   },
   {
     id: 'gospel', label: '복음서', desc: '예수님의 이야기',
     icon: Cross, bookIds: ['mat', 'mrk', 'luk', 'jhn'],
-    color: 'bg-rose-100 hover:bg-rose-200', border: 'border-rose-300', iconColor: 'text-rose-500',
+    color: 'bg-rose-100 hover:bg-rose-200', shadow: 'shadow-[0_8px_0_var(--color-rose-300)]', iconColor: 'text-rose-500',
   },
   {
     id: 'genesis', label: '창세기부터', desc: '처음부터 차근차근',
     icon: Scroll, bookIds: ['gen', 'exo'],
-    color: 'bg-amber-100 hover:bg-amber-200', border: 'border-amber-300', iconColor: 'text-amber-500',
+    color: 'bg-amber-100 hover:bg-amber-200', shadow: 'shadow-[0_8px_0_var(--color-amber-300)]', iconColor: 'text-amber-500',
   },
   {
     id: 'paul', label: '바울서신', desc: '믿음의 편지',
     icon: Mail, bookIds: ['rom', '1co', 'eph'],
-    color: 'bg-sky-100 hover:bg-sky-200', border: 'border-sky-300', iconColor: 'text-sky-500',
+    color: 'bg-sky-100 hover:bg-sky-200', shadow: 'shadow-[0_8px_0_var(--color-sky-300)]', iconColor: 'text-sky-500',
   },
 ];
 
@@ -63,9 +63,9 @@ export function InterestStep({ level, onSelect }: Props) {
             initial={{ y: -10 }}
             animate={{ y: [0, -8, 0] }}
             transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
-            className="text-6xl mb-6"
+            className="w-24 h-24 mx-auto mb-6"
           >
-            📖
+            <img src="/joy-proud.png" alt="JOY" className="w-full h-full object-contain" />
           </motion.div>
           <h2 className="text-3xl font-black text-stone-800 mb-4">
             시편, 잠언, 창세기로<br />시작할게요!
@@ -135,9 +135,9 @@ export function InterestStep({ level, onSelect }: Props) {
               whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => togglePreset(preset)}
-              className={`w-full flex items-center p-5 rounded-3xl border-b-8 ${preset.border} ${preset.color} shadow-sm transition-colors text-left relative ${active ? 'ring-4 ring-orange-300' : ''}`}
+              className={`w-full flex items-center p-5 rounded-3xl ${preset.shadow} ${preset.color} transition-colors text-left relative ${active ? 'ring-4 ring-orange-300' : ''}`}
             >
-              <div className="bg-white/80 backdrop-blur-sm p-3 rounded-2xl mr-4 shadow-sm rotate-3">
+              <div className="bg-white p-3 rounded-2xl mr-4 shadow-sm rotate-3">
                 <Icon size={28} className={preset.iconColor} />
               </div>
               <div className="flex-1">
@@ -177,7 +177,7 @@ export function InterestStep({ level, onSelect }: Props) {
                 className="w-full overflow-hidden"
               >
                 {/* Testament tabs */}
-                <div className="flex bg-white/50 p-1.5 rounded-3xl shadow-inner border-2 border-orange-100 mb-4">
+                <div className="flex bg-white p-1.5 rounded-3xl shadow-inner border-2 border-orange-100 mb-4">
                   <button
                     className={`flex-1 py-2.5 rounded-2xl font-black text-lg transition-colors ${
                       gridTestament === 'old' ? 'bg-white text-amber-600 shadow-sm border-2 border-amber-100' : 'text-stone-500'
@@ -206,14 +206,14 @@ export function InterestStep({ level, onSelect }: Props) {
                         key={book.id}
                         whileTap={{ scale: 0.9 }}
                         onClick={() => toggleGridBook(book.id)}
-                        className={`aspect-square rounded-3xl border-b-8 shadow-sm transition-colors flex flex-col justify-between p-2.5 text-left ${
+                        className={`aspect-square rounded-3xl transition-colors flex flex-col justify-between p-2.5 text-left ${
                           active
                             ? isOld
-                              ? 'bg-amber-200 border-amber-400 ring-4 ring-orange-300'
-                              : 'bg-indigo-200 border-indigo-400 ring-4 ring-orange-300'
+                              ? 'bg-amber-200 shadow-[0_8px_0_var(--color-amber-400)] ring-4 ring-orange-300'
+                              : 'bg-indigo-200 shadow-[0_8px_0_var(--color-indigo-400)] ring-4 ring-orange-300'
                             : isOld
-                              ? 'bg-amber-100 border-amber-300 hover:bg-amber-200'
-                              : 'bg-indigo-100 border-indigo-300 hover:bg-indigo-200'
+                              ? 'bg-amber-100 shadow-[0_8px_0_var(--color-amber-300)] hover:bg-amber-200'
+                              : 'bg-indigo-100 shadow-[0_8px_0_var(--color-indigo-300)] hover:bg-indigo-200'
                         }`}
                         aria-label={book.name}
                       >

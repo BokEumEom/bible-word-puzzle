@@ -29,7 +29,7 @@ const sizeClass: Record<Size, { button: string; icon: number }> = {
 };
 
 /**
- * 3D 액션 버튼 — 듀오링고 시그니처 border-b-4 스타일.
+ * 3D 액션 버튼 — 듀오링고 시그니처 box-shadow 스타일.
  * 모든 CTA에 이 컴포넌트를 사용하여 일관된 버튼 시스템을 유지합니다.
  */
 export function ActionButton({

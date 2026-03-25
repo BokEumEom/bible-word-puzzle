@@ -22,11 +22,11 @@ const colorMap: Record<string, { bg: string; border: string; text: string; bar: 
 
 export function CollectionList({ completedVerses, onSelectCollection, onBack }: Props) {
   return (
-    <div className="min-h-screen p-4 max-w-2xl mx-auto pt-6">
+    <div className="min-h-screen p-4 max-w-2xl mx-auto pt-6 pb-24">
       <div className="flex items-center gap-3 mb-6">
         <button
           onClick={onBack}
-          className="p-3 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-white border-2 border-orange-100 transition-colors"
+          className="p-3 bg-white rounded-full shadow-sm hover:bg-white border-2 border-orange-100 transition-colors"
           aria-label="뒤로 가기"
         >
           <ChevronLeft size={28} className="text-orange-500" />
@@ -46,7 +46,7 @@ export function CollectionList({ completedVerses, onSelectCollection, onBack }: 
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.06, type: 'spring', stiffness: 300, damping: 30 }}
               onClick={() => onSelectCollection(collection)}
-              className={`w-full text-left p-4 rounded-2xl border-2 border-b-4 transition-all ${colors.bg} ${colors.border} active:border-b-2 active:translate-y-0.5`}
+              className={`w-full text-left p-4 rounded-2xl border-2 transition-all ${colors.bg} ${colors.border}`}
             >
               <div className="flex items-center gap-3">
                 <span className="text-3xl shrink-0">{collection.emoji}</span>

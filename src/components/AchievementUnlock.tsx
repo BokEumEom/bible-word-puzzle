@@ -11,12 +11,12 @@ interface Props {
   onDismiss: () => void;
 }
 
-const categoryColors: Record<AchievementCategory, { border: string; text: string; bg: string }> = {
-  '학습': { border: 'border-emerald-200', text: 'text-emerald-600', bg: 'bg-emerald-100' },
-  '연속': { border: 'border-orange-200', text: 'text-orange-600', bg: 'bg-orange-100' },
-  '도전': { border: 'border-amber-200', text: 'text-amber-600', bg: 'bg-amber-100' },
-  '헌신': { border: 'border-violet-200', text: 'text-violet-600', bg: 'bg-violet-100' },
-  '수집': { border: 'border-rose-200', text: 'text-rose-600', bg: 'bg-rose-100' },
+const categoryColors: Record<AchievementCategory, { shadow: string; text: string; bg: string }> = {
+  '학습': { shadow: 'shadow-[0_8px_0_var(--color-emerald-200)]', text: 'text-emerald-600', bg: 'bg-emerald-100' },
+  '연속': { shadow: 'shadow-[0_8px_0_var(--color-orange-200)]', text: 'text-orange-600', bg: 'bg-orange-100' },
+  '도전': { shadow: 'shadow-[0_8px_0_var(--color-amber-200)]', text: 'text-amber-600', bg: 'bg-amber-100' },
+  '헌신': { shadow: 'shadow-[0_8px_0_var(--color-violet-200)]', text: 'text-violet-600', bg: 'bg-violet-100' },
+  '수집': { shadow: 'shadow-[0_8px_0_var(--color-rose-200)]', text: 'text-rose-600', bg: 'bg-rose-100' },
 };
 
 export function AchievementUnlock({ show, achievement, onDismiss }: Props) {
@@ -38,7 +38,7 @@ export function AchievementUnlock({ show, achievement, onDismiss }: Props) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onDismiss}
-          className="fixed inset-0 z-[65] flex items-center justify-center bg-black/40 backdrop-blur-sm p-6"
+          className="fixed inset-0 z-[65] flex items-center justify-center bg-black/40 p-6"
         >
           <motion.div
             initial={{ scale: 0.3, rotate: -10 }}
@@ -46,7 +46,7 @@ export function AchievementUnlock({ show, achievement, onDismiss }: Props) {
             exit={{ scale: 0.3, opacity: 0 }}
             transition={animations.celebration}
             onClick={(e) => e.stopPropagation()}
-            className={`card-celebration border-b-8 ${colors.border} p-8 max-w-sm w-full text-center`}
+            className={`card-celebration ${colors.shadow} p-8 max-w-sm w-full text-center`}
           >
             <motion.div
               animate={{ rotate: [0, -5, 5, -5, 0] }}

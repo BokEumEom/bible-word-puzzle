@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { LevelInfo } from '../data/levels';
 import { useSound } from '../hooks/useSound';
-import { Star } from 'lucide-react';
+// Star icon removed — using JOY mascot instead
 import { animations } from '../design/tokens';
 
 interface Props {
@@ -28,7 +28,7 @@ export function LevelUpCelebration({ show, newLevel, onDismiss }: Props) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onDismiss}
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm p-6"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-6"
         >
           <motion.div
             initial={{ scale: 0.3, rotate: -10 }}
@@ -36,19 +36,21 @@ export function LevelUpCelebration({ show, newLevel, onDismiss }: Props) {
             exit={{ scale: 0.3, opacity: 0 }}
             transition={animations.celebration}
             onClick={(e) => e.stopPropagation()}
-            className="card-celebration border-b-8 border-violet-200 p-8 max-w-sm w-full text-center"
+            className="card-celebration shadow-[0_8px_0_var(--color-violet-200)] p-8 max-w-sm w-full text-center"
           >
             <motion.div
-              animate={{ rotate: [0, -5, 5, -5, 0] }}
-              transition={{ duration: 0.6, delay: 0.3 }}
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+              className="w-24 h-24 mx-auto mb-2"
             >
-              <Star className="text-amber-400 fill-amber-400 mx-auto mb-2" size={48} />
+              <img src="/joy-excited.png" alt="JOY" className="w-full h-full object-contain" />
             </motion.div>
 
             <motion.p
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
+              transition={{ delay: 0.3 }}
               className="text-lg font-bold text-violet-500 mb-2"
             >
               레벨 업!
@@ -58,7 +60,7 @@ export function LevelUpCelebration({ show, newLevel, onDismiss }: Props) {
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.4, type: 'spring', stiffness: 200 }}
-              className="text-7xl mb-3"
+              className="text-5xl mb-3"
             >
               {newLevel.emoji}
             </motion.div>

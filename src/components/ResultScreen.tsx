@@ -41,7 +41,7 @@ export function ResultScreen({ stars, total, sessionStats, onHome, onRetry, onCh
       animate={{ opacity: 1, scale: 1 }}
       className="flex flex-col items-center justify-center min-h-screen p-6 text-center max-w-md mx-auto"
     >
-      {/* Header celebration */}
+      {/* JOY celebration */}
       <motion.div
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -49,12 +49,16 @@ export function ResultScreen({ stars, total, sessionStats, onHome, onRetry, onCh
         className="w-full mb-6"
       >
         <motion.div
-          initial={{ scale: 0, rotate: -180 }}
-          animate={{ scale: 1, rotate: 0 }}
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
           transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
-          className="mb-3"
+          className="w-24 h-24 mx-auto mb-3"
         >
-          <Star size={56} className="text-amber-400 mx-auto drop-shadow-sm" fill="currentColor" />
+          <img
+            src={accuracy === 100 ? '/joy-excited.png' : accuracy >= 80 ? '/joy-proud.png' : '/joy-support.png'}
+            alt="JOY"
+            className="w-full h-full object-contain"
+          />
         </motion.div>
         <h2 className="text-3xl font-black text-stone-800">
           {getEncouragingMessage(sessionStats, stars, total)}

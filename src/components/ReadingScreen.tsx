@@ -37,13 +37,13 @@ export function ReadingScreen({ verse, onBack }: Props) {
       <div className="flex items-center justify-between p-4 pt-6">
         <button
           onClick={onBack}
-          className="p-3 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-white border-2 border-stone-200 transition-colors"
+          className="p-3 bg-white rounded-full shadow-sm hover:bg-white border-2 border-stone-200 transition-colors"
         >
           <ChevronLeft size={28} className="text-stone-500" />
         </button>
         <button
           onClick={handleReadAloud}
-          className="p-3 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-white border-2 border-stone-200 transition-colors"
+          className="p-3 bg-white rounded-full shadow-sm hover:bg-white border-2 border-stone-200 transition-colors"
         >
           <Volume2 size={24} className="text-stone-500" />
         </button>

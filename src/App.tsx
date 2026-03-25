@@ -25,6 +25,7 @@ import { CollectionList } from './components/CollectionList';
 import { CollectionDetail } from './components/CollectionDetail';
 import { CollectionCompleteScreen } from './components/CollectionCompleteScreen';
 import { UpdatePrompt } from './components/UpdatePrompt';
+import { BottomTabBar } from './components/ui/BottomTabBar';
 import { ChevronLeft } from 'lucide-react';
 import { useUserProgress } from './hooks/useUserProgress';
 import { XpEvent } from './utils/xp';
@@ -92,10 +93,6 @@ export default function App() {
 
   const startPreset = () => {
     setGameState('difficulty');
-  };
-
-  const startExplore = () => {
-    setGameState('select-bible');
   };
 
   const selectDifficulty = (diff: Difficulty) => {
@@ -341,10 +338,9 @@ export default function App() {
             <Dashboard
               progress={progress}
               isDailyGoalMet={isDailyGoalMet}
-              onStartExplore={startExplore}
+              currentLevel={currentLevel}
               onStartPreset={startPreset}
               onSelectVerse={handleBibleSelect}
-              onOpenProfile={() => setGameState('profile')}
               onOpenCollections={() => setGameState('collection-list')}
             />
           </motion.div>
@@ -355,7 +351,6 @@ export default function App() {
             <ProfileScreen
               progress={progress}
               level={currentLevel}
-              onBack={goHome}
               onResetOnboarding={handleResetOnboarding}
             />
           </motion.div>
@@ -439,7 +434,7 @@ export default function App() {
             <div className="flex items-center mb-8">
               <button 
                 onClick={() => setGameState('select-mode')}
-                className="p-3 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-white border-2 border-orange-100 transition-colors"
+                className="p-3 bg-white rounded-full shadow-sm hover:bg-white border-2 border-orange-100 transition-colors"
               >
                 <ChevronLeft size={32} className="text-orange-500" />
               </button>
@@ -495,7 +490,7 @@ export default function App() {
             <div className="flex items-center mb-8">
               <button
                 onClick={() => setGameState('collection-detail')}
-                className="p-3 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-white border-2 border-orange-100 transition-colors"
+                className="p-3 bg-white rounded-full shadow-sm hover:bg-white border-2 border-orange-100 transition-colors"
               >
                 <ChevronLeft size={32} className="text-orange-500" />
               </button>
@@ -524,6 +519,14 @@ export default function App() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <BottomTabBar
+        gameState={gameState}
+        onNavigate={(target) => {
+          setGameState(target);
+          setSelectedCustomVerse(null);
+        }}
+      />
 
       <XpGainAnimation
         xpEvent={lastXpEvent}

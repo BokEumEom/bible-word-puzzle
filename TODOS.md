@@ -47,3 +47,29 @@ A `dispatch({ type: 'SELECT_BOOK', book })` pattern would make invalid transitio
 4. TTS: reading screen plays audio, navigating away stops it
 
 **Depends on:** Vitest setup (done). Playwright is an independent addition.
+
+## P2: Empty State 컴포넌트 구현
+
+**What:** 5개 화면(최근 말씀, 좋아하는 말씀, 업적, 복습 알림, 컬렉션 진행)에 빈 상태 디자인 추가.
+
+**Why:** 새 사용자는 데이터 없는 상태로 시작. 현재 데이터 없으면 섹션이 사라지거나 빈 화면 표시 — 기능이 있는지조차 모름. 듀오링고는 빈 상태를 따뜻한 안내 + CTA로 처리.
+
+**Pros:** 첫 사용자 경험 대폭 개선, 기능 발견성 향상.
+**Cons:** 5개 빈 상태 컴포넌트 추가.
+
+**Context:** DESIGN.md "Empty States" 섹션에 각 화면별 이모지/메시지/CTA 스펙 정의됨. 공통 EmptyState 컴포넌트를 만들고 각 화면에서 사용.
+
+**Depends on:** DESIGN.md (완료). 독립 작업 가능.
+
+## P3: aria-label 전체 추가
+
+**What:** 모든 인터랙티브 요소(버튼, 카드, 링크)에 의미있는 aria-label 추가.
+
+**Why:** 현재 프로필 버튼만 aria-label 있음. 뒤로가기 버튼, 카드 버튼, 3D 버튼 등에 없음.
+
+**Pros:** 접근성 기본 충족, 스크린 리더 지원.
+**Cons:** 많은 파일에 소규모 변경.
+
+**Context:** 모바일 PWA이므로 키보드 네비게이션보다 스크린 리더 지원이 우선.
+
+**Depends on:** Nothing. 독립 작업 가능.

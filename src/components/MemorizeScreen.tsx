@@ -35,7 +35,7 @@ export function MemorizeScreen({ verse, onBack }: Props) {
       <div className="flex items-center mb-8">
         <button 
           onClick={onBack}
-          className="p-3 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-white border-2 border-orange-100 transition-colors"
+          className="p-3 bg-white rounded-full shadow-sm hover:bg-white border-2 border-orange-100 transition-colors"
         >
           <ChevronLeft size={32} className="text-orange-500" />
         </button>
@@ -50,11 +50,11 @@ export function MemorizeScreen({ verse, onBack }: Props) {
         </button>
       </div>
 
-      <div className="bg-orange-50/80 backdrop-blur-sm text-orange-800 p-4 rounded-2xl mb-8 text-xl border-2 border-orange-200 text-center font-bold">
+      <div className="bg-orange-50 text-orange-800 p-4 rounded-2xl mb-8 text-xl border-2 border-orange-200 text-center font-bold">
         가리고 싶은 단어를 콕콕 눌러보세요!
       </div>
 
-      <div className="bg-white/90 backdrop-blur-md p-8 rounded-3xl shadow-sm border-4 border-amber-200 w-full relative mb-8">
+      <div className="bg-white p-8 rounded-3xl shadow-sm border-4 border-amber-200 w-full relative mb-8">
         <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-amber-400 text-stone-800 px-6 py-2 rounded-full font-black text-2xl shadow-sm border-2 border-amber-500 whitespace-nowrap">
           {verse.reference}
         </div>

@@ -42,24 +42,24 @@ button, [role="button"] {
  * 3 variants × 3D bottom-border effect (듀오링고 시그니처)
  */
 
-/* Primary: orange gradient — 주요 CTA */
+/* Primary: orange gradient — 주요 CTA (box-shadow 3D) */
 .btn-primary {
-  @apply bg-gradient-to-b from-orange-400 to-orange-500 text-white font-black shadow-sm border-b-4 border-orange-600 rounded-full transition-transform hover:scale-105 active:scale-95 active:border-b-0 active:translate-y-1;
+  @apply bg-gradient-to-b from-orange-400 to-orange-500 text-white font-black shadow-[0_4px_0_var(--color-orange-600)] rounded-full transition-all hover:scale-105 active:scale-95 active:shadow-none active:translate-y-1;
 }
 
-/* Secondary: white — 보조 액션 */
+/* Secondary: white — 보조 액션 (box-shadow 3D) */
 .btn-secondary {
-  @apply bg-white text-orange-500 font-black shadow-sm border-b-4 border-orange-200 rounded-full transition-transform hover:scale-105 active:scale-95 active:border-b-0 active:translate-y-1;
+  @apply bg-white text-orange-500 font-black shadow-[0_4px_0_var(--color-orange-200)] rounded-full transition-all hover:scale-105 active:scale-95 active:shadow-none active:translate-y-1;
 }
 
-/* Success: emerald — 정답/완료/계속하기 */
+/* Success: emerald — 정답/완료/계속하기 (box-shadow 3D) */
 .btn-success {
-  @apply bg-emerald-500 text-white font-black shadow-sm border-b-4 border-emerald-700 rounded-full transition-transform hover:bg-emerald-600 active:scale-95 active:border-b-0 active:translate-y-1;
+  @apply bg-emerald-500 text-white font-black shadow-[0_4px_0_var(--color-emerald-700)] rounded-full transition-all hover:bg-emerald-600 active:scale-95 active:shadow-none active:translate-y-1;
 }
 
-/* Warning: amber — 오답 후 다시 도전 */
+/* Warning: amber — 오답 후 다시 도전 (box-shadow 3D) */
 .btn-warning {
-  @apply bg-amber-400 text-white font-black shadow-sm border-b-4 border-amber-600 rounded-full transition-transform hover:bg-amber-500 active:scale-95 active:border-b-0 active:translate-y-1;
+  @apply bg-amber-400 text-white font-black shadow-[0_4px_0_var(--color-amber-600)] rounded-full transition-all hover:bg-amber-500 active:scale-95 active:shadow-none active:translate-y-1;
 }
 
 /* Ghost: transparent — 최소 강조 */
@@ -67,9 +67,9 @@ button, [role="button"] {
   @apply bg-transparent text-stone-600 font-black rounded-full transition-colors hover:bg-stone-100 active:scale-95;
 }
 
-/* Disabled state — 모든 버튼 공통 */
+/* Disabled state — 모든 버튼 공통 (box-shadow 3D) */
 .btn-disabled {
-  @apply bg-stone-200 text-stone-400 cursor-not-allowed border-b-4 border-stone-300 rounded-full;
+  @apply bg-stone-200 text-stone-400 cursor-not-allowed shadow-[0_4px_0_var(--color-stone-300)] rounded-full;
 }
 
 /*
@@ -77,19 +77,19 @@ button, [role="button"] {
  * 일관된 카드 스타일
  */
 
-/* 기본 카드 */
+/* 기본 카드 — 솔리드 배경 (듀오링고 스타일) */
 .card {
-  @apply bg-white/90 backdrop-blur-sm rounded-2xl shadow-sm border-2 border-stone-100;
+  @apply bg-white rounded-2xl shadow-sm border-2 border-stone-200;
 }
 
-/* 피처드 카드 (큰 CTA, 오늘의 말씀 등) */
+/* 피처드 카드 (큰 CTA, 오늘의 말씀 등) — 솔리드 */
 .card-featured {
-  @apply bg-white/90 backdrop-blur-sm rounded-3xl shadow-md border-4;
+  @apply bg-white rounded-3xl shadow-md border-2 border-stone-200;
 }
 
-/* 셀레브레이션/모달 카드 */
+/* 셀레브레이션/모달 카드 — 솔리드 */
 .card-celebration {
-  @apply bg-white/95 backdrop-blur-md rounded-3xl shadow-lg border-4;
+  @apply bg-white rounded-3xl shadow-lg border-2 border-stone-200;
 }
 
 /*

@@ -29,7 +29,7 @@ export class ErrorBoundary extends Component<Props, State> {
           <p className="text-stone-500 font-bold">걱정 마세요, 다시 시도해 볼까요?</p>
           <button
             onClick={this.handleReset}
-            className="flex items-center gap-2 px-6 py-3 bg-orange-400 text-white font-black text-lg rounded-2xl shadow-sm border-b-4 border-orange-600 hover:bg-orange-500 transition-colors"
+            className="flex items-center gap-2 px-6 py-3 bg-orange-400 text-white font-black text-lg rounded-2xl shadow-[0_4px_0_var(--color-orange-600)] hover:bg-orange-500 transition-colors"
           >
             <RefreshCw size={20} />
             다시 시작하기

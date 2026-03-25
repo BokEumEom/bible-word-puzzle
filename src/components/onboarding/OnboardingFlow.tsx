@@ -66,7 +66,7 @@ export function OnboardingFlow({ onComplete, onSkip }: Props) {
             animate={{ opacity: 1 }}
             whileTap={{ scale: 0.9 }}
             onClick={onSkip}
-            className="absolute left-6 p-2 bg-white/80 backdrop-blur-sm rounded-full shadow-sm border-2 border-orange-100 hover:bg-orange-50 transition-colors"
+            className="absolute left-6 p-2 bg-white rounded-full shadow-sm border-2 border-orange-100 hover:bg-orange-50 transition-colors"
             aria-label="닫기"
           >
             <X size={20} className="text-stone-400" />

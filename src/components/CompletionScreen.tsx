@@ -22,14 +22,18 @@ export function CompletionScreen({ verse, nextVerse, sessionStats, onNextVerse, 
       animate={{ opacity: 1, scale: 1 }}
       className="flex flex-col items-center justify-center min-h-screen p-6 text-center max-w-md mx-auto"
     >
-      {/* Header */}
+      {/* JOY celebration */}
       <motion.div
-        initial={{ scale: 0, rotate: -180 }}
-        animate={{ scale: 1, rotate: 0 }}
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
         transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
-        className="mb-3"
+        className="w-24 h-24 mx-auto mb-3"
       >
-        <Star size={56} className="text-amber-400 mx-auto drop-shadow-sm" fill="currentColor" />
+        <img
+          src={isBookComplete ? '/joy-excited.png' : '/joy-proud.png'}
+          alt="JOY"
+          className="w-full h-full object-contain"
+        />
       </motion.div>
       <motion.h2
         initial={{ opacity: 0, y: 10 }}

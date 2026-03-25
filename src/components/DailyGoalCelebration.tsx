@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useSound } from '../hooks/useSound';
-import { Trophy } from 'lucide-react';
+// Trophy icon removed — using JOY mascot instead
 import { animations } from '../design/tokens';
 
 interface Props {
@@ -27,7 +27,7 @@ export function DailyGoalCelebration({ show, onDismiss }: Props) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onDismiss}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
         >
           <motion.div
             initial={{ scale: 0, rotate: -20 }}
@@ -39,8 +39,9 @@ export function DailyGoalCelebration({ show, onDismiss }: Props) {
             <motion.div
               animate={{ y: [0, -10, 0] }}
               transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
+              className="w-24 h-24 mx-auto mb-4"
             >
-              <Trophy size={72} className="text-violet-500 mx-auto mb-4" />
+              <img src="/joy-excited.png" alt="JOY" className="w-full h-full object-contain" />
             </motion.div>
             <h2 className="text-3xl font-black text-stone-800 mb-2">
               목표 달성!

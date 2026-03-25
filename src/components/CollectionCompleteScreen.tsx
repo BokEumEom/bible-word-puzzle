@@ -36,7 +36,7 @@ export function CollectionCompleteScreen({
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: 'spring', bounce: 0.5, delay: 0.2 }}
-        className="bg-white/90 backdrop-blur-md p-8 rounded-3xl shadow-sm border-4 border-emerald-200 w-full mb-8 relative overflow-hidden"
+        className="bg-white p-8 rounded-3xl shadow-sm border-4 border-emerald-200 w-full mb-8 relative overflow-hidden"
       >
         <motion.div
           initial={{ scale: 0 }}
@@ -46,16 +46,16 @@ export function CollectionCompleteScreen({
         />
 
         <motion.div
-          initial={{ scale: 0, rotate: -180 }}
-          animate={{ scale: 1, rotate: 0 }}
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
           transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
-          className="mb-4"
+          className="w-24 h-24 mx-auto mb-4"
         >
-          {isCollectionComplete ? (
-            <Trophy size={64} className="text-amber-400 mx-auto drop-shadow-sm" fill="currentColor" />
-          ) : (
-            <Star size={64} className="text-amber-400 mx-auto drop-shadow-sm" fill="currentColor" />
-          )}
+          <img
+            src={isCollectionComplete ? '/joy-excited.png' : '/joy-proud.png'}
+            alt="JOY"
+            className="w-full h-full object-contain"
+          />
         </motion.div>
 
         <h2 className="text-3xl font-black text-stone-800 mb-2 relative z-10">

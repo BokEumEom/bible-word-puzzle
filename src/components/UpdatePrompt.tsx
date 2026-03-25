@@ -25,7 +25,7 @@ export function UpdatePrompt() {
           exit={{ opacity: 0, y: 80 }}
           className="fixed bottom-6 left-4 right-4 z-50 max-w-md mx-auto"
         >
-          <div className="bg-white/95 backdrop-blur-sm p-4 rounded-2xl shadow-lg border-b-4 border-orange-200 flex items-center gap-3">
+          <div className="bg-white p-4 rounded-2xl shadow-[0_4px_0_var(--color-orange-200)] flex items-center gap-3">
             <div className="bg-orange-100 p-2.5 rounded-xl shrink-0">
               <RefreshCw size={20} className="text-orange-500" />
             </div>

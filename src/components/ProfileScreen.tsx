@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { ChevronLeft, Flame, CheckCircle2, Target, Trophy, RotateCcw, Settings, Volume2, VolumeX } from 'lucide-react';
+import { Flame, CheckCircle2, Target, Trophy, RotateCcw, Settings, Volume2, VolumeX } from 'lucide-react';
 import { SectionTitle } from './ui/SectionTitle';
 import { LevelInfo, getXpProgress } from '../data/levels';
 import { UserProgress } from '../hooks/useUserProgress';
@@ -10,16 +10,15 @@ import { useSound } from '../hooks/useSound';
 interface Props {
   progress: UserProgress;
   level: LevelInfo;
-  onBack: () => void;
   onResetOnboarding?: () => void;
 }
 
-const categoryBorderColors: Record<AchievementCategory, string> = {
-  '학습': 'border-emerald-200',
-  '연속': 'border-orange-200',
-  '도전': 'border-amber-200',
-  '헌신': 'border-violet-200',
-  '수집': 'border-rose-200',
+const categoryShadowColors: Record<AchievementCategory, string> = {
+  '학습': 'shadow-[0_4px_0_var(--color-emerald-200)]',
+  '연속': 'shadow-[0_4px_0_var(--color-orange-200)]',
+  '도전': 'shadow-[0_4px_0_var(--color-amber-200)]',
+  '헌신': 'shadow-[0_4px_0_var(--color-violet-200)]',
+  '수집': 'shadow-[0_4px_0_var(--color-rose-200)]',
 };
 
 function getStrengthDistribution(reviewData: UserProgress['reviewData']): { label: string; count: number; color: string }[] {
@@ -34,7 +33,7 @@ function getStrengthDistribution(reviewData: UserProgress['reviewData']): { labe
   ];
 }
 
-export function ProfileScreen({ progress, level, onBack, onResetOnboarding }: Props) {
+export function ProfileScreen({ progress, level, onResetOnboarding }: Props) {
   const { isMuted, toggleMute, play } = useSound();
   const { current, next, progress: xpProgress } = getXpProgress(progress.xp);
   const isMaxLevel = xpProgress === 1 && current === next;
@@ -51,32 +50,24 @@ export function ProfileScreen({ progress, level, onBack, onResetOnboarding }: Pr
       initial={{ opacity: 0, x: 40 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 40 }}
-      className="flex flex-col min-h-screen p-4 max-w-md mx-auto pt-6 pb-20"
+      className="flex flex-col min-h-screen p-4 max-w-md mx-auto pt-6 pb-24"
     >
-      {/* Header */}
-      <div className="flex items-center mb-8">
-        <button
-          onClick={onBack}
-          className="p-3 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-white border-2 border-orange-100 transition-colors"
-        >
-          <ChevronLeft size={24} className="text-orange-500" />
-        </button>
-        <h1 className="text-2xl font-black text-stone-800 ml-4">프로필</h1>
-      </div>
-
-      {/* Level Badge — Large */}
+      {/* Hero — JOY + Level */}
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 0.1 }}
-        className="bg-white/90 backdrop-blur-sm p-6 rounded-3xl shadow-sm border-b-4 border-violet-100 mb-6 text-center"
+        className="bg-white p-6 rounded-3xl shadow-[0_4px_0_var(--color-violet-100)] mb-6 text-center"
       >
-        <div className="text-5xl mb-2">{level.emoji}</div>
-        <div className="flex items-center justify-center gap-2 mb-3">
-          <span className="text-sm font-black text-violet-600">Lv.{level.level}</span>
-          <span className="text-xl font-black text-stone-800">{level.name}</span>
+        <div className="relative w-20 h-20 mx-auto mb-3">
+          <div className="absolute inset-0 rounded-full bg-violet-50" />
+          <img src="/joy-proud.png" alt="JOY" className="relative w-full h-full object-contain" />
         </div>
-        <div className="w-full h-3.5 bg-violet-100 rounded-full overflow-hidden mb-2">
+        <div className="flex items-center justify-center gap-2 mb-1">
+          <span className="text-sm font-black text-violet-600">Lv.{level.level}</span>
+          <span className="text-xl font-black text-stone-800">{level.name} {level.emoji}</span>
+        </div>
+        <div className="w-full h-3.5 bg-violet-100 rounded-full overflow-hidden mb-2 mt-3">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${Math.min(xpProgress * 100, 100)}%` }}
@@ -95,7 +86,7 @@ export function ProfileScreen({ progress, level, onBack, onResetOnboarding }: Pr
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
-          className="bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-sm border-b-4 border-orange-100 text-center"
+          className="bg-white p-4 rounded-2xl shadow-[0_4px_0_var(--color-orange-100)] text-center"
         >
           <Flame className="text-orange-500 mx-auto mb-1" size={24} />
           <p className="text-xl font-black text-orange-500">{progress.streak}일</p>
@@ -106,7 +97,7 @@ export function ProfileScreen({ progress, level, onBack, onResetOnboarding }: Pr
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-sm border-b-4 border-emerald-100 text-center"
+          className="bg-white p-4 rounded-2xl shadow-[0_4px_0_var(--color-emerald-100)] text-center"
         >
           <CheckCircle2 className="text-emerald-500 mx-auto mb-1" size={24} />
           <p className="text-xl font-black text-emerald-500">{Object.keys(progress.completedVerses).length}개</p>
@@ -117,7 +108,7 @@ export function ProfileScreen({ progress, level, onBack, onResetOnboarding }: Pr
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
-          className="bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-sm border-b-4 border-violet-100 text-center"
+          className="bg-white p-4 rounded-2xl shadow-[0_4px_0_var(--color-violet-100)] text-center"
         >
           <Target className="text-violet-500 mx-auto mb-1" size={24} />
           <p className="text-xl font-black text-violet-500">{progress.dailyGoalMetCount}일</p>
@@ -134,7 +125,7 @@ export function ProfileScreen({ progress, level, onBack, onResetOnboarding }: Pr
         <div className="grid grid-cols-4 gap-3">
           {achievements.map((achievement, index) => {
             const isUnlocked = progress.unlockedAchievements.includes(achievement.id);
-            const borderColor = isUnlocked ? categoryBorderColors[achievement.category] : 'border-stone-100';
+            const shadowColor = isUnlocked ? categoryShadowColors[achievement.category] : 'shadow-[0_4px_0_var(--color-stone-100)]';
 
             return (
               <motion.div
@@ -142,7 +133,7 @@ export function ProfileScreen({ progress, level, onBack, onResetOnboarding }: Pr
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.3 + index * 0.02, type: 'spring', stiffness: 200, damping: 15 }}
-                className={`bg-white/90 backdrop-blur-sm p-3 rounded-3xl shadow-sm border-b-4 ${borderColor} text-center ${!isUnlocked ? 'opacity-30 grayscale' : ''}`}
+                className={`bg-white p-3 rounded-3xl ${shadowColor} text-center ${!isUnlocked ? 'opacity-30 grayscale' : ''}`}
               >
                 <div className="text-2xl mb-1">
                   {isUnlocked ? achievement.emoji : '🔒'}
@@ -162,7 +153,7 @@ export function ProfileScreen({ progress, level, onBack, onResetOnboarding }: Pr
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="bg-white/90 backdrop-blur-sm p-5 rounded-3xl shadow-sm border-b-4 border-rose-100 mb-6"
+          className="bg-white p-5 rounded-3xl shadow-[0_4px_0_var(--color-rose-100)] mb-6"
         >
           <h2 className="text-lg font-black text-stone-800 mb-3 flex items-center gap-2">
             <RotateCcw className="text-rose-400" size={20} />
@@ -203,7 +194,7 @@ export function ProfileScreen({ progress, level, onBack, onResetOnboarding }: Pr
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className="bg-white/90 backdrop-blur-sm p-5 rounded-3xl shadow-sm border-b-4 border-stone-100"
+        className="bg-white p-5 rounded-3xl shadow-[0_4px_0_var(--color-stone-100)]"
       >
         <h2 className="text-lg font-black text-stone-800 mb-4 flex items-center gap-2">
           <Settings className="text-stone-400" size={20} />

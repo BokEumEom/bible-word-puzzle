@@ -32,12 +32,12 @@ export function CollectionDetail({ collection, completedVerses, onPlayVerse, onB
   const progress = getCollectionProgress(collection, completedVerses);
 
   return (
-    <div className="min-h-screen p-4 max-w-2xl mx-auto pt-6 pb-20">
+    <div className="min-h-screen p-4 max-w-2xl mx-auto pt-6 pb-24">
       {/* Header */}
       <div className="flex items-center gap-3 mb-4">
         <button
           onClick={onBack}
-          className="p-3 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-white border-2 border-orange-100 transition-colors"
+          className="p-3 bg-white rounded-full shadow-sm hover:bg-white border-2 border-orange-100 transition-colors"
           aria-label="뒤로 가기"
         >
           <ChevronLeft size={28} className="text-orange-500" />
@@ -48,7 +48,7 @@ export function CollectionDetail({ collection, completedVerses, onPlayVerse, onB
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className={`${colors.bg} rounded-3xl p-6 mb-6 border-2 border-b-4 ${colors.border}`}
+        className={`${colors.bg} rounded-3xl p-6 mb-6 border-2 ${colors.border}`}
       >
         <div className="flex items-center gap-3 mb-3">
           <span className="text-4xl">{collection.emoji}</span>
@@ -60,7 +60,7 @@ export function CollectionDetail({ collection, completedVerses, onPlayVerse, onB
 
         {/* Progress */}
         <div className="flex items-center gap-3 mt-4">
-          <div className="flex-1 h-3 bg-white/60 rounded-full overflow-hidden">
+          <div className="flex-1 h-3 bg-stone-100 rounded-full overflow-hidden">
             <motion.div
               className={`h-full ${colors.bar} rounded-full`}
               initial={{ width: 0 }}
@@ -91,7 +91,7 @@ export function CollectionDetail({ collection, completedVerses, onPlayVerse, onB
                 w-full text-left p-4 rounded-2xl border-2 transition-all flex items-center gap-3
                 ${completed
                   ? 'bg-white border-stone-100'
-                  : `${colors.bg} ${colors.border} border-b-4 active:border-b-2 active:translate-y-0.5`}
+                  : `${colors.bg} ${colors.border}`}
               `}
             >
               {/* Status Icon */}

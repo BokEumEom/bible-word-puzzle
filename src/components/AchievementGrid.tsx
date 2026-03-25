@@ -6,12 +6,12 @@ interface Props {
   unlockedIds: readonly string[];
 }
 
-const categoryBorderColors: Record<AchievementCategory, string> = {
-  '학습': 'border-emerald-200',
-  '연속': 'border-orange-200',
-  '도전': 'border-amber-200',
-  '헌신': 'border-violet-200',
-  '수집': 'border-rose-200',
+const categoryShadowColors: Record<AchievementCategory, string> = {
+  '학습': 'shadow-[0_4px_0_var(--color-emerald-200)]',
+  '연속': 'shadow-[0_4px_0_var(--color-orange-200)]',
+  '도전': 'shadow-[0_4px_0_var(--color-amber-200)]',
+  '헌신': 'shadow-[0_4px_0_var(--color-violet-200)]',
+  '수집': 'shadow-[0_4px_0_var(--color-rose-200)]',
 };
 
 export function AchievementGrid({ unlockedIds }: Props) {
@@ -27,7 +27,7 @@ export function AchievementGrid({ unlockedIds }: Props) {
         {achievements.map((achievement, index) => {
           const isUnlocked = unlockedIds.includes(achievement.id);
           const isRecent = achievement.id === lastUnlocked;
-          const borderColor = isUnlocked ? categoryBorderColors[achievement.category] : 'border-stone-100';
+          const shadowColor = isUnlocked ? categoryShadowColors[achievement.category] : 'shadow-[0_4px_0_var(--color-stone-100)]';
 
           return (
             <motion.div
@@ -35,7 +35,7 @@ export function AchievementGrid({ unlockedIds }: Props) {
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: index * 0.03, type: 'spring', stiffness: 200, damping: 15 }}
-              className={`bg-white/90 backdrop-blur-sm p-3 rounded-3xl shadow-sm border-b-4 ${borderColor} text-center ${!isUnlocked ? 'opacity-30 grayscale' : ''}`}
+              className={`bg-white p-3 rounded-3xl ${shadowColor} text-center ${!isUnlocked ? 'opacity-30 grayscale' : ''}`}
             >
               {isRecent && isUnlocked && (
                 <motion.div

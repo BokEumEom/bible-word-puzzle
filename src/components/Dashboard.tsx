@@ -1,21 +1,22 @@
 import { motion } from 'motion/react';
-import { BookOpen, Search, Flame, ChevronRight, Heart, Sparkles, Clock, User, RotateCcw, Library } from 'lucide-react';
+import { BookOpen, Flame, ChevronRight, Heart, Star, Clock, RotateCcw, Library } from 'lucide-react';
 import { Verse } from '../types';
 import { UserProgress } from '../hooks/useUserProgress';
+import { LevelInfo } from '../data/levels';
 import { verses as presetVerses } from '../data/verses';
 import { getRecommendations } from '../utils/recommend';
 import { getDueReviews } from '../utils/spaced';
 import { InstallPrompt } from './InstallPrompt';
 import { SectionTitle } from './ui/SectionTitle';
+import { ActionButton } from './ui/ActionButton';
 
 interface Props {
-  progress: UserProgress;
-  isDailyGoalMet: boolean;
-  onStartExplore: () => void;
-  onStartPreset: () => void;
-  onSelectVerse: (verse: Verse) => void;
-  onOpenProfile: () => void;
-  onOpenCollections: () => void;
+  readonly progress: UserProgress;
+  readonly isDailyGoalMet: boolean;
+  readonly currentLevel: LevelInfo;
+  readonly onStartPreset: () => void;
+  readonly onSelectVerse: (verse: Verse) => void;
+  readonly onOpenCollections: () => void;
 }
 
 function getGreeting(): string {
@@ -26,15 +27,45 @@ function getGreeting(): string {
   return '좋은 저녁이에요';
 }
 
-function getGreetingEmoji(): string {
-  const hour = new Date().getHours();
-  if (hour < 6) return '🌙';
-  if (hour < 12) return '☀️';
-  if (hour < 18) return '🌤️';
-  return '🌙';
+function getJoyMessage(options: {
+  isDailyGoalMet: boolean;
+  streak: number;
+  remainingReviews: number;
+  todayCompletions: number;
+  dailyGoal: number;
+  totalCompleted: number;
+}): string {
+  const { isDailyGoalMet, streak, remainingReviews, todayCompletions, dailyGoal, totalCompleted } = options;
+
+  if (isDailyGoalMet) return '오늘 목표 달성! 대단해!';
+  if (streak >= 7) return `벌써 ${streak}일째! 멋져!`;
+  if (remainingReviews > 0) return `다시 만날 말씀이 ${remainingReviews}개 있어!`;
+  if (todayCompletions > 0) {
+    const remaining = dailyGoal - todayCompletions;
+    return `${remaining}개 더 풀면 목표 달성!`;
+  }
+  if (totalCompleted === 0) return '첫 퍼즐을 풀어볼까?';
+  return getGreeting();
 }
 
-export function Dashboard({ progress, isDailyGoalMet, onStartExplore, onStartPreset, onSelectVerse, onOpenProfile, onOpenCollections }: Props) {
+function getJoyPose(options: {
+  isDailyGoalMet: boolean;
+  streak: number;
+  remainingReviews: number;
+  todayCompletions: number;
+  totalCompleted: number;
+}): string {
+  const { isDailyGoalMet, streak, remainingReviews, todayCompletions, totalCompleted } = options;
+
+  if (isDailyGoalMet) return '/joy-excited.png';
+  if (streak >= 7) return '/joy-proud.png';
+  if (remainingReviews > 0) return '/joy-focused.png';
+  if (todayCompletions > 0) return '/joy-support.png';
+  if (totalCompleted === 0) return '/joy-default.png';
+  return '/joy-default.png';
+}
+
+export function Dashboard({ progress, isDailyGoalMet, currentLevel, onStartPreset, onSelectVerse, onOpenCollections }: Props) {
   const today = new Date().toISOString().split('T')[0];
   const dateSeed = today.split('-').reduce((a, b) => a + parseInt(b), 0);
 
@@ -50,83 +81,156 @@ export function Dashboard({ progress, isDailyGoalMet, onStartExplore, onStartPre
 
   const todaysVerse = recommendations.dailyVerse.verse;
   const isReview = recommendations.dailyVerse.reason === 'review';
-  const goalProgress = Math.min(progress.todayCompletions / progress.dailyGoal, 1);
 
   const dueReviews = progress.reviewData ? getDueReviews(progress.reviewData, today) : [];
   const remainingReviews = isReview
     ? dueReviews.filter(r => r.verseId !== todaysVerse.id).length
     : dueReviews.length;
 
+  const totalCompleted = Object.values(progress.completedVerses).reduce((a, b) => a + b, 0);
+
+  const joyMessage = getJoyMessage({
+    isDailyGoalMet,
+    streak: progress.streak,
+    remainingReviews,
+    todayCompletions: progress.todayCompletions,
+    dailyGoal: progress.dailyGoal,
+    totalCompleted,
+  });
+
+  const filledStars = Math.min(progress.todayCompletions, progress.dailyGoal);
+
+  const joyPose = getJoyPose({
+    isDailyGoalMet,
+    streak: progress.streak,
+    remainingReviews,
+    todayCompletions: progress.todayCompletions,
+    totalCompleted,
+  });
+
+  // Quick pills
+  const pills: { key: string; icon: typeof RotateCcw; label: string; badge?: number; action: () => void }[] = [];
+
+  if (remainingReviews > 0) {
+    const reviewAction = recommendations.nextActions.find(a => a.type === 'review');
+    pills.push({
+      key: 'review',
+      icon: RotateCcw,
+      label: '복습',
+      badge: remainingReviews,
+      action: () => { if (reviewAction) onSelectVerse(reviewAction.verse); },
+    });
+  }
+
+  pills.push({
+    key: 'collections',
+    icon: Library,
+    label: '테마 모음',
+    action: onOpenCollections,
+  });
+
+  if (progress.favoriteVerses.length > 0) {
+    pills.push({
+      key: 'favorites',
+      icon: Heart,
+      label: '좋아하는',
+      action: () => onSelectVerse(progress.favoriteVerses[0]),
+    });
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="flex flex-col min-h-screen p-4 max-w-md mx-auto pt-6 pb-20"
+      className="flex flex-col min-h-screen p-4 max-w-md mx-auto pt-4 pb-24"
     >
-      {/* Header: Greeting + Profile */}
-      <div className="flex items-center justify-between mb-2">
-        <motion.h1
-          initial={{ opacity: 0, x: -10 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="text-xl font-black text-stone-800"
-        >
-          {getGreeting()} {getGreetingEmoji()}
-        </motion.h1>
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={onOpenProfile}
-          className="p-2.5 bg-white/80 backdrop-blur-sm rounded-full shadow-sm border-2 border-violet-100 hover:bg-violet-50 transition-colors"
-          aria-label="프로필"
-        >
-          <User size={20} className="text-violet-500" />
-        </motion.button>
-      </div>
-
-      {/* Streak + Daily Goal — single compact row */}
-      <div className="flex items-center gap-3 mb-6">
+      {/* LAYER 1: Status Bar */}
+      <div className="flex items-center gap-3 mb-4 h-12">
         <div className="flex items-center gap-1.5">
           <Flame size={16} className="text-orange-500" />
           <span className="text-sm font-black text-orange-500">{progress.streak}일</span>
         </div>
-        <div className="flex-1 h-2.5 bg-violet-100 rounded-full overflow-hidden">
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{
-              width: `${goalProgress * 100}%`,
-              boxShadow: isDailyGoalMet
-                ? ['0 0 0 0 rgba(139,92,246,0)', '0 0 8px 2px rgba(139,92,246,0.4)', '0 0 0 0 rgba(139,92,246,0)']
-                : '0 0 0 0 rgba(139,92,246,0)',
-            }}
-            transition={{ duration: 0.5, ease: 'easeOut' }}
-            className={`h-full rounded-full ${isDailyGoalMet ? 'bg-violet-500' : 'bg-violet-400'}`}
+        <div className="flex items-center gap-1.5">
+          <Star size={16} className="text-amber-500" fill="currentColor" />
+          <span className="text-sm font-black text-amber-500">{progress.xp}</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="text-sm">{currentLevel.emoji}</span>
+          <span className="text-sm font-black text-violet-500">Lv.{currentLevel.level} {currentLevel.name}</span>
+        </div>
+      </div>
+
+      {/* LAYER 2: JOY Hero Zone */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+        className="flex flex-col items-center mb-6"
+      >
+        {/* JOY mascot */}
+        <div className="relative w-30 h-30 mb-3">
+          <div className="absolute inset-0 rounded-full bg-amber-50" />
+          <img
+            src={joyPose}
+            alt="JOY"
+            className="relative w-full h-full object-contain drop-shadow-md"
           />
         </div>
-        <span className="text-sm font-black text-violet-500 whitespace-nowrap">
-          {isDailyGoalMet ? '목표 달성!' : `${progress.todayCompletions}/${progress.dailyGoal}`}
+
+        {/* Speech bubble */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="relative bg-white rounded-2xl shadow-sm border-2 border-amber-100 px-4 py-2.5 mb-4"
+        >
+          {/* Triangle tail */}
+          <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-b-8 border-b-white" />
+          <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[9px] border-l-transparent border-r-[9px] border-r-transparent border-b-[9px] border-b-amber-100" />
+          <p className="text-sm font-black text-stone-700 text-center">{joyMessage}</p>
+        </motion.div>
+
+        {/* Daily Stars */}
+        <div className="flex items-center gap-2 mb-1">
+          {Array.from({ length: progress.dailyGoal }, (_, i) => {
+            const isFilled = i < filledStars;
+            return (
+              <motion.div
+                key={i}
+                initial={false}
+                animate={isFilled ? { scale: [0, 1.3, 1], rotate: [0, 15, 0] } : { scale: 1 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+              >
+                <Star
+                  size={28}
+                  className={isFilled ? 'text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]' : 'text-stone-200'}
+                  fill={isFilled ? 'currentColor' : 'none'}
+                  strokeWidth={isFilled ? 1.5 : 2}
+                />
+              </motion.div>
+            );
+          })}
+        </div>
+        <span className="text-xs font-bold text-stone-400">
+          {isDailyGoalMet ? '목표 달성!' : `목표까지 ${progress.dailyGoal - filledStars}개 남았어!`}
         </span>
-      </div>
+      </motion.div>
 
       {/* Install Prompt */}
       <InstallPrompt />
 
-      {/* Today's Verse — original card style with "퍼즐로 만나기" CTA */}
-      <div className="mb-6">
+      {/* LAYER 3: Primary CTA — Today's Verse Card */}
+      <div className="mb-5">
         {isReview ? (
           <SectionTitle icon={RotateCcw} iconColor="text-emerald-500">다시 만나는 말씀</SectionTitle>
         ) : (
           <SectionTitle icon={BookOpen} iconColor="text-amber-500">오늘의 말씀</SectionTitle>
         )}
-        <motion.button
-          whileHover={{ scale: 1.02 }}
+        <motion.div
           whileTap={{ scale: 0.98 }}
-          onClick={() => onSelectVerse(todaysVerse)}
-          className={`w-full card-featured ${isReview ? 'border-emerald-200' : 'border-amber-200'} text-left p-5 hover:bg-white transition-colors relative overflow-hidden`}
+          className={`card-featured ${isReview ? 'border-emerald-200' : 'border-amber-200'} p-5 relative overflow-hidden`}
         >
-          <div className={`absolute -right-4 -top-4 opacity-5 ${isReview ? 'text-emerald-500' : 'text-amber-500'}`}>
-            {isReview ? <RotateCcw size={100} /> : <BookOpen size={100} />}
-          </div>
           <div className="flex items-center gap-2 mb-3">
             <span className={`inline-block ${isReview ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'} text-sm font-bold px-3 py-1 rounded-full shadow-sm`}>
               {todaysVerse.reference}
@@ -137,89 +241,55 @@ export function Dashboard({ progress, isDailyGoalMet, onStartExplore, onStartPre
               </span>
             )}
           </div>
-          <p className="text-base text-stone-700 font-bold leading-relaxed line-clamp-2">
+          <p className="text-base text-stone-700 font-bold leading-relaxed line-clamp-2 mb-3">
             {todaysVerse.verse}
           </p>
-          <div className={`mt-4 flex items-center ${isReview ? 'text-emerald-600' : 'text-amber-600'} font-black text-sm`}>
-            퍼즐로 만나기 <ChevronRight size={16} />
-          </div>
-        </motion.button>
+          <ActionButton
+            variant={isReview ? 'success' : 'primary'}
+            size="sm"
+            onClick={() => onSelectVerse(todaysVerse)}
+          >
+            퍼즐로 만나기
+          </ActionButton>
+        </motion.div>
       </div>
 
-      {/* Review reminder */}
-      {remainingReviews > 0 && (
-        <motion.button
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          whileTap={{ scale: 0.97 }}
-          onClick={() => {
-            const reviewAction = recommendations.nextActions.find(a => a.type === 'review');
-            if (reviewAction) onSelectVerse(reviewAction.verse);
-          }}
-          className="flex items-center gap-2 mb-6 px-4 py-2.5 bg-emerald-50/80 rounded-xl w-full text-left"
-        >
-          <RotateCcw size={15} className="text-emerald-500 shrink-0" />
-          <span className="text-sm font-medium text-emerald-600">
-            다시 만날 말씀 {remainingReviews}개
-          </span>
-          <ChevronRight size={14} className="text-emerald-400 ml-auto shrink-0" />
-        </motion.button>
+      {/* Quick Access Pills */}
+      {pills.length > 0 && (
+        <div className="flex gap-2.5 overflow-x-auto pb-1 mb-5 scrollbar-hide">
+          {pills.map((pill) => {
+            const PillIcon = pill.icon;
+            return (
+              <motion.button
+                key={pill.key}
+                whileTap={{ scale: 0.95 }}
+                onClick={pill.action}
+                className="shrink-0 flex items-center gap-1.5 bg-white rounded-full px-4 py-2.5 border-2 border-stone-100 shadow-[0_3px_0_var(--color-stone-200)] active:shadow-none active:translate-y-0.5 transition-all"
+              >
+                <PillIcon size={16} className="text-stone-500" />
+                <span className="text-sm font-black text-stone-700">{pill.label}</span>
+                {pill.badge !== undefined && (
+                  <span className="bg-emerald-500 text-white text-[10px] font-bold rounded-full min-w-4.5 h-4.5 flex items-center justify-center px-1">
+                    {pill.badge}
+                  </span>
+                )}
+              </motion.button>
+            );
+          })}
+        </div>
       )}
 
-      {/* 더 만나보기 — 3-column card grid (profile stats style) */}
-      <div className="grid grid-cols-3 gap-3 mb-6">
-        <motion.button
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={onStartPreset}
-          className="card p-4 border-b-4 border-orange-100 text-center"
-        >
-          <Sparkles className="text-orange-500 mx-auto mb-1" size={24} />
-          <p className="text-xl font-black text-orange-500">퍼즐</p>
-          <p className="text-xs font-bold text-stone-400">추천 퍼즐</p>
-        </motion.button>
-
-        <motion.button
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={onStartExplore}
-          className="card p-4 border-b-4 border-violet-100 text-center"
-        >
-          <Search className="text-violet-500 mx-auto mb-1" size={24} />
-          <p className="text-xl font-black text-violet-500">성경</p>
-          <p className="text-xs font-bold text-stone-400">66권 찾기</p>
-        </motion.button>
-
-        <motion.button
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={onOpenCollections}
-          className="card p-4 border-b-4 border-emerald-100 text-center"
-        >
-          <Library className="text-emerald-500 mx-auto mb-1" size={24} />
-          <p className="text-xl font-black text-emerald-500">테마</p>
-          <p className="text-xs font-bold text-stone-400">8개 모음</p>
-        </motion.button>
-      </div>
-
-      {/* Recent Verses — Horizontal Scroll */}
-      {progress.recentVerses.length > 0 && (
-        <div className="mb-6">
-          <SectionTitle icon={Clock} iconColor="text-emerald-500">최근 말씀</SectionTitle>
+      {/* Recent Verses — Horizontal Scroll + Empty State */}
+      <div className="mb-6">
+        <SectionTitle icon={Clock} iconColor="text-emerald-500">최근 말씀</SectionTitle>
+        {progress.recentVerses.length > 0 ? (
           <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-hide">
             {progress.recentVerses.slice(0, 5).map((verse) => (
               <motion.button
                 key={`recent-${verse.id}`}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => onSelectVerse(verse)}
-                className="shrink-0 w-44 card p-4 border-b-4 border-emerald-100 text-left hover:bg-white transition-colors"
+                className="shrink-0 w-44 card p-4 shadow-[0_4px_0_var(--color-emerald-100)] text-left hover:bg-white transition-colors"
               >
                 <span className="text-xs font-bold text-emerald-600 mb-1 block">
                   {verse.reference}
@@ -235,32 +305,28 @@ export function Dashboard({ progress, isDailyGoalMet, onStartExplore, onStartPre
               </motion.button>
             ))}
           </div>
-        </div>
-      )}
-
-      {/* Favorite Verses — Horizontal Scroll */}
-      {progress.favoriteVerses.length > 0 && (
-        <div className="mb-6">
-          <SectionTitle icon={Heart} iconColor="text-rose-400">좋아하는 말씀</SectionTitle>
-          <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-hide">
-            {progress.favoriteVerses.map((verse) => (
-              <motion.button
-                key={`fav-${verse.id}`}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => onSelectVerse(verse)}
-                className="shrink-0 w-44 card p-4 border-b-4 border-rose-100 text-left hover:bg-white transition-colors"
-              >
-                <span className="text-xs font-bold text-rose-500 mb-1 block">
-                  {verse.reference}
-                </span>
-                <p className="text-sm text-stone-700 line-clamp-2 font-bold leading-snug">
-                  {verse.verse}
-                </p>
-              </motion.button>
-            ))}
+        ) : (
+          <div className="bg-amber-50 rounded-2xl p-6 text-center">
+            <div className="w-15 h-15 mx-auto mb-3">
+              <img src="/joy-support.png" alt="JOY" className="w-full h-full object-contain" />
+            </div>
+            <p className="text-sm font-bold text-stone-600 mb-1">아직 만난 말씀이 없어요</p>
+            <p className="text-xs font-bold text-stone-400">퍼즐을 풀면 여기에 모여요</p>
           </div>
-        </div>
-      )}
+        )}
+      </div>
+
+      {/* 추천 퍼즐 — secondary CTA */}
+      <div className="mb-6">
+        <ActionButton
+          variant="secondary"
+          size="sm"
+          onClick={onStartPreset}
+          delay={0.1}
+        >
+          추천 퍼즐 풀기 <ChevronRight size={18} />
+        </ActionButton>
+      </div>
     </motion.div>
   );
 }

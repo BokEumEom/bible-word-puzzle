@@ -236,7 +236,7 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
     <div className="flex flex-col w-full max-w-lg mx-auto">
       {/* Reference & Hint */}
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-2xl font-black text-stone-700 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-2xl shadow-sm border-2 border-orange-100 flex items-center gap-2">
+        <h3 className="text-2xl font-black text-stone-700 bg-white px-4 py-2 rounded-2xl shadow-sm border-2 border-orange-100 flex items-center gap-2">
           {verse.reference}
           {onToggleFavorite && (
             <button 
@@ -267,7 +267,7 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="bg-amber-50/80 backdrop-blur-sm text-amber-800 p-4 rounded-2xl mb-4 text-lg border-2 border-amber-200 font-bold"
+            className="bg-amber-50 text-amber-800 p-4 rounded-2xl mb-4 text-lg border-2 border-amber-200 font-bold"
           >
             💡 {verse.hint}
           </motion.div>
@@ -284,7 +284,7 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
         animate={isWrong ? { x: [-4, 4, -3, 3, 0] } : {}}
         transition={{ duration: 0.4 }}
         className={`p-4 sm:p-6 rounded-3xl shadow-sm border-4 mb-6 sm:mb-8 min-h-[120px] sm:min-h-[150px] flex flex-wrap gap-2 sm:gap-3 content-start transition-colors duration-500 ${
-          isSuccess ? 'bg-emerald-50/80 backdrop-blur-sm border-emerald-200' : 'bg-white/90 backdrop-blur-md border-orange-100'
+          isSuccess ? 'bg-emerald-50 border-emerald-200' : 'bg-white border-orange-100'
         }`}
       >
         {slots.map((item, i) => (
@@ -337,14 +337,14 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
                 className={`
                   absolute inset-0 w-full h-full flex items-center justify-center rounded-xl text-base sm:text-xl font-black transition-colors cursor-grab active:cursor-grabbing
                   ${revealedSlots.has(i)
-                    ? 'bg-emerald-400 text-white shadow-sm border-b-4 border-emerald-600'
+                    ? 'bg-emerald-400 text-white shadow-[0_4px_0_var(--color-emerald-600)]'
                     : wrongSlots.has(i)
-                      ? 'bg-amber-400 text-white shadow-sm border-b-4 border-amber-600'
+                      ? 'bg-amber-400 text-white shadow-[0_4px_0_var(--color-amber-600)]'
                       : correctSlots.has(i) && !isSuccess
-                        ? 'bg-emerald-400 text-white shadow-sm border-b-4 border-emerald-600'
+                        ? 'bg-emerald-400 text-white shadow-[0_4px_0_var(--color-emerald-600)]'
                         : isSuccess
-                          ? 'bg-orange-400 text-white shadow-sm border-b-4 border-orange-600'
-                          : 'bg-orange-400 text-white shadow-sm border-b-4 border-orange-600 hover:bg-orange-500 hover:border-orange-700 active:border-b-0 active:translate-y-1'}
+                          ? 'bg-orange-400 text-white shadow-[0_4px_0_var(--color-orange-600)]'
+                          : 'bg-orange-400 text-white shadow-[0_4px_0_var(--color-orange-600)] hover:bg-orange-500 active:shadow-none active:translate-y-1'}
                 `}
                 style={{ transformStyle: 'preserve-3d', touchAction: 'none' }}
               >
@@ -381,7 +381,7 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
                 transition={{ type: "spring", stiffness: 250, damping: 25 }}
                 disabled={isSuccess}
                 onClick={() => handleBankClick(item, i)}
-                className="absolute inset-0 w-full h-full flex items-center justify-center rounded-xl text-base sm:text-xl font-black shadow-sm transition-colors bg-white/90 backdrop-blur-sm border-2 border-b-4 border-stone-200 text-stone-700 hover:border-orange-400 hover:text-orange-500 active:border-b-2 active:translate-y-1 cursor-grab active:cursor-grabbing"
+                className="absolute inset-0 w-full h-full flex items-center justify-center rounded-xl text-base sm:text-xl font-black transition-colors bg-white border-2 border-stone-200 shadow-[0_4px_0_var(--color-stone-200)] text-stone-700 hover:border-orange-400 hover:text-orange-500 active:shadow-none active:translate-y-1 cursor-grab active:cursor-grabbing"
                 style={{ transformStyle: 'preserve-3d', touchAction: 'none' }}
               >
                 {item.text}
@@ -419,7 +419,7 @@ export function VersePuzzleBoard({ verse, onCorrect, isFavorite, onToggleFavorit
               key="success-msg"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="w-full py-4 rounded-full text-2xl font-black flex items-center justify-center gap-2 bg-emerald-500 text-white shadow-sm border-b-4 border-emerald-700"
+              className="w-full py-4 rounded-full text-2xl font-black flex items-center justify-center gap-2 bg-emerald-500 text-white shadow-[0_4px_0_var(--color-emerald-700)]"
             >
               <Check size={28} />
               정답이에요!

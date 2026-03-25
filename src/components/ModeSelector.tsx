@@ -16,7 +16,7 @@ export function ModeSelector({ verse, onSelectMode, onBack }: Props) {
       desc: '큰 글씨로 천천히 읽어보아요',
       icon: BookOpen,
       color: 'bg-emerald-100 hover:bg-emerald-200',
-      border: 'border-emerald-300',
+      shadow: 'shadow-[0_8px_0_var(--color-emerald-300)]',
       iconColor: 'text-emerald-500'
     },
     {
@@ -25,7 +25,7 @@ export function ModeSelector({ verse, onSelectMode, onBack }: Props) {
       desc: '단어를 콕콕 눌러서 가려보아요',
       icon: Brain,
       color: 'bg-amber-100 hover:bg-amber-200',
-      border: 'border-amber-300',
+      shadow: 'shadow-[0_8px_0_var(--color-amber-300)]',
       iconColor: 'text-amber-500'
     },
     {
@@ -34,7 +34,7 @@ export function ModeSelector({ verse, onSelectMode, onBack }: Props) {
       desc: '흩어진 단어를 순서대로 맞춰요',
       icon: Puzzle,
       color: 'bg-sky-100 hover:bg-sky-200',
-      border: 'border-sky-300',
+      shadow: 'shadow-[0_8px_0_var(--color-sky-300)]',
       iconColor: 'text-sky-500'
     },
   ];
@@ -46,23 +46,32 @@ export function ModeSelector({ verse, onSelectMode, onBack }: Props) {
       exit={{ opacity: 0, x: -20 }}
       className="flex flex-col items-center justify-center min-h-screen p-6 max-w-md mx-auto"
     >
-      <div className="w-full flex items-center mb-8">
-        <button 
+      <div className="w-full flex items-center mb-6">
+        <button
           onClick={onBack}
-          className="p-3 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-white mr-4 border-2 border-orange-100 transition-colors"
+          className="p-3 bg-white rounded-full shadow-sm hover:bg-white mr-4 border-2 border-orange-100 transition-colors"
         >
           <ChevronLeft size={32} className="text-orange-500" />
         </button>
         <h2 className="text-3xl font-black text-stone-800 flex-1 text-center">
-          어떻게 해볼까요? 🎈
+          어떻게 해볼까요?
         </h2>
         <div className="w-14" />
       </div>
 
-      <div className="bg-white/90 backdrop-blur-md p-6 rounded-3xl shadow-sm border-2 border-orange-100 mb-10 w-full text-center relative overflow-hidden">
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ type: 'spring', stiffness: 200, delay: 0.1 }}
+        className="w-20 h-20 mx-auto mb-4"
+      >
+        <img src="/joy-default.png" alt="JOY" className="w-full h-full object-contain" />
+      </motion.div>
+
+      <div className="bg-white p-5 rounded-3xl shadow-sm border-2 border-orange-100 mb-8 w-full text-center relative overflow-hidden">
         <div className="absolute -top-4 -right-4 bg-orange-50 w-20 h-20 rounded-full opacity-50" />
-        <h3 className="text-2xl font-black text-orange-500 mb-3 relative z-10">{verse.reference}</h3>
-        <p className="text-2xl text-stone-700 leading-relaxed font-bold relative z-10">{verse.verse}</p>
+        <h3 className="text-lg font-black text-orange-500 mb-2 relative z-10">{verse.reference}</h3>
+        <p className="text-base text-stone-700 leading-relaxed font-bold relative z-10 line-clamp-2">{verse.verse}</p>
       </div>
 
       <div className="w-full space-y-5">
@@ -77,9 +86,9 @@ export function ModeSelector({ verse, onSelectMode, onBack }: Props) {
               whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => onSelectMode(mode.id)}
-              className={`w-full flex items-center p-6 rounded-3xl border-b-8 ${mode.border} ${mode.color} shadow-sm transition-colors text-left`}
+              className={`w-full flex items-center p-6 rounded-3xl ${mode.color} ${mode.shadow} transition-colors text-left`}
             >
-              <div className="bg-white/80 backdrop-blur-sm p-4 rounded-2xl mr-5 shadow-sm rotate-3">
+              <div className="bg-white p-4 rounded-2xl mr-5 shadow-sm rotate-3">
                 <Icon size={36} className={mode.iconColor} />
               </div>
               <div>

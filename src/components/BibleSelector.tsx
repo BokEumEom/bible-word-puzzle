@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { BibleBookMeta, BibleChapter, BibleVerse, Verse } from '../types';
 import { bibleIndex, loadBookChapters } from '../data/bible';
-import { Book, ChevronLeft, ChevronRight, List, CheckCircle2, Home, Loader2, Search, X, RefreshCw, Clock, Star } from 'lucide-react';
+import { Book, ChevronLeft, ChevronRight, List, CheckCircle2, Loader2, Search, X, RefreshCw, Clock, Star } from 'lucide-react';
 
 interface Props {
   onSelect: (verse: Verse) => void;
@@ -23,6 +23,7 @@ const chapterThemes = {
   old: {
     bg: 'bg-amber-100', text: 'text-amber-900', border: 'border-amber-200',
     borderDark: 'border-amber-300', borderDarker: 'border-amber-400',
+    shadowDark: 'shadow-[0_4px_0_var(--color-amber-300)]', shadowDarker: 'shadow-[0_4px_0_var(--color-amber-400)]',
     btnBg: 'bg-amber-200', btnHover: 'hover:bg-amber-300', btnText: 'text-amber-900',
     iconText: 'text-amber-600', navHover: 'hover:bg-amber-50', navDisabled: 'bg-amber-50',
     numText: 'text-amber-800',
@@ -34,6 +35,7 @@ const chapterThemes = {
   new: {
     bg: 'bg-indigo-100', text: 'text-indigo-900', border: 'border-indigo-200',
     borderDark: 'border-indigo-300', borderDarker: 'border-indigo-400',
+    shadowDark: 'shadow-[0_4px_0_var(--color-indigo-300)]', shadowDarker: 'shadow-[0_4px_0_var(--color-indigo-400)]',
     btnBg: 'bg-indigo-200', btnHover: 'hover:bg-indigo-300', btnText: 'text-indigo-900',
     iconText: 'text-indigo-600', navHover: 'hover:bg-indigo-50', navDisabled: 'bg-indigo-50',
     numText: 'text-indigo-800',
@@ -92,7 +94,7 @@ function ChapterNavigator({
         whileTap={prevChapter ? { scale: 0.9 } : {}}
         onClick={() => prevChapter && onChangeChapter(prevChapter)}
         disabled={!prevChapter}
-        className={`p-3 rounded-2xl transition-colors flex items-center justify-center ${prevChapter ? `bg-white/80 backdrop-blur-sm ${theme.iconText} ${theme.navHover} shadow-sm` : `opacity-40 cursor-not-allowed ${theme.navDisabled}`}`}
+        className={`p-3 rounded-2xl transition-colors flex items-center justify-center ${prevChapter ? `bg-white  ${theme.iconText} ${theme.navHover} shadow-sm` : `opacity-40 cursor-not-allowed ${theme.navDisabled}`}`}
         aria-label={`이전 ${unit}`}
       >
         <ChevronLeft size={28} />
@@ -106,7 +108,7 @@ function ChapterNavigator({
         whileTap={nextChapter ? { scale: 0.9 } : {}}
         onClick={() => nextChapter && onChangeChapter(nextChapter)}
         disabled={!nextChapter}
-        className={`p-3 rounded-2xl transition-colors flex items-center justify-center ${nextChapter ? `bg-white/80 backdrop-blur-sm ${theme.iconText} ${theme.navHover} shadow-sm` : `opacity-40 cursor-not-allowed ${theme.navDisabled}`}`}
+        className={`p-3 rounded-2xl transition-colors flex items-center justify-center ${nextChapter ? `bg-white  ${theme.iconText} ${theme.navHover} shadow-sm` : `opacity-40 cursor-not-allowed ${theme.navDisabled}`}`}
         aria-label={`다음 ${unit}`}
       >
         <ChevronRight size={28} />
@@ -220,30 +222,27 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {}, interest
   };
 
   return (
-    <div className="flex flex-col min-h-screen p-4 max-w-md mx-auto pt-6 pb-20">
+    <div className="flex flex-col min-h-screen p-4 max-w-md mx-auto pt-6 pb-24">
       {/* Sticky header */}
       <div className="sticky top-2 z-20 mb-6">
-        <div className="bg-white/90 backdrop-blur-md p-4 rounded-3xl shadow-sm border-2 border-orange-100 flex flex-col gap-3">
+        <div className="bg-white p-4 rounded-3xl shadow-sm border-2 border-orange-100 flex flex-col gap-3">
           <div className="flex items-center justify-between">
-            <motion.button
-              whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-              onClick={handleGlobalBack}
-              className="flex items-center justify-center w-12 h-12 bg-white rounded-2xl shadow-sm hover:bg-orange-50 border-2 border-orange-100 shrink-0 transition-colors"
-              aria-label="뒤로 가기"
-            >
-              <ChevronLeft size={28} className="text-orange-500" />
-            </motion.button>
+            {step !== 'book' ? (
+              <motion.button
+                whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                onClick={handleGlobalBack}
+                className="flex items-center justify-center w-12 h-12 bg-white rounded-2xl shadow-sm hover:bg-orange-50 border-2 border-orange-100 shrink-0 transition-colors"
+                aria-label="뒤로 가기"
+              >
+                <ChevronLeft size={28} className="text-orange-500" />
+              </motion.button>
+            ) : (
+              <div className="w-12" />
+            )}
             <h2 className="text-2xl font-black text-stone-800 text-center flex-1">
               {headerTitle()}
             </h2>
-            <motion.button
-              whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-              onClick={onBack}
-              className="flex items-center justify-center w-12 h-12 bg-white rounded-2xl shadow-sm hover:bg-orange-50 border-2 border-orange-100 shrink-0 transition-colors"
-              aria-label="홈으로 가기"
-            >
-              <Home size={24} className="text-orange-500" />
-            </motion.button>
+            <div className="w-12" />
           </div>
 
           {/* Breadcrumbs for chapter/verse steps */}
@@ -311,7 +310,7 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {}, interest
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="성경 검색 (창, 시, 요...)"
-                className="w-full pl-11 pr-10 py-3 rounded-2xl bg-white/80 backdrop-blur-sm border-2 border-orange-100 text-lg font-bold text-stone-800 placeholder:text-stone-400 focus:outline-none focus:border-orange-300 transition-colors"
+                className="w-full pl-11 pr-10 py-3 rounded-2xl bg-white  border-2 border-orange-100 text-lg font-bold text-stone-800 placeholder:text-stone-400 focus:outline-none focus:border-orange-300 transition-colors"
                 aria-label="성경 이름 검색"
               />
               {searchQuery && (
@@ -340,10 +339,10 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {}, interest
                     transition={{ delay: index * 0.04 }}
                     whileTap={{ scale: 0.97 }}
                     onClick={() => handleBookSelect(book)}
-                    className={`w-full p-4 rounded-2xl shadow-sm border-2 border-b-4 text-left flex items-center gap-3 transition-colors ${
+                    className={`w-full p-4 rounded-2xl border-2 text-left flex items-center gap-3 transition-colors ${
                       book.testament === 'old'
-                        ? 'bg-amber-50 border-amber-200 hover:bg-amber-100'
-                        : 'bg-indigo-50 border-indigo-200 hover:bg-indigo-100'
+                        ? 'bg-amber-50 border-amber-200 hover:bg-amber-100 shadow-[0_4px_0_var(--color-amber-200)]'
+                        : 'bg-indigo-50 border-indigo-200 hover:bg-indigo-100 shadow-[0_4px_0_var(--color-indigo-200)]'
                     }`}
                   >
                     <span className="text-lg font-black text-stone-400 w-8">{book.abbr}</span>
@@ -373,10 +372,10 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {}, interest
                           transition={{ delay: index * 0.05 }}
                           whileTap={{ scale: 0.93 }}
                           onClick={() => handleBookSelect(book)}
-                          className={`px-4 py-2.5 rounded-2xl font-black text-base border-2 border-b-4 transition-colors ${
+                          className={`px-4 py-2.5 rounded-2xl font-black text-base border-2 transition-colors ${
                             book.testament === 'old'
-                              ? 'bg-amber-100 border-amber-300 hover:bg-amber-200 text-amber-800'
-                              : 'bg-indigo-100 border-indigo-300 hover:bg-indigo-200 text-indigo-800'
+                              ? 'bg-amber-100 border-amber-300 hover:bg-amber-200 text-amber-800 shadow-[0_4px_0_var(--color-amber-300)]'
+                              : 'bg-indigo-100 border-indigo-300 hover:bg-indigo-200 text-indigo-800 shadow-[0_4px_0_var(--color-indigo-300)]'
                           }`}
                         >
                           {book.name}
@@ -402,10 +401,10 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {}, interest
                           transition={{ delay: index * 0.05 }}
                           whileTap={{ scale: 0.93 }}
                           onClick={() => handleBookSelect(book)}
-                          className={`px-4 py-2.5 rounded-2xl font-black text-base border-2 border-b-4 transition-colors ${
+                          className={`px-4 py-2.5 rounded-2xl font-black text-base border-2 transition-colors ${
                             book.testament === 'old'
-                              ? 'bg-amber-200 border-amber-400 hover:bg-amber-300 text-amber-800'
-                              : 'bg-indigo-200 border-indigo-400 hover:bg-indigo-300 text-indigo-800'
+                              ? 'bg-amber-200 border-amber-400 hover:bg-amber-300 text-amber-800 shadow-[0_4px_0_var(--color-amber-400)]'
+                              : 'bg-indigo-200 border-indigo-400 hover:bg-indigo-300 text-indigo-800 shadow-[0_4px_0_var(--color-indigo-400)]'
                           }`}
                         >
                           {book.name}
@@ -416,14 +415,14 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {}, interest
                 )}
 
                 {/* Testament tabs */}
-                <div className="flex bg-white/50 p-1.5 rounded-3xl shadow-inner border-2 border-orange-100" role="tablist" aria-label="구약/신약 선택">
+                <div className="flex bg-white p-1.5 rounded-3xl shadow-inner border-2 border-orange-100" role="tablist" aria-label="구약/신약 선택">
                   <motion.button
                     role="tab"
                     aria-selected={activeTestament === 'old'}
                     className={`flex-1 py-3 px-4 rounded-2xl font-black text-xl transition-colors ${
                       activeTestament === 'old'
                         ? 'bg-white text-amber-600 shadow-sm border-2 border-amber-100'
-                        : 'text-stone-500 hover:bg-white/80'
+                        : 'text-stone-500 hover:bg-white'
                     }`}
                     onClick={() => setActiveTestament('old')}
                     whileTap={{ scale: 0.95 }}
@@ -436,7 +435,7 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {}, interest
                     className={`flex-1 py-3 px-4 rounded-2xl font-black text-xl transition-colors ${
                       activeTestament === 'new'
                         ? 'bg-white text-indigo-600 shadow-sm border-2 border-indigo-100'
-                        : 'text-stone-500 hover:bg-white/80'
+                        : 'text-stone-500 hover:bg-white'
                     }`}
                     onClick={() => setActiveTestament('new')}
                     whileTap={{ scale: 0.95 }}
@@ -469,14 +468,14 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {}, interest
                         whileHover={{ scale: 1.05, y: -3 }}
                         whileTap={{ scale: 0.93 }}
                         onClick={() => handleBookSelect(book)}
-                        className={`relative aspect-square rounded-3xl border-b-8 shadow-sm transition-colors flex flex-col justify-between p-3 text-left ${
+                        className={`relative aspect-square rounded-3xl shadow-sm transition-colors flex flex-col justify-between p-3 text-left ${
                           completed
                             ? isOld
-                              ? 'bg-amber-200 hover:bg-amber-300 border-amber-400'
-                              : 'bg-indigo-200 hover:bg-indigo-300 border-indigo-400'
+                              ? 'bg-amber-200 hover:bg-amber-300 shadow-[0_8px_0_var(--color-amber-400)]'
+                              : 'bg-indigo-200 hover:bg-indigo-300 shadow-[0_8px_0_var(--color-indigo-400)]'
                             : isOld
-                              ? 'bg-amber-100 hover:bg-amber-200 border-amber-300'
-                              : 'bg-indigo-100 hover:bg-indigo-200 border-indigo-300'
+                              ? 'bg-amber-100 hover:bg-amber-200 shadow-[0_8px_0_var(--color-amber-300)]'
+                              : 'bg-indigo-100 hover:bg-indigo-200 shadow-[0_8px_0_var(--color-indigo-300)]'
                         }`}
                         aria-label={book.name}
                       >
@@ -522,7 +521,7 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {}, interest
                 <motion.button
                   whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                   onClick={() => selectedBook && fetchChapters(selectedBook.id)}
-                  className="flex items-center gap-2 px-6 py-3 bg-orange-400 text-white font-black text-lg rounded-2xl shadow-sm border-b-4 border-orange-600 hover:bg-orange-500 transition-colors"
+                  className="flex items-center gap-2 px-6 py-3 bg-orange-400 text-white font-black text-lg rounded-2xl shadow-[0_4px_0_var(--color-orange-600)] border-orange-600 hover:bg-orange-500 transition-colors"
                 >
                   <RefreshCw size={20} />
                   다시 시도하기
@@ -543,7 +542,7 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {}, interest
                     whileHover={{ scale: 1.1, y: -4 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={() => handleChapterSelect(chapter)}
-                    className={`aspect-square ${theme.btnBg} rounded-3xl shadow-sm border-b-4 ${theme.borderDarker} flex items-center justify-center text-2xl font-black ${theme.btnText} ${theme.btnHover} transition-colors`}
+                    className={`aspect-square ${theme.btnBg} rounded-3xl ${theme.shadowDarker} flex items-center justify-center text-2xl font-black ${theme.btnText} ${theme.btnHover} transition-colors`}
                     aria-label={`${chapter.chapter}${chapterUnit(selectedBook.name)}`}
                   >
                     {chapter.chapter}
@@ -589,10 +588,10 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {}, interest
                     whileHover={{ scale: 1.02, y: -2 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => handleVerseSelect(verse)}
-                    className={`${theme.bg} p-5 rounded-3xl shadow-sm border-b-4 ${theme.borderDark} text-left ${theme.btnHover} flex gap-4 items-start transition-colors relative overflow-hidden`}
+                    className={`${theme.bg} p-5 rounded-3xl ${theme.shadowDark} text-left ${theme.btnHover} flex gap-4 items-start transition-colors relative overflow-hidden`}
                     aria-label={`${verse.verse}절: ${verse.text}`}
                   >
-                    <span className={`bg-white/80 backdrop-blur-sm ${theme.numText} font-black rounded-2xl w-12 h-12 flex items-center justify-center shrink-0 mt-1 text-xl shadow-sm rotate-3`}>
+                    <span className={`bg-white  ${theme.numText} font-black rounded-2xl w-12 h-12 flex items-center justify-center shrink-0 mt-1 text-xl shadow-sm rotate-3`}>
                       {verse.verse}
                     </span>
                     <div className="flex-1 pt-1 min-w-0">

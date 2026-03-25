@@ -71,11 +71,11 @@ export const colors = {
     textDark: 'text-stone-800',
     border: 'border-stone-200',
   },
-  /** 카드/컨테이너 배경 */
+  /** 카드/컨테이너 배경 — 솔리드 (듀오링고 스타일) */
   surface: {
-    card: 'bg-white/90 backdrop-blur-sm',
+    card: 'bg-white',
     cardSolid: 'bg-white',
-    overlay: 'bg-black/30 backdrop-blur-sm',
+    overlay: 'bg-black/50',
   },
 } as const;
 
@@ -175,20 +175,20 @@ export const animations = {
 
 // ─── 3D 버튼 스타일 (듀오링고 시그니처) ──────────────────
 export const button3d = {
-  /** 주요 CTA 버튼 — bottom border로 입체감 */
-  active: 'border-b-4 active:border-b-0 active:translate-y-1 transition-transform',
+  /** 주요 CTA 버튼 — box-shadow로 입체감 */
+  active: 'shadow-[0_4px_0_currentColor] active:shadow-none active:translate-y-1 transition-all',
   /** 비활성 */
   disabled: 'cursor-not-allowed opacity-60',
 } as const;
 
 // ─── 조합 프리셋 (자주 쓰는 패턴) ────────────────────────
 export const presets = {
-  /** 기본 카드 */
-  card: `${colors.surface.card} ${radius.md} ${shadows.sm} border-2 ${colors.primary.border} ${spacing.cardSm}`,
-  /** 피처드 카드 (메인 CTA) */
-  cardFeatured: `${colors.surface.card} ${radius.lg} ${shadows.md} border-4 ${colors.primary.border} ${spacing.cardMd}`,
+  /** 기본 카드 — 솔리드 */
+  card: `${colors.surface.card} ${radius.md} ${shadows.sm} border-2 ${colors.neutral.border} ${spacing.cardSm}`,
+  /** 피처드 카드 (메인 CTA) — 솔리드 */
+  cardFeatured: `${colors.surface.card} ${radius.lg} ${shadows.md} border-2 ${colors.neutral.border} ${spacing.cardMd}`,
   /** 통계 아이콘 배경 */
   statIcon: `p-2 ${radius.sm}`,
-  /** 수평 스크롤 아이템 */
-  scrollItem: `shrink-0 w-44 ${colors.surface.card} ${spacing.cardSm} ${radius.md} ${shadows.sm} border-b-4 text-left hover:bg-white transition-colors`,
+  /** 수평 스크롤 아이템 — box-shadow 3D */
+  scrollItem: `shrink-0 w-44 ${colors.surface.card} ${spacing.cardSm} ${radius.md} ${shadows.sm} shadow-[0_4px_0_var(--color-stone-200)] text-left hover:bg-white transition-colors`,
 } as const;
