@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { ResultStep } from './ResultStep';
 
 // Mock motion/react to skip animations
@@ -21,7 +21,7 @@ vi.mock('motion/react', () => ({
   AnimatePresence: ({ children }: any) => <>{children}</>,
 }));
 
-function renderAndFinishLoading(props: Partial<{
+function renderResult(props: Partial<{
   level: 'beginner' | 'easy' | 'normal';
   interests: string[];
   dailyGoal: number;
@@ -36,72 +36,51 @@ function renderAndFinishLoading(props: Partial<{
       onComplete={onComplete}
     />,
   );
-  // Advance past the 2500ms fake loading
-  act(() => {
-    vi.advanceTimersByTime(3000);
-  });
   return { ...result, onComplete };
 }
 
 describe('ResultStep', () => {
-  beforeEach(() => {
-    vi.useFakeTimers();
-  });
+  it('renders summary cards immediately without a loading state', () => {
+    renderResult();
 
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
-  it('shows loading state initially', () => {
-    render(
-      <ResultStep level="beginner" interests={['psa']} dailyGoal={3} onComplete={vi.fn()} />,
-    );
-    expect(screen.getByText('맞춤 플랜 생성 중...')).toBeTruthy();
-  });
-
-  it('shows progress messages during loading', () => {
-    render(
-      <ResultStep level="beginner" interests={['psa']} dailyGoal={3} onComplete={vi.fn()} />,
-    );
-    expect(screen.getByText('성경 데이터 분석 중...')).toBeTruthy();
-  });
-
-  it('shows result cards after loading completes', () => {
-    renderAndFinishLoading();
-    expect(screen.getByText('당신의 수준')).toBeTruthy();
-    expect(screen.getByText('관심 성경')).toBeTruthy();
+    expect(screen.queryByText('맞춤 플랜 생성 중...')).toBeNull();
+    expect(screen.getByText(/맞춤 시작점이/)).toBeTruthy();
+    expect(screen.getByTestId('result-title').className).toContain('text-2xl');
+    expect(screen.getByAltText('완료한 JOY 캐릭터').className).toContain('h-28');
+    expect(screen.getByText('현재 수준')).toBeTruthy();
+    expect(screen.getByText('관심 말씀')).toBeTruthy();
     expect(screen.getByText('일일 목표')).toBeTruthy();
   });
 
   it('displays correct level label for easy', () => {
-    renderAndFinishLoading({ level: 'easy' });
+    renderResult({ level: 'easy' });
     expect(screen.getByText(/주일학교 수준/)).toBeTruthy();
   });
 
   it('displays daily goal value', () => {
-    renderAndFinishLoading({ dailyGoal: 5 });
+    renderResult({ dailyGoal: 5 });
     expect(screen.getByText('하루 5구절')).toBeTruthy();
   });
 
-  it('shows CTA button after loading', () => {
-    renderAndFinishLoading();
+  it('shows CTA button immediately', () => {
+    renderResult();
     expect(screen.getByText('내 맞춤 말씀 시작하기!')).toBeTruthy();
   });
 
   it('calls onComplete when CTA is clicked', () => {
-    const { onComplete } = renderAndFinishLoading();
+    const { onComplete } = renderResult();
     fireEvent.click(screen.getByText('내 맞춤 말씀 시작하기!'));
     expect(onComplete).toHaveBeenCalledTimes(1);
   });
 
   it('displays interest book names from bibleIndex', () => {
-    renderAndFinishLoading({ interests: ['psa', 'pro'] });
+    renderResult({ interests: ['psa', 'pro'] });
     expect(screen.getByText(/시편/)).toBeTruthy();
     expect(screen.getByText(/잠언/)).toBeTruthy();
   });
 
   it('falls back to default interests text when empty', () => {
-    renderAndFinishLoading({ interests: [] });
+    renderResult({ interests: [] });
     expect(screen.getByText(/시편, 잠언, 창세기/)).toBeTruthy();
   });
 });

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Difficulty, OnboardingProfile } from '../../types';
+import { IntroStep } from './IntroStep';
 import { LevelStep } from './LevelStep';
 import { MiniPuzzleStep } from './MiniPuzzleStep';
 import { InterestStep } from './InterestStep';
@@ -8,35 +9,37 @@ import { GoalStep } from './GoalStep';
 import { ResultStep } from './ResultStep';
 import { X } from 'lucide-react';
 
-type Step = 'level' | 'puzzle' | 'interest' | 'goal' | 'result';
+type Step = 'intro' | 'puzzle' | 'level' | 'interest' | 'goal' | 'result';
 
 interface Props {
   onComplete: (profile: OnboardingProfile, dailyGoal: number) => void;
   onSkip?: () => void;
 }
 
-function getStepIndex(step: Step, level: Difficulty): { current: number; total: number } {
-  const allSteps: Step[] = level === 'beginner'
-    ? ['level', 'puzzle', 'interest', 'goal', 'result']
-    : ['level', 'puzzle', 'interest', 'goal', 'result'];
+function getStepIndex(step: Step): { current: number; total: number } {
+  const allSteps: Step[] = ['intro', 'puzzle', 'level', 'interest', 'goal', 'result'];
   return { current: allSteps.indexOf(step), total: allSteps.length };
 }
 
 export function OnboardingFlow({ onComplete, onSkip }: Props) {
-  const [step, setStep] = useState<Step>('level');
+  const [step, setStep] = useState<Step>('intro');
   const [level, setLevel] = useState<Difficulty>('beginner');
   const [interests, setInterests] = useState<string[]>([]);
   const [dailyGoal, setDailyGoal] = useState(3);
 
-  const { current, total } = getStepIndex(step, level);
+  const { current, total } = getStepIndex(step);
 
-  const handleLevelSelect = (selected: Difficulty) => {
-    setLevel(selected);
+  const handleStart = () => {
     setStep('puzzle');
   };
 
-  const handlePuzzleComplete = () => {
+  const handleLevelSelect = (selected: Difficulty) => {
+    setLevel(selected);
     setStep('interest');
+  };
+
+  const handlePuzzleComplete = () => {
+    setStep('level');
   };
 
   const handleInterestSelect = (selected: string[]) => {
@@ -88,15 +91,21 @@ export function OnboardingFlow({ onComplete, onSkip }: Props) {
       </div>
 
       <AnimatePresence mode="wait">
-        {step === 'level' && (
-          <motion.div key="level" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }}>
-            <LevelStep onSelect={handleLevelSelect} />
+        {step === 'intro' && (
+          <motion.div key="intro" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }}>
+            <IntroStep onStart={handleStart} />
           </motion.div>
         )}
 
         {step === 'puzzle' && (
           <motion.div key="puzzle" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }}>
             <MiniPuzzleStep onComplete={handlePuzzleComplete} />
+          </motion.div>
+        )}
+
+        {step === 'level' && (
+          <motion.div key="level" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }}>
+            <LevelStep onSelect={handleLevelSelect} />
           </motion.div>
         )}
 

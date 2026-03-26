@@ -17,6 +17,14 @@ function filterMotionProps(props: any) {
 }
 
 // Mock child components to isolate OnboardingFlow logic
+vi.mock('./IntroStep', () => ({
+  IntroStep: ({ onStart }: { onStart: () => void }) => (
+    <button data-testid="intro-step" onClick={onStart}>
+      Start Onboarding
+    </button>
+  ),
+}));
+
 vi.mock('./LevelStep', () => ({
   LevelStep: ({ onSelect }: { onSelect: (level: string) => void }) => (
     <button data-testid="level-step" onClick={() => onSelect('beginner')}>
@@ -58,15 +66,15 @@ vi.mock('./ResultStep', () => ({
 }));
 
 describe('OnboardingFlow', () => {
-  it('renders LevelStep as the first step', () => {
+  it('renders IntroStep as the first step', () => {
     render(<OnboardingFlow onComplete={vi.fn()} />);
-    expect(screen.getByTestId('level-step')).toBeTruthy();
+    expect(screen.getByTestId('intro-step')).toBeTruthy();
   });
 
-  it('shows 5 progress dots', () => {
+  it('shows 6 progress dots', () => {
     const { container } = render(<OnboardingFlow onComplete={vi.fn()} />);
     const dots = container.querySelectorAll('.rounded-full');
-    expect(dots.length).toBe(5);
+    expect(dots.length).toBe(6);
   });
 
   it('does not show close button when onSkip is not provided', () => {
@@ -86,14 +94,25 @@ describe('OnboardingFlow', () => {
     expect(onSkip).toHaveBeenCalledTimes(1);
   });
 
-  it('advances through all steps to completion', () => {
+  it('advances through intro, puzzle, selection steps, and completion', () => {
     const onComplete = vi.fn();
     render(<OnboardingFlow onComplete={onComplete} />);
 
-    fireEvent.click(screen.getByTestId('level-step'));
+    fireEvent.click(screen.getByTestId('intro-step'));
+    expect(screen.getByTestId('puzzle-step')).toBeTruthy();
+
     fireEvent.click(screen.getByTestId('puzzle-step'));
+    expect(screen.getByTestId('level-step')).toBeTruthy();
+
+    fireEvent.click(screen.getByTestId('level-step'));
+    expect(screen.getByTestId('interest-step')).toBeTruthy();
+
     fireEvent.click(screen.getByTestId('interest-step'));
+    expect(screen.getByTestId('goal-step')).toBeTruthy();
+
     fireEvent.click(screen.getByTestId('goal-step'));
+    expect(screen.getByTestId('result-step')).toBeTruthy();
+
     fireEvent.click(screen.getByTestId('result-step'));
 
     expect(onComplete).toHaveBeenCalledTimes(1);

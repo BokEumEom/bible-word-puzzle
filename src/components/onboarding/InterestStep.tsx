@@ -15,31 +15,29 @@ interface Preset {
   desc: string;
   icon: any;
   bookIds: string[];
-  color: string;
-  shadow: string;
-  iconColor: string;
+  accentClassName: string;
 }
 
 const presets: Preset[] = [
   {
     id: 'wisdom', label: '시편/잠언', desc: '위로와 지혜',
     icon: BookOpen, bookIds: ['psa', 'pro'],
-    color: 'bg-violet-100 hover:bg-violet-200', shadow: 'shadow-[0_4px_0_var(--color-violet-300)]', iconColor: 'text-violet-500',
+    accentClassName: 'bg-violet-50 text-violet-500',
   },
   {
     id: 'gospel', label: '복음서', desc: '예수님의 이야기',
     icon: Cross, bookIds: ['mat', 'mrk', 'luk', 'jhn'],
-    color: 'bg-rose-100 hover:bg-rose-200', shadow: 'shadow-[0_4px_0_var(--color-rose-300)]', iconColor: 'text-rose-500',
+    accentClassName: 'bg-rose-50 text-rose-500',
   },
   {
     id: 'genesis', label: '창세기부터', desc: '처음부터 차근차근',
     icon: Scroll, bookIds: ['gen', 'exo'],
-    color: 'bg-amber-100 hover:bg-amber-200', shadow: 'shadow-[0_4px_0_var(--color-amber-300)]', iconColor: 'text-amber-500',
+    accentClassName: 'bg-amber-50 text-amber-500',
   },
   {
     id: 'paul', label: '바울서신', desc: '믿음의 편지',
     icon: Mail, bookIds: ['rom', '1co', 'eph'],
-    color: 'bg-sky-100 hover:bg-sky-200', shadow: 'shadow-[0_4px_0_var(--color-sky-300)]', iconColor: 'text-sky-500',
+    accentClassName: 'bg-sky-50 text-sky-500',
   },
 ];
 
@@ -53,32 +51,28 @@ export function InterestStep({ level, onSelect }: Props) {
   // Beginner: auto-advance with defaults
   if (level === 'beginner') {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen p-6 max-w-md mx-auto">
+      <div className="flex min-h-screen items-center p-6 pt-20">
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-center"
+          className="mx-auto w-full max-w-md rounded-[2rem] border border-stone-200 bg-white p-6 text-center shadow-sm"
         >
-          <motion.div
-            initial={{ y: -10 }}
-            animate={{ y: [0, -8, 0] }}
-            transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
-            className="mx-auto mb-6"
-          />
-          <h2 className="text-3xl font-black text-stone-800 mb-4">
+          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-50 text-amber-500">
+            <BookOpen size={28} />
+          </div>
+          <h2 className="mb-3 text-3xl font-black text-stone-900">
             시편, 잠언, 창세기로<br />시작할게요!
           </h2>
-          <p className="text-lg font-bold text-stone-500 mb-10">
+          <p className="mb-8 text-base font-bold text-stone-500">
             가장 인기 있는 성경으로 준비했어요
           </p>
           <motion.button
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            transition={{ delay: 0.1 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => onSelect(BEGINNER_DEFAULTS)}
-            className="btn-primary px-10 py-4 text-2xl"
+            className="btn-primary w-full py-4 text-xl"
           >
             좋아요!
           </motion.button>
@@ -110,14 +104,22 @@ export function InterestStep({ level, onSelect }: Props) {
   const gridBooks = useMemo(() => bibleIndex.filter(b => b.testament === gridTestament), [gridTestament]);
 
   return (
-    <div className="flex flex-col items-center min-h-screen p-6 max-w-md mx-auto pt-16 pb-32">
+    <div className="mx-auto flex min-h-screen max-w-md flex-col items-center p-6 pb-32 pt-20">
       <motion.h2
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-3xl font-black text-stone-800 mb-10 text-center leading-tight"
+        className="mb-3 text-center text-3xl font-black leading-tight text-stone-900"
       >
-        어떤 말씀에<br />관심 있나요?
+        어떤 말씀에 관심 있나요?
       </motion.h2>
+      <motion.p
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.05 }}
+        className="mb-8 text-center text-base font-bold text-stone-500"
+      >
+        마음이 가는 말씀부터 고르면 추천이 더 정확해져요.
+      </motion.p>
 
       {/* Presets */}
       <div className="w-full space-y-4 mb-6">
@@ -129,22 +131,25 @@ export function InterestStep({ level, onSelect }: Props) {
               key={preset.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.08, type: 'spring', stiffness: 200 }}
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.95 }}
+              transition={{ delay: index * 0.05 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => togglePreset(preset)}
-              className={`w-full flex items-center p-5 rounded-3xl ${preset.shadow} ${preset.color} transition-colors text-left relative ${active ? 'ring-4 ring-orange-300' : ''}`}
+              className={`relative flex w-full items-center gap-4 rounded-3xl border px-5 py-5 text-left shadow-sm transition-colors ${
+                active
+                  ? 'border-orange-200 bg-orange-50 ring-2 ring-orange-200'
+                  : 'border-stone-200 bg-white hover:border-orange-200 hover:bg-orange-50/40'
+              }`}
             >
-              <div className="bg-white p-3 rounded-2xl mr-4 shadow-sm rotate-3">
-                <Icon size={28} className={preset.iconColor} />
+              <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ${preset.accentClassName}`}>
+                <Icon size={24} />
               </div>
               <div className="flex-1">
-                <h3 className="text-xl font-black text-stone-800">{preset.label}</h3>
-                <p className="text-base text-stone-600 font-bold">{preset.desc}</p>
+                <h3 className="text-lg font-black text-stone-900">{preset.label}</h3>
+                <p className="mt-1 text-sm font-bold text-stone-500">{preset.desc}</p>
               </div>
               {active && (
                 <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}>
-                  <CheckCircle2 size={28} className="text-orange-500 shrink-0" />
+                  <CheckCircle2 size={22} className="shrink-0 text-orange-500" />
                 </motion.div>
               )}
             </motion.button>
@@ -160,7 +165,7 @@ export function InterestStep({ level, onSelect }: Props) {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
             onClick={() => setShowGrid(!showGrid)}
-            className="flex items-center gap-2 text-stone-500 font-black text-base mb-4 hover:text-orange-500 transition-colors"
+            className="mb-4 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-base font-black text-stone-500 shadow-sm ring-1 ring-stone-200 transition-colors hover:text-orange-500"
           >
             {showGrid ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
             직접 고를래요
@@ -172,13 +177,13 @@ export function InterestStep({ level, onSelect }: Props) {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="w-full overflow-hidden"
+                className="w-full overflow-hidden rounded-[2rem] border border-stone-200 bg-white p-4 shadow-sm"
               >
                 {/* Testament tabs */}
-                <div className="flex bg-white p-1.5 rounded-3xl shadow-inner border-2 border-orange-100 mb-4">
+                <div className="mb-4 flex rounded-3xl bg-stone-100 p-1">
                   <button
                     className={`flex-1 py-2.5 rounded-2xl font-black text-lg transition-colors ${
-                      gridTestament === 'old' ? 'bg-white text-amber-600 shadow-sm border-2 border-amber-100' : 'text-stone-500'
+                      gridTestament === 'old' ? 'bg-white text-amber-600 shadow-sm' : 'text-stone-500'
                     }`}
                     onClick={() => setGridTestament('old')}
                   >
@@ -186,7 +191,7 @@ export function InterestStep({ level, onSelect }: Props) {
                   </button>
                   <button
                     className={`flex-1 py-2.5 rounded-2xl font-black text-lg transition-colors ${
-                      gridTestament === 'new' ? 'bg-white text-indigo-600 shadow-sm border-2 border-indigo-100' : 'text-stone-500'
+                      gridTestament === 'new' ? 'bg-white text-indigo-600 shadow-sm' : 'text-stone-500'
                     }`}
                     onClick={() => setGridTestament('new')}
                   >
@@ -204,14 +209,14 @@ export function InterestStep({ level, onSelect }: Props) {
                         key={book.id}
                         whileTap={{ scale: 0.9 }}
                         onClick={() => toggleGridBook(book.id)}
-                        className={`aspect-square rounded-3xl transition-colors flex flex-col justify-between p-2.5 text-left ${
+                        className={`flex aspect-square flex-col justify-between rounded-3xl border p-2.5 text-left transition-colors ${
                           active
                             ? isOld
-                              ? 'bg-amber-200 shadow-[0_4px_0_var(--color-amber-400)] ring-4 ring-orange-300'
-                              : 'bg-indigo-200 shadow-[0_4px_0_var(--color-indigo-400)] ring-4 ring-orange-300'
+                              ? 'border-amber-200 bg-amber-100 ring-2 ring-amber-200'
+                              : 'border-indigo-200 bg-indigo-100 ring-2 ring-indigo-200'
                             : isOld
-                              ? 'bg-amber-100 shadow-[0_4px_0_var(--color-amber-300)] hover:bg-amber-200'
-                              : 'bg-indigo-100 shadow-[0_4px_0_var(--color-indigo-300)] hover:bg-indigo-200'
+                              ? 'border-transparent bg-amber-50 hover:border-amber-200'
+                              : 'border-transparent bg-indigo-50 hover:border-indigo-200'
                         }`}
                         aria-label={book.name}
                       >

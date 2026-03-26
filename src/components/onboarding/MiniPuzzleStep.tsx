@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Verse } from '../../types';
 import { shuffle } from '../../utils/shuffle';
-import { Star } from 'lucide-react';
+import { BookOpen, Sparkles } from 'lucide-react';
 
 interface Props {
   onComplete: () => void;
@@ -68,11 +68,41 @@ export function MiniPuzzleStep({ onComplete }: Props) {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-6 max-w-md mx-auto">
+    <div className="mx-auto flex min-h-screen max-w-md flex-col items-center justify-center p-6 pt-20">
+      <motion.div
+        initial={{ opacity: 0, y: -16 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mb-4 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-black text-orange-500 shadow-sm ring-1 ring-orange-100"
+      >
+        <Sparkles size={16} />
+        첫 퍼즐
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.05 }}
+        className="mb-5 flex w-full items-center gap-3 rounded-[1.75rem] border border-stone-200 bg-white px-4 py-3 shadow-sm"
+      >
+        <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-[1.5rem] bg-lime-50">
+          <img
+            src="/joy-focused.png"
+            alt="JOY 도우미 캐릭터"
+            className="h-16 w-16 scale-[1.25] object-contain"
+          />
+        </div>
+        <p className="text-sm font-black leading-relaxed text-stone-600">
+          단어를 순서대로 눌러서
+          <br />
+          첫 성공을 만들어볼까요?
+        </p>
+      </motion.div>
+
       <motion.h2
+        data-testid="mini-puzzle-title"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-3xl font-black text-stone-800 mb-3 text-center leading-tight"
+        className="mb-3 text-center text-2xl font-black leading-tight text-stone-900"
       >
         말씀을 순서대로<br />맞춰보세요!
       </motion.h2>
@@ -81,9 +111,19 @@ export function MiniPuzzleStep({ onComplete }: Props) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className="text-lg font-bold text-stone-500 mb-10"
+        className="mb-4 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-base font-black text-stone-500 shadow-sm ring-1 ring-stone-200"
       >
+        <BookOpen size={16} className="text-violet-500" />
         {MINI_VERSE.reference}
+      </motion.p>
+
+      <motion.p
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.25 }}
+        className="mb-8 text-center text-sm font-bold text-stone-500"
+      >
+        아래 단어를 눌러 위 칸을 채워보세요.
       </motion.p>
 
       {/* Slots */}
@@ -91,14 +131,14 @@ export function MiniPuzzleStep({ onComplete }: Props) {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className={`w-full p-6 rounded-3xl shadow-sm border-4 mb-8 min-h-[80px] flex flex-wrap gap-3 justify-center content-center transition-colors duration-500 ${
-          isSuccess ? 'bg-emerald-50 border-emerald-200' : 'bg-white border-orange-100'
+        className={`mb-6 flex min-h-[104px] w-full flex-wrap content-center justify-center gap-3 rounded-[2rem] border p-6 shadow-sm transition-colors duration-500 ${
+          isSuccess ? 'border-emerald-200 bg-emerald-50' : 'border-stone-200 bg-white'
         }`}
       >
         {slots.map((item, i) => (
           <div
             key={`slot-${i}`}
-            className="relative bg-stone-100 border-2 border-dashed border-stone-300 rounded-xl"
+            className="relative rounded-2xl border-2 border-dashed border-stone-300 bg-stone-100"
           >
             <div className={`px-4 py-3 text-xl font-black whitespace-nowrap ${item ? 'opacity-0' : 'text-stone-400'}`}>
               {item ? item.text : '?'}
@@ -113,7 +153,7 @@ export function MiniPuzzleStep({ onComplete }: Props) {
                 transition={isSuccess ? { duration: 0.5, delay: i * 0.1 } : { type: 'spring', stiffness: 250 }}
                 onClick={() => handleSlotClick(item, i)}
                 disabled={isSuccess}
-                className={`absolute inset-0 w-full h-full flex items-center justify-center rounded-xl text-xl font-black transition-colors ${
+                className={`absolute inset-0 flex h-full w-full items-center justify-center rounded-2xl text-xl font-black transition-colors ${
                   isSuccess
                     ? 'bg-emerald-400 text-white shadow-[0_4px_0_var(--color-emerald-600)]'
                     : 'bg-orange-400 text-white shadow-[0_4px_0_var(--color-orange-600)]'
@@ -132,7 +172,7 @@ export function MiniPuzzleStep({ onComplete }: Props) {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="flex flex-wrap gap-3 justify-center mb-8"
+        className="flex w-full flex-wrap justify-center gap-3 rounded-[2rem] border border-stone-200 bg-white p-4 shadow-sm"
       >
         {bank.map((item, i) => (
           <div key={`bank-${i}`} className="relative rounded-xl">
@@ -146,7 +186,7 @@ export function MiniPuzzleStep({ onComplete }: Props) {
                 transition={{ type: 'spring', stiffness: 250 }}
                 onClick={() => handleBankClick(item, i)}
                 disabled={isSuccess}
-                className="absolute inset-0 w-full h-full flex items-center justify-center rounded-xl text-xl font-black shadow-[0_4px_0_var(--color-stone-200)] bg-white border-2 border-stone-200 text-stone-700 hover:border-orange-400 hover:text-orange-500 active:translate-y-1"
+                className="absolute inset-0 flex h-full w-full items-center justify-center rounded-xl border-2 border-stone-200 bg-white text-xl font-black text-stone-700 shadow-[0_4px_0_var(--color-stone-200)] hover:border-orange-400 hover:text-orange-500 active:translate-y-1"
                 style={{ touchAction: 'none' }}
               >
                 {item.text}
@@ -168,10 +208,17 @@ export function MiniPuzzleStep({ onComplete }: Props) {
               initial={{ scale: 0, rotate: -30 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ type: 'spring', damping: 12, stiffness: 200 }}
-              className="bg-amber-400 text-amber-900 rounded-full w-52 h-52 flex flex-col items-center justify-center shadow-sm border-8 border-amber-200"
+              className="flex flex-col items-center justify-center rounded-[2rem] border border-amber-100 bg-white px-9 py-8 text-center text-amber-900 shadow-[0_16px_40px_rgba(245,158,11,0.18)]"
             >
-              <span className="text-2xl font-black">이렇게 쉬워요!</span>
-              <span className="text-lg font-bold mt-1">말씀을 맞추며 배워봐요</span>
+              <div className="mb-4 flex h-32 w-32 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-lime-100 via-amber-50 to-white">
+                <img
+                  src="/joy-happy.png"
+                  alt="성공한 JOY 캐릭터"
+                  className="h-28 w-28 scale-[1.2] object-contain"
+                />
+              </div>
+              <span className="text-xl font-black">이렇게 쉬워요!</span>
+              <span className="mt-1 text-base font-bold">말씀을 맞추며 배워봐요</span>
             </motion.div>
           </motion.div>
         )}

@@ -50,11 +50,13 @@ describe('MiniPuzzleStep', () => {
   it('renders the heading', () => {
     render(<MiniPuzzleStep onComplete={vi.fn()} />);
     expect(screen.getByText(/말씀을 순서대로/)).toBeTruthy();
+    expect(screen.getByTestId('mini-puzzle-title').className).toContain('text-2xl');
   });
 
   it('renders the verse reference', () => {
     render(<MiniPuzzleStep onComplete={vi.fn()} />);
     expect(screen.getByText('데살로니가전서 5:17')).toBeTruthy();
+    expect(screen.getByAltText('JOY 도우미 캐릭터').className).toContain('h-16');
   });
 
   it('renders all 3 words', () => {
@@ -89,6 +91,7 @@ describe('MiniPuzzleStep', () => {
     clickWordButton('기도하라');
 
     expect(screen.getByText('이렇게 쉬워요!')).toBeTruthy();
+    expect(screen.getByAltText('성공한 JOY 캐릭터').className).toContain('h-28');
   });
 
   it('resets on wrong answer after delay', () => {
