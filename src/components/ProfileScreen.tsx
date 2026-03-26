@@ -65,9 +65,6 @@ export function ProfileScreen({ progress, level, onResetOnboarding }: Props) {
         transition={{ delay: 0.1 }}
         className="mb-6 rounded-3xl border border-stone-100 bg-white p-6 text-center shadow-sm"
       >
-        <div className="relative w-28 h-28 mx-auto mb-2">
-          <img src="/joy-proud.png" alt="JOY" className="absolute -top-4 -left-4 w-36 h-36 object-contain drop-shadow-md" />
-        </div>
         <div className="flex items-center justify-center gap-2 mb-1">
           <span className="text-sm font-black text-violet-600">Lv.{level.level}</span>
           <span className="text-xl font-black text-stone-800">{level.name} {level.emoji}</span>

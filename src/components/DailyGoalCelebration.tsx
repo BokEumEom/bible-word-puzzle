@@ -39,10 +39,8 @@ export function DailyGoalCelebration({ show, onDismiss }: Props) {
             <motion.div
               animate={{ y: [0, -10, 0] }}
               transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
-              className="w-24 h-24 mx-auto mb-4"
-            >
-              <img src="/joy-excited.png" alt="JOY" className="w-full h-full object-contain" />
-            </motion.div>
+              className="mb-4"
+            />
             <h2 className="text-3xl font-black text-stone-800 mb-2">
               목표 달성!
             </h2>

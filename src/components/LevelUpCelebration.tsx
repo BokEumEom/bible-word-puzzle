@@ -42,10 +42,8 @@ export function LevelUpCelebration({ show, newLevel, onDismiss }: Props) {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-              className="w-24 h-24 mx-auto mb-2"
-            >
-              <img src="/joy-excited.png" alt="JOY" className="w-full h-full object-contain" />
-            </motion.div>
+              className="mb-2"
+            />
 
             <motion.p
               initial={{ opacity: 0, y: 10 }}

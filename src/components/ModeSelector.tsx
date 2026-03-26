@@ -63,10 +63,8 @@ export function ModeSelector({ verse, onSelectMode, onBack }: Props) {
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ type: 'spring', stiffness: 200, delay: 0.1 }}
-        className="w-20 h-20 mx-auto mb-4"
-      >
-        <img src="/joy-default.png" alt="JOY" className="w-full h-full object-contain" />
-      </motion.div>
+        className="mb-4"
+      />
 
       <div className="bg-white p-5 rounded-3xl shadow-sm border-2 border-orange-100 mb-8 w-full text-center relative overflow-hidden">
         <div className="absolute -top-4 -right-4 bg-orange-50 w-20 h-20 rounded-full opacity-50" />

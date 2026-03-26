@@ -52,14 +52,8 @@ export function ResultScreen({ stars, total, sessionStats, onHome, onRetry, onCh
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
-          className="w-24 h-24 mx-auto mb-3"
-        >
-          <img
-            src={accuracy === 100 ? '/joy-excited.png' : accuracy >= 80 ? '/joy-proud.png' : '/joy-support.png'}
-            alt="JOY"
-            className="w-full h-full object-contain"
-          />
-        </motion.div>
+          className="mb-3"
+        />
         <h2 className="text-3xl font-black text-stone-800">
           {getEncouragingMessage(sessionStats, stars, total)}
         </h2>

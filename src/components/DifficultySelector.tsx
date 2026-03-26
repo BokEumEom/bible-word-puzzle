@@ -60,10 +60,8 @@ export function DifficultySelector({ onSelect, onBack, defaultLevel }: Props) {
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ type: 'spring', stiffness: 200, delay: 0.1 }}
-        className="w-20 h-20 mx-auto mb-4 mt-12"
-      >
-        <img src="/joy-focused.png" alt="JOY" className="w-full h-full object-contain" />
-      </motion.div>
+        className="mb-4 mt-12"
+      />
 
       <h2 className="text-3xl font-black text-stone-800 mb-8 text-center leading-tight">
         어떤 난이도로<br/>해볼까요?

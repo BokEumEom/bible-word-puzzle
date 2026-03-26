@@ -49,14 +49,8 @@ export function CollectionCompleteScreen({
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
-          className="w-24 h-24 mx-auto mb-4"
-        >
-          <img
-            src={isCollectionComplete ? '/joy-excited.png' : '/joy-proud.png'}
-            alt="JOY"
-            className="w-full h-full object-contain"
-          />
-        </motion.div>
+          className="mx-auto mb-4"
+        />
 
         <h2 className="text-3xl font-black text-stone-800 mb-2 relative z-10">
           {isCollectionComplete ? '컬렉션 완료!' : '잘했어요!'}

@@ -63,10 +63,8 @@ export function InterestStep({ level, onSelect }: Props) {
             initial={{ y: -10 }}
             animate={{ y: [0, -8, 0] }}
             transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
-            className="w-24 h-24 mx-auto mb-6"
-          >
-            <img src="/joy-proud.png" alt="JOY" className="w-full h-full object-contain" />
-          </motion.div>
+            className="mx-auto mb-6"
+          />
           <h2 className="text-3xl font-black text-stone-800 mb-4">
             시편, 잠언, 창세기로<br />시작할게요!
           </h2>

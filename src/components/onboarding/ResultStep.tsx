@@ -65,13 +65,6 @@ export function ResultStep({ level, interests, dailyGoal, onComplete }: Props) {
             exit={{ opacity: 0 }}
             className="flex flex-col items-center w-full"
           >
-            <motion.div
-              animate={{ y: [0, -8, 0] }}
-              transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
-              className="w-24 h-24 mb-6"
-            >
-              <img src="/joy-focused.png" alt="JOY" className="w-full h-full object-contain" />
-            </motion.div>
             <h2 className="text-2xl font-black text-stone-800 mb-8 text-center">
               맞춤 플랜 생성 중...
             </h2>
@@ -96,10 +89,8 @@ export function ResultStep({ level, interests, dailyGoal, onComplete }: Props) {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: 'spring', stiffness: 200 }}
-              className="w-24 h-24 mb-4"
-            >
-              <img src="/joy-excited.png" alt="JOY" className="w-full h-full object-contain" />
-            </motion.div>
+              className="mb-4"
+            />
 
             <motion.h2
               initial={{ opacity: 0, y: -20 }}

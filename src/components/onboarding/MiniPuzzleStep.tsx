@@ -170,7 +170,6 @@ export function MiniPuzzleStep({ onComplete }: Props) {
               transition={{ type: 'spring', damping: 12, stiffness: 200 }}
               className="bg-amber-400 text-amber-900 rounded-full w-52 h-52 flex flex-col items-center justify-center shadow-sm border-8 border-amber-200"
             >
-              <img src="/joy-excited.png" alt="JOY" className="w-16 h-16 object-contain mb-2" />
               <span className="text-2xl font-black">이렇게 쉬워요!</span>
               <span className="text-lg font-bold mt-1">말씀을 맞추며 배워봐요</span>
             </motion.div>

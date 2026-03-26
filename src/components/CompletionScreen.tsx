@@ -27,14 +27,8 @@ export function CompletionScreen({ verse, nextVerse, sessionStats, onNextVerse, 
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
-        className="w-24 h-24 mx-auto mb-3"
-      >
-        <img
-          src={isBookComplete ? '/joy-excited.png' : '/joy-proud.png'}
-          alt="JOY"
-          className="w-full h-full object-contain"
-        />
-      </motion.div>
+        className="mx-auto mb-3"
+      />
       <motion.h2
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}

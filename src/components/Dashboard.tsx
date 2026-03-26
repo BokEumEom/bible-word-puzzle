@@ -26,11 +26,6 @@ function getGreeting(): string {
   return '좋은 저녁이에요';
 }
 
-function isNightTime(): boolean {
-  const hour = new Date().getHours();
-  return hour >= 22 || hour < 6;
-}
-
 function getJoyMessage(options: {
   isDailyGoalMet: boolean;
   streak: number;
@@ -50,24 +45,6 @@ function getJoyMessage(options: {
   }
   if (totalCompleted === 0) return '첫 퍼즐을 풀어볼까?';
   return getGreeting();
-}
-
-function getJoyPose(options: {
-  isDailyGoalMet: boolean;
-  streak: number;
-  remainingReviews: number;
-  todayCompletions: number;
-  totalCompleted: number;
-}): string {
-  const { isDailyGoalMet, streak, remainingReviews, todayCompletions, totalCompleted } = options;
-
-  if (isDailyGoalMet) return '/joy-excited.png';
-  if (streak >= 7) return '/joy-proud.png';
-  if (remainingReviews > 0) return '/joy-focused.png';
-  if (todayCompletions > 0) return '/joy-happy.png';
-  if (totalCompleted === 0) return '/joy-smile.png';
-  if (isNightTime()) return '/joy-comfort.png';
-  return '/joy-default.png';
 }
 
 export function Dashboard({ progress, isDailyGoalMet, currentLevel, onStartPreset, onSelectVerse }: Props) {
@@ -105,13 +82,6 @@ export function Dashboard({ progress, isDailyGoalMet, currentLevel, onStartPrese
 
   const filledStars = Math.min(progress.todayCompletions, progress.dailyGoal);
 
-  const joyPose = getJoyPose({
-    isDailyGoalMet,
-    streak: progress.streak,
-    remainingReviews,
-    todayCompletions: progress.todayCompletions,
-    totalCompleted,
-  });
 
   return (
     <motion.div
@@ -136,7 +106,7 @@ export function Dashboard({ progress, isDailyGoalMet, currentLevel, onStartPrese
         </div>
       </div>
 
-      {/* LAYER 2: JOY Companion (compact) */}
+      {/* LAYER 2: Status message + daily stars */}
       <motion.div
         data-testid="dashboard-companion-card"
         initial={{ opacity: 0, scale: 0.9 }}
@@ -144,49 +114,29 @@ export function Dashboard({ progress, isDailyGoalMet, currentLevel, onStartPrese
         transition={{ type: 'spring', stiffness: 200, damping: 20 }}
         className="mb-5 rounded-3xl border border-stone-100 bg-white p-4 shadow-sm"
       >
-        <div className="flex items-start gap-3">
-          <motion.div
-            key={joyPose}
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-            className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-amber-50"
-          >
-            <img
-              src={joyPose}
-              alt="JOY"
-              className="h-14 w-14 object-contain drop-shadow-sm"
-            />
-          </motion.div>
-
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-black text-stone-800 mb-1">{joyMessage}</p>
-            <p className="text-xs font-bold text-stone-400">오늘의 학습 흐름을 이어가요</p>
-
-            <div className="flex items-center gap-1.5 mt-3">
-              {Array.from({ length: progress.dailyGoal }, (_, i) => {
-                const isFilled = i < filledStars;
-                return (
-                  <motion.div
-                    key={i}
-                    initial={false}
-                    animate={isFilled ? { scale: [0, 1.3, 1], rotate: [0, 15, 0] } : { scale: 1 }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 15 }}
-                  >
-                    <Star
-                      size={18}
-                      className={isFilled ? 'text-amber-400 drop-shadow-[0_0_4px_rgba(251,191,36,0.45)]' : 'text-stone-200'}
-                      fill={isFilled ? 'currentColor' : 'none'}
-                      strokeWidth={isFilled ? 1.5 : 2}
-                    />
-                  </motion.div>
-                );
-              })}
-              <span className="ml-1 text-[10px] font-bold text-stone-400">
-                {isDailyGoalMet ? '달성!' : `${progress.dailyGoal - filledStars}개 남음`}
-              </span>
-            </div>
-          </div>
+        <p className="text-sm font-black text-stone-800 mb-1">{joyMessage}</p>
+        <div className="flex items-center gap-1.5 mt-2">
+          {Array.from({ length: progress.dailyGoal }, (_, i) => {
+            const isFilled = i < filledStars;
+            return (
+              <motion.div
+                key={i}
+                initial={false}
+                animate={isFilled ? { scale: [0, 1.3, 1], rotate: [0, 15, 0] } : { scale: 1 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+              >
+                <Star
+                  size={18}
+                  className={isFilled ? 'text-amber-400 drop-shadow-[0_0_4px_rgba(251,191,36,0.45)]' : 'text-stone-200'}
+                  fill={isFilled ? 'currentColor' : 'none'}
+                  strokeWidth={isFilled ? 1.5 : 2}
+                />
+              </motion.div>
+            );
+          })}
+          <span className="ml-1 text-[10px] font-bold text-stone-400">
+            {isDailyGoalMet ? '달성!' : `${progress.dailyGoal - filledStars}개 남음`}
+          </span>
         </div>
       </motion.div>
 
