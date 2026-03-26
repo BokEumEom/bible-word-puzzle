@@ -16,7 +16,7 @@ export function ModeSelector({ verse, onSelectMode, onBack }: Props) {
       desc: '큰 글씨로 천천히 읽어보아요',
       icon: BookOpen,
       color: 'bg-emerald-100 hover:bg-emerald-200',
-      shadow: 'shadow-[0_8px_0_var(--color-emerald-300)]',
+      shadow: 'shadow-[0_4px_0_var(--color-emerald-300)]',
       iconColor: 'text-emerald-500'
     },
     {
@@ -25,7 +25,7 @@ export function ModeSelector({ verse, onSelectMode, onBack }: Props) {
       desc: '단어를 콕콕 눌러서 가려보아요',
       icon: Brain,
       color: 'bg-amber-100 hover:bg-amber-200',
-      shadow: 'shadow-[0_8px_0_var(--color-amber-300)]',
+      shadow: 'shadow-[0_4px_0_var(--color-amber-300)]',
       iconColor: 'text-amber-500'
     },
     {
@@ -34,7 +34,7 @@ export function ModeSelector({ verse, onSelectMode, onBack }: Props) {
       desc: '흩어진 단어를 순서대로 맞춰요',
       icon: Puzzle,
       color: 'bg-sky-100 hover:bg-sky-200',
-      shadow: 'shadow-[0_8px_0_var(--color-sky-300)]',
+      shadow: 'shadow-[0_4px_0_var(--color-sky-300)]',
       iconColor: 'text-sky-500'
     },
   ];

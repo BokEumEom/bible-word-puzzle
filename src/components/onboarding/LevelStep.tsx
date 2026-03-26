@@ -13,7 +13,7 @@ const levels = [
     desc: '성경이 처음이에요',
     icon: Sprout,
     color: 'bg-emerald-100 hover:bg-emerald-200',
-    shadow: 'shadow-[0_8px_0_var(--color-emerald-300)]',
+    shadow: 'shadow-[0_4px_0_var(--color-emerald-300)]',
     iconColor: 'text-emerald-500',
   },
   {
@@ -22,7 +22,7 @@ const levels = [
     desc: '어느 정도 알고 있어요',
     icon: TreePine,
     color: 'bg-amber-100 hover:bg-amber-200',
-    shadow: 'shadow-[0_8px_0_var(--color-amber-300)]',
+    shadow: 'shadow-[0_4px_0_var(--color-amber-300)]',
     iconColor: 'text-amber-500',
   },
   {
@@ -31,7 +31,7 @@ const levels = [
     desc: '성경을 잘 알아요',
     icon: Trees,
     color: 'bg-sky-100 hover:bg-sky-200',
-    shadow: 'shadow-[0_8px_0_var(--color-sky-300)]',
+    shadow: 'shadow-[0_4px_0_var(--color-sky-300)]',
     iconColor: 'text-sky-500',
   },
 ];

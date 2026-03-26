@@ -377,8 +377,8 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {}, interest
                           onClick={() => handleBookSelect(book)}
                           className={`px-4 py-2.5 rounded-2xl font-black text-base border-2 transition-colors ${
                             book.testament === 'old'
-                              ? 'bg-amber-100 border-amber-300 hover:bg-amber-200 text-amber-800 shadow-[0_4px_0_var(--color-amber-300)]'
-                              : 'bg-indigo-100 border-indigo-300 hover:bg-indigo-200 text-indigo-800 shadow-[0_4px_0_var(--color-indigo-300)]'
+                              ? 'bg-amber-100 border-amber-300 hover:bg-amber-200 text-amber-800 shadow-sm'
+                              : 'bg-indigo-100 border-indigo-300 hover:bg-indigo-200 text-indigo-800 shadow-sm'
                           }`}
                         >
                           {book.name}
@@ -406,8 +406,8 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {}, interest
                           onClick={() => handleBookSelect(book)}
                           className={`px-4 py-2.5 rounded-2xl font-black text-base border-2 transition-colors ${
                             book.testament === 'old'
-                              ? 'bg-amber-200 border-amber-400 hover:bg-amber-300 text-amber-800 shadow-[0_4px_0_var(--color-amber-400)]'
-                              : 'bg-indigo-200 border-indigo-400 hover:bg-indigo-300 text-indigo-800 shadow-[0_4px_0_var(--color-indigo-400)]'
+                              ? 'bg-amber-200 border-amber-400 hover:bg-amber-300 text-amber-800 shadow-sm'
+                              : 'bg-indigo-200 border-indigo-400 hover:bg-indigo-300 text-indigo-800 shadow-sm'
                           }`}
                         >
                           {book.name}
@@ -474,11 +474,11 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {}, interest
                         className={`relative aspect-square rounded-3xl shadow-sm transition-colors flex flex-col justify-between p-3 text-left ${
                           completed
                             ? isOld
-                              ? 'bg-amber-200 hover:bg-amber-300 shadow-[0_8px_0_var(--color-amber-400)]'
-                              : 'bg-indigo-200 hover:bg-indigo-300 shadow-[0_8px_0_var(--color-indigo-400)]'
+                              ? 'bg-amber-200 hover:bg-amber-300 shadow-[0_4px_0_var(--color-amber-400)]'
+                              : 'bg-indigo-200 hover:bg-indigo-300 shadow-[0_4px_0_var(--color-indigo-400)]'
                             : isOld
-                              ? 'bg-amber-100 hover:bg-amber-200 shadow-[0_8px_0_var(--color-amber-300)]'
-                              : 'bg-indigo-100 hover:bg-indigo-200 shadow-[0_8px_0_var(--color-indigo-300)]'
+                              ? 'bg-amber-100 hover:bg-amber-200 shadow-[0_4px_0_var(--color-amber-300)]'
+                              : 'bg-indigo-100 hover:bg-indigo-200 shadow-[0_4px_0_var(--color-indigo-300)]'
                         }`}
                         aria-label={book.name}
                       >
@@ -531,26 +531,28 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {}, interest
                 </motion.button>
               </div>
             ) : (
-              <div className="grid grid-cols-3 min-[400px]:grid-cols-4 sm:grid-cols-5 gap-2 min-[400px]:gap-3 sm:gap-4" role="list" aria-label={`${selectedBook.name} 장 목록`}>
+              <div className="grid grid-cols-4 gap-3" role="list" aria-label={`${selectedBook.name} 장 목록`}>
                 {chapters.map((chapter, index) => (
-                  <motion.button
-                    key={chapter.chapter}
-                    role="listitem"
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{
-                      delay: index < MAX_STAGGER ? index * 0.02 : 0,
-                      type: 'spring', stiffness: 300, damping: 15,
-                    }}
-                    whileHover={{ scale: 1.1, y: -4 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => handleChapterSelect(chapter)}
-                    className={`aspect-square ${theme.btnBg} rounded-3xl ${theme.shadowDarker} flex items-center justify-center text-2xl font-black ${theme.btnText} ${theme.btnHover} transition-colors`}
-                    aria-label={`${chapter.chapter}${chapterUnit(selectedBook.name)}`}
-                  >
-                    {chapter.chapter}
-                  </motion.button>
-                ))}
+                    <motion.button
+                      key={chapter.chapter}
+                      role="listitem"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{
+                        delay: index < MAX_STAGGER ? index * 0.015 : 0,
+                        type: 'spring', stiffness: 300, damping: 20,
+                      }}
+                      whileHover={{ scale: 1.05, y: -3 }}
+                      whileTap={{ scale: 0.93 }}
+                      onClick={() => handleChapterSelect(chapter)}
+                      className={`aspect-square ${theme.bg} rounded-3xl shadow-sm flex items-center justify-center ${theme.btnText} ${theme.btnHover} transition-colors`}
+                      aria-label={`${chapter.chapter}${chapterUnit(selectedBook.name)}`}
+                    >
+                      <span className={`text-2xl font-black ${theme.numText}`}>
+                        {chapter.chapter}
+                      </span>
+                    </motion.button>
+                  ))}
               </div>
             )}
           </motion.div>

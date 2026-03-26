@@ -36,7 +36,7 @@ export function LevelUpCelebration({ show, newLevel, onDismiss }: Props) {
             exit={{ scale: 0.3, opacity: 0 }}
             transition={animations.celebration}
             onClick={(e) => e.stopPropagation()}
-            className="card-celebration shadow-[0_8px_0_var(--color-violet-200)] p-8 max-w-sm w-full text-center"
+            className="card-celebration shadow-[0_4px_0_var(--color-violet-200)] p-8 max-w-sm w-full text-center"
           >
             <motion.div
               initial={{ scale: 0 }}

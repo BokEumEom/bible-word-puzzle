@@ -12,7 +12,7 @@ const goals = [
     desc: '가볍게',
     icon: Turtle,
     color: 'bg-emerald-100 hover:bg-emerald-200',
-    shadow: 'shadow-[0_8px_0_var(--color-emerald-300)]',
+    shadow: 'shadow-[0_4px_0_var(--color-emerald-300)]',
     iconColor: 'text-emerald-500',
   },
   {
@@ -21,7 +21,7 @@ const goals = [
     desc: '꾸준히',
     icon: Rabbit,
     color: 'bg-amber-100 hover:bg-amber-200',
-    shadow: 'shadow-[0_8px_0_var(--color-amber-300)]',
+    shadow: 'shadow-[0_4px_0_var(--color-amber-300)]',
     iconColor: 'text-amber-500',
     recommended: true,
   },
@@ -31,7 +31,7 @@ const goals = [
     desc: '도전!',
     icon: Bird,
     color: 'bg-sky-100 hover:bg-sky-200',
-    shadow: 'shadow-[0_8px_0_var(--color-sky-300)]',
+    shadow: 'shadow-[0_4px_0_var(--color-sky-300)]',
     iconColor: 'text-sky-500',
   },
 ];

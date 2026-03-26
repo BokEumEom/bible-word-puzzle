@@ -143,18 +143,18 @@ export function Dashboard({ progress, isDailyGoalMet, currentLevel, onStartPrese
         transition={{ type: 'spring', stiffness: 200, damping: 20 }}
         className="flex items-center gap-3 mb-5"
       >
-        {/* JOY — companion */}
+        {/* JOY — companion: fixed layout box, image overflows visually */}
         <motion.div
           key={joyPose}
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-          className="shrink-0"
+          className="relative w-24 h-24 shrink-0"
         >
           <img
             src={joyPose}
             alt="JOY"
-            className="w-44 h-44 object-contain drop-shadow-md"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-36 h-36 object-contain drop-shadow-md"
           />
         </motion.div>
 
@@ -246,7 +246,7 @@ export function Dashboard({ progress, isDailyGoalMet, currentLevel, onStartPrese
         <motion.button
           whileTap={{ scale: 0.96 }}
           onClick={onStartPreset}
-          className="bg-violet-50 p-5 rounded-2xl border-2 border-violet-200 shadow-[0_4px_0_var(--color-violet-200)] active:shadow-none active:translate-y-1 transition-all text-left"
+          className="bg-violet-50 p-5 rounded-2xl border-2 border-violet-200 shadow-sm transition-all text-left"
         >
           <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center mb-3">
             <Shuffle size={20} className="text-violet-500" />
@@ -265,7 +265,7 @@ export function Dashboard({ progress, isDailyGoalMet, currentLevel, onStartPrese
               const reviewAction = recommendations.nextActions.find(a => a.type === 'review');
               if (reviewAction) onSelectVerse(reviewAction.verse);
             }}
-            className="bg-emerald-50 p-5 rounded-2xl border-2 border-emerald-200 shadow-[0_4px_0_var(--color-emerald-200)] active:shadow-none active:translate-y-1 transition-all text-left"
+            className="bg-emerald-50 p-5 rounded-2xl border-2 border-emerald-200 shadow-sm transition-all text-left"
           >
             <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center mb-3 relative">
               <RotateCcw size={20} className="text-emerald-500" />
@@ -282,7 +282,7 @@ export function Dashboard({ progress, isDailyGoalMet, currentLevel, onStartPrese
           <motion.button
             whileTap={{ scale: 0.96 }}
             onClick={() => onSelectVerse(progress.favoriteVerses[0])}
-            className="bg-rose-50 p-5 rounded-2xl border-2 border-rose-200 shadow-[0_4px_0_var(--color-rose-200)] active:shadow-none active:translate-y-1 transition-all text-left"
+            className="bg-rose-50 p-5 rounded-2xl border-2 border-rose-200 shadow-sm transition-all text-left"
           >
             <div className="w-10 h-10 rounded-xl bg-rose-100 flex items-center justify-center mb-3">
               <Heart size={20} className="text-rose-400" />
@@ -296,7 +296,7 @@ export function Dashboard({ progress, isDailyGoalMet, currentLevel, onStartPrese
           <motion.button
             whileTap={{ scale: 0.96 }}
             onClick={onStartPreset}
-            className="bg-amber-50 p-5 rounded-2xl border-2 border-amber-200 shadow-[0_4px_0_var(--color-amber-200)] active:shadow-none active:translate-y-1 transition-all text-left"
+            className="bg-amber-50 p-5 rounded-2xl border-2 border-amber-200 shadow-sm transition-all text-left"
           >
             <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center mb-3">
               <Star size={20} className="text-amber-400" />

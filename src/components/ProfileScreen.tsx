@@ -14,11 +14,11 @@ interface Props {
 }
 
 const categoryShadowColors: Record<AchievementCategory, string> = {
-  '학습': 'shadow-[0_4px_0_var(--color-emerald-200)]',
-  '연속': 'shadow-[0_4px_0_var(--color-orange-200)]',
-  '도전': 'shadow-[0_4px_0_var(--color-amber-200)]',
-  '헌신': 'shadow-[0_4px_0_var(--color-violet-200)]',
-  '수집': 'shadow-[0_4px_0_var(--color-rose-200)]',
+  '학습': 'shadow-sm',
+  '연속': 'shadow-sm',
+  '도전': 'shadow-sm',
+  '헌신': 'shadow-sm',
+  '수집': 'shadow-sm',
 };
 
 function getStrengthDistribution(reviewData: UserProgress['reviewData']): { label: string; count: number; color: string }[] {
@@ -59,7 +59,9 @@ export function ProfileScreen({ progress, level, onResetOnboarding }: Props) {
         transition={{ delay: 0.1 }}
         className="bg-white p-6 rounded-3xl shadow-[0_4px_0_var(--color-violet-100)] mb-6 text-center"
       >
-        <img src="/joy-proud.png" alt="JOY" className="w-32 h-32 mx-auto mb-2 object-contain drop-shadow-md" />
+        <div className="relative w-28 h-28 mx-auto mb-2">
+          <img src="/joy-proud.png" alt="JOY" className="absolute -top-4 -left-4 w-36 h-36 object-contain drop-shadow-md" />
+        </div>
         <div className="flex items-center justify-center gap-2 mb-1">
           <span className="text-sm font-black text-violet-600">Lv.{level.level}</span>
           <span className="text-xl font-black text-stone-800">{level.name} {level.emoji}</span>
@@ -83,7 +85,7 @@ export function ProfileScreen({ progress, level, onResetOnboarding }: Props) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
-          className="bg-white p-4 rounded-2xl shadow-[0_4px_0_var(--color-orange-100)] text-center"
+          className="bg-white p-4 rounded-2xl shadow-sm text-center"
         >
           <Flame className="text-orange-500 mx-auto mb-1" size={24} />
           <p className="text-xl font-black text-orange-500">{progress.streak}일</p>
@@ -94,7 +96,7 @@ export function ProfileScreen({ progress, level, onResetOnboarding }: Props) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white p-4 rounded-2xl shadow-[0_4px_0_var(--color-emerald-100)] text-center"
+          className="bg-white p-4 rounded-2xl shadow-sm text-center"
         >
           <CheckCircle2 className="text-emerald-500 mx-auto mb-1" size={24} />
           <p className="text-xl font-black text-emerald-500">{Object.keys(progress.completedVerses).length}개</p>
@@ -105,7 +107,7 @@ export function ProfileScreen({ progress, level, onResetOnboarding }: Props) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
-          className="bg-white p-4 rounded-2xl shadow-[0_4px_0_var(--color-violet-100)] text-center"
+          className="bg-white p-4 rounded-2xl shadow-sm text-center"
         >
           <Target className="text-violet-500 mx-auto mb-1" size={24} />
           <p className="text-xl font-black text-violet-500">{progress.dailyGoalMetCount}일</p>
@@ -122,7 +124,7 @@ export function ProfileScreen({ progress, level, onResetOnboarding }: Props) {
         <div className="grid grid-cols-4 gap-3">
           {achievements.map((achievement, index) => {
             const isUnlocked = progress.unlockedAchievements.includes(achievement.id);
-            const shadowColor = isUnlocked ? categoryShadowColors[achievement.category] : 'shadow-[0_4px_0_var(--color-stone-100)]';
+            const shadowColor = isUnlocked ? categoryShadowColors[achievement.category] : 'shadow-sm';
 
             return (
               <motion.div
@@ -130,12 +132,12 @@ export function ProfileScreen({ progress, level, onResetOnboarding }: Props) {
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.3 + index * 0.02, type: 'spring', stiffness: 200, damping: 15 }}
-                className={`bg-white p-3 rounded-3xl ${shadowColor} text-center ${!isUnlocked ? 'opacity-30 grayscale' : ''}`}
+                className={`aspect-square bg-white rounded-3xl ${shadowColor} flex flex-col items-center justify-center p-2 ${!isUnlocked ? 'opacity-30 grayscale' : ''}`}
               >
                 <div className="text-2xl mb-1">
                   {isUnlocked ? achievement.emoji : '🔒'}
                 </div>
-                <p className="text-[10px] font-bold text-stone-600 leading-tight truncate">
+                <p className="text-[10px] font-bold text-stone-600 leading-tight truncate w-full text-center">
                   {isUnlocked ? achievement.name : '???'}
                 </p>
               </motion.div>

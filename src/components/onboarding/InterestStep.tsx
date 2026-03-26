@@ -24,22 +24,22 @@ const presets: Preset[] = [
   {
     id: 'wisdom', label: '시편/잠언', desc: '위로와 지혜',
     icon: BookOpen, bookIds: ['psa', 'pro'],
-    color: 'bg-violet-100 hover:bg-violet-200', shadow: 'shadow-[0_8px_0_var(--color-violet-300)]', iconColor: 'text-violet-500',
+    color: 'bg-violet-100 hover:bg-violet-200', shadow: 'shadow-[0_4px_0_var(--color-violet-300)]', iconColor: 'text-violet-500',
   },
   {
     id: 'gospel', label: '복음서', desc: '예수님의 이야기',
     icon: Cross, bookIds: ['mat', 'mrk', 'luk', 'jhn'],
-    color: 'bg-rose-100 hover:bg-rose-200', shadow: 'shadow-[0_8px_0_var(--color-rose-300)]', iconColor: 'text-rose-500',
+    color: 'bg-rose-100 hover:bg-rose-200', shadow: 'shadow-[0_4px_0_var(--color-rose-300)]', iconColor: 'text-rose-500',
   },
   {
     id: 'genesis', label: '창세기부터', desc: '처음부터 차근차근',
     icon: Scroll, bookIds: ['gen', 'exo'],
-    color: 'bg-amber-100 hover:bg-amber-200', shadow: 'shadow-[0_8px_0_var(--color-amber-300)]', iconColor: 'text-amber-500',
+    color: 'bg-amber-100 hover:bg-amber-200', shadow: 'shadow-[0_4px_0_var(--color-amber-300)]', iconColor: 'text-amber-500',
   },
   {
     id: 'paul', label: '바울서신', desc: '믿음의 편지',
     icon: Mail, bookIds: ['rom', '1co', 'eph'],
-    color: 'bg-sky-100 hover:bg-sky-200', shadow: 'shadow-[0_8px_0_var(--color-sky-300)]', iconColor: 'text-sky-500',
+    color: 'bg-sky-100 hover:bg-sky-200', shadow: 'shadow-[0_4px_0_var(--color-sky-300)]', iconColor: 'text-sky-500',
   },
 ];
 
@@ -209,11 +209,11 @@ export function InterestStep({ level, onSelect }: Props) {
                         className={`aspect-square rounded-3xl transition-colors flex flex-col justify-between p-2.5 text-left ${
                           active
                             ? isOld
-                              ? 'bg-amber-200 shadow-[0_8px_0_var(--color-amber-400)] ring-4 ring-orange-300'
-                              : 'bg-indigo-200 shadow-[0_8px_0_var(--color-indigo-400)] ring-4 ring-orange-300'
+                              ? 'bg-amber-200 shadow-[0_4px_0_var(--color-amber-400)] ring-4 ring-orange-300'
+                              : 'bg-indigo-200 shadow-[0_4px_0_var(--color-indigo-400)] ring-4 ring-orange-300'
                             : isOld
-                              ? 'bg-amber-100 shadow-[0_8px_0_var(--color-amber-300)] hover:bg-amber-200'
-                              : 'bg-indigo-100 shadow-[0_8px_0_var(--color-indigo-300)] hover:bg-indigo-200'
+                              ? 'bg-amber-100 shadow-[0_4px_0_var(--color-amber-300)] hover:bg-amber-200'
+                              : 'bg-indigo-100 shadow-[0_4px_0_var(--color-indigo-300)] hover:bg-indigo-200'
                         }`}
                         aria-label={book.name}
                       >
