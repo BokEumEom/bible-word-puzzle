@@ -25,7 +25,7 @@ import { CollectionList } from './components/CollectionList';
 import { CollectionDetail } from './components/CollectionDetail';
 import { CollectionCompleteScreen } from './components/CollectionCompleteScreen';
 import { UpdatePrompt } from './components/UpdatePrompt';
-import { BottomTabBar } from './components/ui/BottomTabBar';
+import { BottomTabBar, getTabIndex } from './components/ui/BottomTabBar';
 import { ChevronLeft } from 'lucide-react';
 import { useUserProgress } from './hooks/useUserProgress';
 import { XpEvent } from './utils/xp';
@@ -55,6 +55,7 @@ export default function App() {
   const [collectionVerse, setCollectionVerse] = useState<Verse | null>(null);
   const [collectionCv, setCollectionCv] = useState<CollectionVerse | null>(null);
   const [sessionStats, setSessionStats] = useState<SessionStats | null>(null);
+  const [tabDirection, setTabDirection] = useState(0); // -1 left, 0 none, 1 right
 
   const { progress, toggleFavorite, markCompleted, addRecent, updateStreak, setDailyGoal, saveOnboarding, unlockAchievements, isDailyGoalMet, currentLevel } = useUserProgress();
 
@@ -334,20 +335,19 @@ export default function App() {
         )}
 
         {gameState === 'home' && (
-          <motion.div key="home" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.96 }} transition={{ duration: 0.25 }}>
+          <motion.div key="home" initial={{ opacity: 0, x: tabDirection * -60 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: tabDirection * 60 }} transition={{ type: 'spring', stiffness: 300, damping: 30 }}>
             <Dashboard
               progress={progress}
               isDailyGoalMet={isDailyGoalMet}
               currentLevel={currentLevel}
               onStartPreset={startPreset}
               onSelectVerse={handleBibleSelect}
-              onOpenCollections={() => setGameState('collection-list')}
             />
           </motion.div>
         )}
 
         {gameState === 'profile' && (
-          <motion.div key="profile" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 40 }} transition={{ type: 'spring', stiffness: 300, damping: 30 }}>
+          <motion.div key="profile" initial={{ opacity: 0, x: tabDirection * -60 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: tabDirection * 60 }} transition={{ type: 'spring', stiffness: 300, damping: 30 }}>
             <ProfileScreen
               progress={progress}
               level={currentLevel}
@@ -397,7 +397,7 @@ export default function App() {
 
         {/* New Bible Exploration States */}
         {gameState === 'select-bible' && (
-          <motion.div key="select-bible" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ type: 'spring', stiffness: 300, damping: 30 }}>
+          <motion.div key="select-bible" initial={{ opacity: 0, x: tabDirection * -60 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: tabDirection * 60 }} transition={{ type: 'spring', stiffness: 300, damping: 30 }}>
             <BibleSelector
               onSelect={handleBibleSelect}
               onBack={goHome}
@@ -465,7 +465,7 @@ export default function App() {
 
         {/* Collection Routes */}
         {gameState === 'collection-list' && (
-          <motion.div key="collection-list" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ type: 'spring', stiffness: 300, damping: 30 }}>
+          <motion.div key="collection-list" initial={{ opacity: 0, x: tabDirection * -60 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: tabDirection * 60 }} transition={{ type: 'spring', stiffness: 300, damping: 30 }}>
             <CollectionList
               completedVerses={progress.completedVerses}
               onSelectCollection={handleSelectCollection}
@@ -523,6 +523,9 @@ export default function App() {
       <BottomTabBar
         gameState={gameState}
         onNavigate={(target) => {
+          const fromIdx = getTabIndex(gameState);
+          const toIdx = getTabIndex(target);
+          setTabDirection(toIdx > fromIdx ? 1 : toIdx < fromIdx ? -1 : 0);
           setGameState(target);
           setSelectedCustomVerse(null);
         }}

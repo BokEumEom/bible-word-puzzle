@@ -72,7 +72,7 @@
 /* Primary CTA */
 .btn-primary {
   @apply bg-gradient-to-b from-orange-400 to-orange-500 text-white font-black
-         shadow-[0_4px_0_theme(colors.orange.600)] rounded-full
+         shadow-[0_4px_0_var(--color-orange-600)] rounded-full
          transition-all hover:scale-105
          active:shadow-none active:translate-y-1;
 }
@@ -80,7 +80,7 @@
 /* Secondary */
 .btn-secondary {
   @apply bg-white text-orange-500 font-black
-         shadow-[0_4px_0_theme(colors.orange.200)] rounded-full
+         shadow-[0_4px_0_var(--color-orange-200)] rounded-full
          transition-all hover:scale-105
          active:shadow-none active:translate-y-1;
 }
@@ -88,7 +88,7 @@
 /* Success */
 .btn-success {
   @apply bg-emerald-500 text-white font-black
-         shadow-[0_4px_0_theme(colors.emerald.700)] rounded-full
+         shadow-[0_4px_0_var(--color-emerald-700)] rounded-full
          transition-all hover:bg-emerald-600
          active:shadow-none active:translate-y-1;
 }
@@ -96,7 +96,7 @@
 /* Warning */
 .btn-warning {
   @apply bg-amber-400 text-white font-black
-         shadow-[0_4px_0_theme(colors.amber.600)] rounded-full
+         shadow-[0_4px_0_var(--color-amber-600)] rounded-full
          transition-all hover:bg-amber-500
          active:shadow-none active:translate-y-1;
 }
@@ -110,7 +110,7 @@
 /* Disabled */
 .btn-disabled {
   @apply bg-stone-200 text-stone-400 cursor-not-allowed
-         shadow-[0_4px_0_theme(colors.stone.300)] rounded-full;
+         shadow-[0_4px_0_var(--color-stone-300)] rounded-full;
 }
 ```
 
@@ -340,7 +340,7 @@ motion/react 기반. CSS transition 아닌 spring physics.
 
 **Quick Access Pills:**
 - 가로 스크롤, gap-2.5, 좌우 패딩 16px
-- 각 알약: `bg-white rounded-full px-4 py-2.5 border-2 border-stone-100 shadow-[0_3px_0_theme(colors.stone.200)]`
+- 각 알약: `bg-white rounded-full px-4 py-2.5 border-2 border-stone-100 shadow-[0_3px_0_var(--color-stone-200)]`
 - 아이콘: 16px + gap-1.5 + 텍스트
 - 텍스트: `text-sm font-black text-stone-700`
 - 복습 숫자 뱃지: `bg-emerald-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center`

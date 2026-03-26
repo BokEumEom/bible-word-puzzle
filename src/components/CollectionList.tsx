@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronRight, Library } from 'lucide-react';
 import { collections, Collection } from '../data/collections';
 import { getCollectionProgress } from '../utils/collectionProgress';
 
@@ -20,18 +20,12 @@ const colorMap: Record<string, { bg: string; border: string; text: string; bar: 
   teal: { bg: 'bg-teal-50', border: 'border-teal-200', text: 'text-teal-600', bar: 'bg-teal-400' },
 };
 
-export function CollectionList({ completedVerses, onSelectCollection, onBack }: Props) {
+export function CollectionList({ completedVerses, onSelectCollection }: Props) {
   return (
-    <div className="min-h-screen p-4 max-w-2xl mx-auto pt-6 pb-24">
-      <div className="flex items-center gap-3 mb-6">
-        <button
-          onClick={onBack}
-          className="p-3 bg-white rounded-full shadow-sm hover:bg-white border-2 border-orange-100 transition-colors"
-          aria-label="뒤로 가기"
-        >
-          <ChevronLeft size={28} className="text-orange-500" />
-        </button>
-        <h1 className="text-2xl font-black text-stone-700">테마별 모음</h1>
+    <div className="min-h-screen p-4 max-w-md mx-auto pt-4 pb-24">
+      <div className="flex items-center gap-2 mb-5 h-10">
+        <Library size={22} className="text-orange-500" />
+        <h1 className="text-xl font-black text-stone-800">테마별 모음</h1>
       </div>
 
       <div className="flex flex-col gap-3">

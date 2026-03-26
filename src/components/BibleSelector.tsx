@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { BibleBookMeta, BibleChapter, BibleVerse, Verse } from '../types';
 import { bibleIndex, loadBookChapters } from '../data/bible';
-import { Book, ChevronLeft, ChevronRight, List, CheckCircle2, Loader2, Search, X, RefreshCw, Clock, Star } from 'lucide-react';
+import { Book, BookOpen, ChevronLeft, ChevronRight, List, CheckCircle2, Loader2, Search, X, RefreshCw, Clock, Star } from 'lucide-react';
 
 interface Props {
   onSelect: (verse: Verse) => void;
@@ -222,32 +222,35 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {}, interest
   };
 
   return (
-    <div className="flex flex-col min-h-screen p-4 max-w-md mx-auto pt-6 pb-24">
-      {/* Sticky header */}
+    <div className="flex flex-col min-h-screen p-4 max-w-md mx-auto pt-4 pb-24">
+      {/* Tab header — simple, matches 테마 tab */}
+      {step === 'book' && (
+        <div className="flex items-center gap-2 mb-5 h-10">
+          <BookOpen size={22} className="text-orange-500" />
+          <h1 className="text-xl font-black text-stone-800">성경 탐색</h1>
+        </div>
+      )}
+
+      {/* Sticky drilldown header — chapter/verse steps only */}
+      {step !== 'book' && (
       <div className="sticky top-2 z-20 mb-6">
         <div className="bg-white p-4 rounded-3xl shadow-sm border-2 border-orange-100 flex flex-col gap-3">
           <div className="flex items-center justify-between">
-            {step !== 'book' ? (
-              <motion.button
-                whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-                onClick={handleGlobalBack}
-                className="flex items-center justify-center w-12 h-12 bg-white rounded-2xl shadow-sm hover:bg-orange-50 border-2 border-orange-100 shrink-0 transition-colors"
-                aria-label="뒤로 가기"
-              >
-                <ChevronLeft size={28} className="text-orange-500" />
-              </motion.button>
-            ) : (
-              <div className="w-12" />
-            )}
+            <motion.button
+              whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+              onClick={handleGlobalBack}
+              className="flex items-center justify-center w-12 h-12 bg-white rounded-2xl shadow-sm hover:bg-orange-50 border-2 border-orange-100 shrink-0 transition-colors"
+              aria-label="뒤로 가기"
+            >
+              <ChevronLeft size={28} className="text-orange-500" />
+            </motion.button>
             <h2 className="text-2xl font-black text-stone-800 text-center flex-1">
               {headerTitle()}
             </h2>
             <div className="w-12" />
           </div>
 
-          {/* Breadcrumbs for chapter/verse steps */}
-          {(step === 'chapter' || step === 'verse') && (
-            <nav className="flex items-center justify-center gap-2 px-1 pb-1 overflow-x-auto no-scrollbar" aria-label="성경 탐색 경로">
+          <nav className="flex items-center justify-center gap-2 px-1 pb-1 overflow-x-auto no-scrollbar" aria-label="성경 탐색 경로">
               <motion.button
                 whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                 onClick={() => setStep('book')}
@@ -288,9 +291,9 @@ export function BibleSelector({ onSelect, onBack, completedVerses = {}, interest
                 </>
               )}
             </nav>
-          )}
         </div>
       </div>
+      )}
 
       <AnimatePresence mode="wait">
         {/* Step 1: Book selection — search + recents + testament toggle + abbreviation grid */}

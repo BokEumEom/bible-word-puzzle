@@ -50,7 +50,7 @@ export function ProfileScreen({ progress, level, onResetOnboarding }: Props) {
       initial={{ opacity: 0, x: 40 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 40 }}
-      className="flex flex-col min-h-screen p-4 max-w-md mx-auto pt-6 pb-24"
+      className="flex flex-col min-h-screen p-4 max-w-md mx-auto pt-4 pb-24"
     >
       {/* Hero — JOY + Level */}
       <motion.div
@@ -59,10 +59,7 @@ export function ProfileScreen({ progress, level, onResetOnboarding }: Props) {
         transition={{ delay: 0.1 }}
         className="bg-white p-6 rounded-3xl shadow-[0_4px_0_var(--color-violet-100)] mb-6 text-center"
       >
-        <div className="relative w-20 h-20 mx-auto mb-3">
-          <div className="absolute inset-0 rounded-full bg-violet-50" />
-          <img src="/joy-proud.png" alt="JOY" className="relative w-full h-full object-contain" />
-        </div>
+        <img src="/joy-proud.png" alt="JOY" className="w-32 h-32 mx-auto mb-2 object-contain drop-shadow-md" />
         <div className="flex items-center justify-center gap-2 mb-1">
           <span className="text-sm font-black text-violet-600">Lv.{level.level}</span>
           <span className="text-xl font-black text-stone-800">{level.name} {level.emoji}</span>
