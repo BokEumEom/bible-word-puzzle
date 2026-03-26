@@ -469,7 +469,6 @@ export default function App() {
             <CollectionList
               completedVerses={progress.completedVerses}
               onSelectCollection={handleSelectCollection}
-              onBack={goHome}
             />
           </motion.div>
         )}
@@ -557,4 +556,3 @@ export default function App() {
     </div>
   );
 }
-

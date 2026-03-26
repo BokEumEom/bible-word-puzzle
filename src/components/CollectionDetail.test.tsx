@@ -34,20 +34,32 @@ describe('CollectionDetail', () => {
   const onPlayVerse = vi.fn();
   const onBack = vi.fn();
 
-  it('renders collection title and description', () => {
+  it('renders collection title and description inside a soft summary card', () => {
     render(
       <CollectionDetail collection={testCollection} completedVerses={{}} onPlayVerse={onPlayVerse} onBack={onBack} />,
     );
 
+    const summaryCard = screen.getByTestId('collection-detail-summary-card');
+
+    expect(summaryCard.className).toContain('bg-white');
+    expect(summaryCard.className).toContain('rounded-3xl');
+    expect(summaryCard.className).toContain('border');
+    expect(summaryCard.className).toContain('shadow-sm');
     expect(screen.getByText('사랑의 말씀')).toBeDefined();
     expect(screen.getByText('하나님의 사랑을 느껴보세요')).toBeDefined();
   });
 
-  it('renders all verse references', () => {
+  it('renders all verse references inside soft white list cards', () => {
     render(
       <CollectionDetail collection={testCollection} completedVerses={{}} onPlayVerse={onPlayVerse} onBack={onBack} />,
     );
 
+    const firstVerseRow = screen.getByTestId('collection-detail-verse-row-1jn-4-8');
+
+    expect(firstVerseRow.className).toContain('bg-white');
+    expect(firstVerseRow.className).toContain('rounded-3xl');
+    expect(firstVerseRow.className).toContain('border');
+    expect(firstVerseRow.className).toContain('shadow-sm');
     expect(screen.getByText('요한일서 4:8')).toBeDefined();
     expect(screen.getByText('요한복음 3:16')).toBeDefined();
     expect(screen.getByText('로마서 5:8')).toBeDefined();

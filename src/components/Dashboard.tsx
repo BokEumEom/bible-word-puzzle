@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { BookOpen, Flame, Heart, Star, Clock, RotateCcw, Shuffle } from 'lucide-react';
+import { BookOpen, ChevronRight, Flame, Heart, Star, Clock, RotateCcw, Shuffle } from 'lucide-react';
 import { Verse } from '../types';
 import { UserProgress } from '../hooks/useUserProgress';
 import { LevelInfo } from '../data/levels';
@@ -138,57 +138,54 @@ export function Dashboard({ progress, isDailyGoalMet, currentLevel, onStartPrese
 
       {/* LAYER 2: JOY Companion (compact) */}
       <motion.div
+        data-testid="dashboard-companion-card"
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ type: 'spring', stiffness: 200, damping: 20 }}
-        className="flex items-center gap-3 mb-5"
+        className="mb-5 rounded-3xl border border-stone-100 bg-white p-4 shadow-sm"
       >
-        {/* JOY — companion: fixed layout box, image overflows visually */}
-        <motion.div
-          key={joyPose}
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-          className="relative w-24 h-24 shrink-0"
-        >
-          <img
-            src={joyPose}
-            alt="JOY"
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-36 h-36 object-contain drop-shadow-md"
-          />
-        </motion.div>
+        <div className="flex items-start gap-3">
+          <motion.div
+            key={joyPose}
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+            className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-amber-50"
+          >
+            <img
+              src={joyPose}
+              alt="JOY"
+              className="h-14 w-14 object-contain drop-shadow-sm"
+            />
+          </motion.div>
 
-        <div className="flex-1">
-          {/* Speech bubble */}
-          <div className="bg-white rounded-2xl shadow-sm border-2 border-amber-100 px-3 py-2 relative">
-            <div className="absolute top-1/2 -left-2 -translate-y-1/2 w-0 h-0 border-t-6 border-t-transparent border-b-6 border-b-transparent border-r-8 border-r-white" />
-            <div className="absolute top-1/2 -left-2.5 -translate-y-1/2 w-0 h-0 border-t-[7px] border-t-transparent border-b-[7px] border-b-transparent border-r-[9px] border-r-amber-100" />
-            <p className="text-base font-black text-stone-700">{joyMessage}</p>
-          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-black text-stone-800 mb-1">{joyMessage}</p>
+            <p className="text-xs font-bold text-stone-400">오늘의 학습 흐름을 이어가요</p>
 
-          {/* Daily Stars — inline */}
-          <div className="flex items-center gap-1.5 mt-1.5 ml-1">
-            {Array.from({ length: progress.dailyGoal }, (_, i) => {
-              const isFilled = i < filledStars;
-              return (
-                <motion.div
-                  key={i}
-                  initial={false}
-                  animate={isFilled ? { scale: [0, 1.3, 1], rotate: [0, 15, 0] } : { scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 15 }}
-                >
-                  <Star
-                    size={20}
-                    className={isFilled ? 'text-amber-400 drop-shadow-[0_0_4px_rgba(251,191,36,0.5)]' : 'text-stone-200'}
-                    fill={isFilled ? 'currentColor' : 'none'}
-                    strokeWidth={isFilled ? 1.5 : 2}
-                  />
-                </motion.div>
-              );
-            })}
-            <span className="text-[10px] font-bold text-stone-400 ml-1">
-              {isDailyGoalMet ? '달성!' : `${progress.dailyGoal - filledStars}개 남음`}
-            </span>
+            <div className="flex items-center gap-1.5 mt-3">
+              {Array.from({ length: progress.dailyGoal }, (_, i) => {
+                const isFilled = i < filledStars;
+                return (
+                  <motion.div
+                    key={i}
+                    initial={false}
+                    animate={isFilled ? { scale: [0, 1.3, 1], rotate: [0, 15, 0] } : { scale: 1 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+                  >
+                    <Star
+                      size={18}
+                      className={isFilled ? 'text-amber-400 drop-shadow-[0_0_4px_rgba(251,191,36,0.45)]' : 'text-stone-200'}
+                      fill={isFilled ? 'currentColor' : 'none'}
+                      strokeWidth={isFilled ? 1.5 : 2}
+                    />
+                  </motion.div>
+                );
+              })}
+              <span className="ml-1 text-[10px] font-bold text-stone-400">
+                {isDailyGoalMet ? '달성!' : `${progress.dailyGoal - filledStars}개 남음`}
+              </span>
+            </div>
           </div>
         </div>
       </motion.div>
@@ -209,8 +206,9 @@ export function Dashboard({ progress, isDailyGoalMet, currentLevel, onStartPrese
           <SectionTitle icon={BookOpen} iconColor="text-amber-500">오늘의 말씀</SectionTitle>
         )}
         <motion.div
+          data-testid="dashboard-featured-card"
           whileTap={{ scale: 0.98 }}
-          className={`card-featured ${isReview ? 'border-emerald-200 shadow-[0_4px_0_var(--color-emerald-200)]' : 'border-amber-200 shadow-[0_4px_0_var(--color-amber-200)]'} p-5 relative overflow-hidden`}
+          className="relative overflow-hidden rounded-3xl border border-stone-100 bg-white p-5 shadow-sm"
         >
           <div className="flex items-center gap-2 mb-3">
             <span className={`inline-block ${isReview ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'} text-sm font-bold px-3 py-1 rounded-full shadow-sm`}>
@@ -240,21 +238,28 @@ export function Dashboard({ progress, isDailyGoalMet, currentLevel, onStartPrese
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="grid grid-cols-2 gap-3 mb-5"
+        className="flex flex-col gap-3 mb-5"
       >
         {/* 추천 퍼즐 */}
         <motion.button
+          data-testid="dashboard-quick-action-primary"
           whileTap={{ scale: 0.96 }}
           onClick={onStartPreset}
-          className="bg-violet-50 p-5 rounded-2xl border-2 border-violet-200 shadow-sm transition-all text-left"
+          className="flex items-start gap-3 rounded-3xl border border-stone-100 bg-white p-4 text-left shadow-sm transition-colors hover:bg-stone-50 active:bg-stone-100"
         >
-          <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center mb-3">
+          <div
+            data-testid="dashboard-quick-action-primary-icon"
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-violet-100"
+          >
             <Shuffle size={20} className="text-violet-500" />
           </div>
-          <span className="text-base font-black text-violet-600 block mb-1">추천 퍼즐</span>
-          <p className="text-xs font-bold text-stone-400 leading-snug">
-            난이도에 맞는 새 말씀
-          </p>
+          <div className="min-w-0 flex-1">
+            <span className="mb-1 block text-base font-black text-stone-800">추천 퍼즐</span>
+            <p className="text-xs font-bold leading-snug text-stone-400">
+              난이도에 맞는 새 말씀
+            </p>
+          </div>
+          <ChevronRight size={18} className="mt-1 shrink-0 text-stone-300" />
         </motion.button>
 
         {/* 복습 or 좋아하는 */}
@@ -265,46 +270,55 @@ export function Dashboard({ progress, isDailyGoalMet, currentLevel, onStartPrese
               const reviewAction = recommendations.nextActions.find(a => a.type === 'review');
               if (reviewAction) onSelectVerse(reviewAction.verse);
             }}
-            className="bg-emerald-50 p-5 rounded-2xl border-2 border-emerald-200 shadow-sm transition-all text-left"
+            className="flex items-start gap-3 rounded-3xl border border-stone-100 bg-white p-4 text-left shadow-sm transition-colors hover:bg-stone-50 active:bg-stone-100"
           >
-            <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center mb-3 relative">
+            <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-100">
               <RotateCcw size={20} className="text-emerald-500" />
               <span className="absolute -top-1 -right-1 bg-emerald-500 text-white text-[10px] font-black rounded-full min-w-5 h-5 flex items-center justify-center px-1">
                 {remainingReviews}
               </span>
             </div>
-            <span className="text-base font-black text-emerald-600 block mb-1">복습</span>
-            <p className="text-xs font-bold text-stone-400 leading-snug">
-              다시 만날 말씀
-            </p>
+            <div className="min-w-0 flex-1">
+              <span className="mb-1 block text-base font-black text-stone-800">복습</span>
+              <p className="text-xs font-bold leading-snug text-stone-400">
+                다시 만날 말씀
+              </p>
+            </div>
+            <ChevronRight size={18} className="mt-1 shrink-0 text-stone-300" />
           </motion.button>
         ) : progress.favoriteVerses.length > 0 ? (
           <motion.button
             whileTap={{ scale: 0.96 }}
             onClick={() => onSelectVerse(progress.favoriteVerses[0])}
-            className="bg-rose-50 p-5 rounded-2xl border-2 border-rose-200 shadow-sm transition-all text-left"
+            className="flex items-start gap-3 rounded-3xl border border-stone-100 bg-white p-4 text-left shadow-sm transition-colors hover:bg-stone-50 active:bg-stone-100"
           >
-            <div className="w-10 h-10 rounded-xl bg-rose-100 flex items-center justify-center mb-3">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-rose-100">
               <Heart size={20} className="text-rose-400" />
             </div>
-            <span className="text-base font-black text-rose-500 block mb-1">좋아하는</span>
-            <p className="text-xs font-bold text-stone-400 leading-snug">
-              저장한 말씀 풀기
-            </p>
+            <div className="min-w-0 flex-1">
+              <span className="mb-1 block text-base font-black text-stone-800">좋아하는</span>
+              <p className="text-xs font-bold leading-snug text-stone-400">
+                저장한 말씀 풀기
+              </p>
+            </div>
+            <ChevronRight size={18} className="mt-1 shrink-0 text-stone-300" />
           </motion.button>
         ) : (
           <motion.button
             whileTap={{ scale: 0.96 }}
             onClick={onStartPreset}
-            className="bg-amber-50 p-5 rounded-2xl border-2 border-amber-200 shadow-sm transition-all text-left"
+            className="flex items-start gap-3 rounded-3xl border border-stone-100 bg-white p-4 text-left shadow-sm transition-colors hover:bg-stone-50 active:bg-stone-100"
           >
-            <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center mb-3">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-100">
               <Star size={20} className="text-amber-400" />
             </div>
-            <span className="text-base font-black text-amber-500 block mb-1">도전</span>
-            <p className="text-xs font-bold text-stone-400 leading-snug">
-              더 많은 말씀 풀기
-            </p>
+            <div className="min-w-0 flex-1">
+              <span className="mb-1 block text-base font-black text-stone-800">도전</span>
+              <p className="text-xs font-bold leading-snug text-stone-400">
+                더 많은 말씀 풀기
+              </p>
+            </div>
+            <ChevronRight size={18} className="mt-1 shrink-0 text-stone-300" />
           </motion.button>
         )}
       </motion.div>
@@ -324,7 +338,7 @@ export function Dashboard({ progress, isDailyGoalMet, currentLevel, onStartPrese
                 key={`recent-${verse.id}`}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => onSelectVerse(verse)}
-                className="shrink-0 w-44 card p-4 shadow-[0_4px_0_var(--color-emerald-100)] text-left hover:bg-white transition-colors"
+                className="shrink-0 w-44 rounded-3xl border border-stone-100 bg-white p-4 text-left shadow-sm transition-colors hover:bg-stone-50"
               >
                 <span className="text-xs font-bold text-emerald-600 mb-1 block">
                   {verse.reference}
@@ -341,12 +355,19 @@ export function Dashboard({ progress, isDailyGoalMet, currentLevel, onStartPrese
             ))}
           </div>
         ) : (
-          <div className="bg-amber-50 rounded-2xl p-6 text-center">
-            <div className="w-15 h-15 mx-auto mb-3">
-              <img src="/joy-support.png" alt="JOY" className="w-full h-full object-contain" />
+          <div
+            data-testid="dashboard-recent-empty"
+            className="rounded-3xl border border-stone-100 bg-white p-4 shadow-sm"
+          >
+            <div className="flex items-start gap-3">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-100">
+                <Clock size={20} className="text-amber-500" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="mb-1 text-sm font-black text-stone-800">아직 만난 말씀이 없어요</p>
+                <p className="text-xs font-bold text-stone-400">퍼즐을 풀면 여기에 모여요</p>
+              </div>
             </div>
-            <p className="text-sm font-bold text-stone-600 mb-1">아직 만난 말씀이 없어요</p>
-            <p className="text-xs font-bold text-stone-400">퍼즐을 풀면 여기에 모여요</p>
           </div>
         )}
       </motion.div>

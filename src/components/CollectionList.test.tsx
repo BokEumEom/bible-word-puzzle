@@ -19,52 +19,65 @@ vi.mock('motion/react', () => ({
 
 describe('CollectionList', () => {
   const onSelectCollection = vi.fn();
-  const onBack = vi.fn();
+  const totalVerseCount = collections.reduce((sum, collection) => sum + collection.verses.length, 0);
 
-  it('renders all 8 collection titles', () => {
+  it('renders a root-tab header and summary card for the theme library', () => {
     render(
-      <CollectionList completedVerses={{}} onSelectCollection={onSelectCollection} onBack={onBack} />,
+      <CollectionList completedVerses={{}} onSelectCollection={onSelectCollection} />,
+    );
+
+    const summaryCard = screen.getByTestId('collection-summary-card');
+
+    expect(screen.getByText('테마')).toBeDefined();
+    expect(summaryCard.className).toContain('bg-white');
+    expect(summaryCard.className).toContain('rounded-3xl');
+    expect(summaryCard.className).toContain('border');
+    expect(summaryCard.className).toContain('shadow-sm');
+    expect(summaryCard.textContent).toContain(`${collections.length}개 테마`);
+    expect(summaryCard.textContent).toContain(`${totalVerseCount}개 말씀`);
+  });
+
+  it('renders all collection titles inside soft white list cards', () => {
+    render(
+      <CollectionList completedVerses={{}} onSelectCollection={onSelectCollection} />,
     );
 
     for (const c of collections) {
       expect(screen.getByText(c.title)).toBeDefined();
     }
-  });
 
-  it('shows progress text for collections', () => {
-    render(
-      <CollectionList completedVerses={{}} onSelectCollection={onSelectCollection} onBack={onBack} />,
-    );
-
-    // All show "0/N" format — at least one exists for each verse count
-    const progressTexts = screen.getAllByText(/^0\/\d+$/);
-    expect(progressTexts.length).toBe(collections.length);
+    const firstRow = screen.getByTestId(`collection-row-${collections[0].id}`);
+    const firstIcon = screen.getByTestId(`collection-icon-${collections[0].id}`);
+    expect(firstRow.className).toContain('bg-white');
+    expect(firstRow.className).toContain('rounded-3xl');
+    expect(firstRow.className).toContain('border');
+    expect(firstRow.className).toContain('shadow-sm');
+    expect(firstIcon.className).toContain('rounded-2xl');
   });
 
   it('calls onSelectCollection when a collection is clicked', async () => {
     const user = userEvent.setup();
     render(
-      <CollectionList completedVerses={{}} onSelectCollection={onSelectCollection} onBack={onBack} />,
+      <CollectionList completedVerses={{}} onSelectCollection={onSelectCollection} />,
     );
 
     await user.click(screen.getByText(collections[0].title));
     expect(onSelectCollection).toHaveBeenCalledWith(collections[0]);
   });
 
-  it('calls onBack when back button is clicked', async () => {
-    const user = userEvent.setup();
+  it('shows progress text for collections in the summary and each row', () => {
     render(
-      <CollectionList completedVerses={{}} onSelectCollection={onSelectCollection} onBack={onBack} />,
+      <CollectionList completedVerses={{}} onSelectCollection={onSelectCollection} />,
     );
 
-    await user.click(screen.getByLabelText('뒤로 가기'));
-    expect(onBack).toHaveBeenCalled();
+    const progressTexts = screen.getAllByText(/^0\/\d+$/);
+    expect(progressTexts.length).toBe(collections.length + 1);
   });
 
   it('shows partial progress for completed verses', () => {
     const completed = { '1jn-4-8': 1, 'jhn-3-16': 2 };
     render(
-      <CollectionList completedVerses={completed} onSelectCollection={onSelectCollection} onBack={onBack} />,
+      <CollectionList completedVerses={completed} onSelectCollection={onSelectCollection} />,
     );
 
     // love collection has 8 verses, 2 completed
